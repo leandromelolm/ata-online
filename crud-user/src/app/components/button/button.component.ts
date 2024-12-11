@@ -7,6 +7,6 @@ import { Component, Input } from '@angular/core';
 })
 export class ButtonComponent {
 
-  @Input() textButton: string = 'login';
+  @Input() textButton: string = 'Default';
 
 }

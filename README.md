@@ -14,6 +14,22 @@ ng version
 ## criar projeto
 ng new crud-user --no-standalone
 
+## executar projeto
+ng serve -o
+
+## instalar boostrap
+npm install bootstrap@5.3.3
+
+## instalar material angular
+ng add @angular/material
+
+
+### comandos angular
+
+## criar componente
+ng generate component components/button
+ng generate component components/location
+
 
 ### Outros comandos úteis
 
