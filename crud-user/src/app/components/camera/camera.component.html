@@ -1,0 +1,16 @@
+<div class="container">
+    <h1>Câmera no Angular</h1>
+    <div class="d-grid">
+        <div class="mb-1">
+            <app-button textButton="Abrir Camera" (click)="abrirCamera()"></app-button>
+        </div>
+        <video id="video" width="640" height="480" autoplay></video>
+    </div>    
+    <hr>
+    <app-button textButton="Capturar Foto" (click)="capturarFoto()"></app-button>
+
+    <div *ngIf="fotoCapturada">
+        <h3>Foto Capturada</h3>
+        <img [src]="fotoCapturada" alt="Foto da câmera" width="640">
+    </div>
+</div>
