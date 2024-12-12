@@ -29,6 +29,7 @@ ng add @angular/material
 ## criar componente
 ng generate component components/button
 ng generate component components/location
+ng generate component pages/login
 
 
 ### Outros comandos úteis
