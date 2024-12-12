@@ -11,18 +11,17 @@ export class LocationComponent {
   long: number = 0;
   btnClickLocation: string = "Localizar"
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public clickLocation(): void {
     this.getCurrentLocation();
   }
 
-  getCurrentLocation() {
+  getCurrentLocation() {        
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(position => {
         this.lat = position.coords.latitude;
-        this.long = position.coords.longitude;
+        this.long = position.coords.longitude;      
       });
     }
     else {
