@@ -5,9 +5,9 @@
         <h1 class="titulo"> CRUD USER</h1>
         <h1 class="subtitulo"> Gerenciamento de cadastro de usuários</h1>
 
-        <input class="input-form" type="text" placeholder="Digite seu nome">
+        <input [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" class="input-form" type="text" placeholder="Digite seu nome">
 
-        <app-button textButton="Acessar" size="100"></app-button>
+        <app-button textButton="Acessar" size="100" (click)="login()"></app-button>
     </form>
 
     <p class="footer"> 2024 | Desenvolvido por Leandro Melo</p>
