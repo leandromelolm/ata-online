@@ -12,6 +12,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { MatIconModule} from '@angular/material/icon';
 import { CameraComponent } from './components/camera/camera.component';
+import { FormComponent } from './components/form/form.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -21,13 +23,15 @@ import { CameraComponent } from './components/camera/camera.component';
     LoginComponent,
     HomeComponent,
     MenuComponent,
-    CameraComponent
+    CameraComponent,
+    FormComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    MatIconModule
+    MatIconModule,
+    HttpClientModule
   ],
   providers: [
     provideAnimationsAsync()
