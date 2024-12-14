@@ -1,7 +1,4 @@
 import { Component } from '@angular/core';
-import { UploadService } from '../../services/upload.service';
-import { Observable } from 'rxjs';
-import { IndexedDbService } from '../../services/indexed-db.service';
 
 @Component({
   selector: 'app-form',
@@ -13,132 +10,80 @@ export class FormComponent {
   selectedFile: boolean = false;
   successMessage: string = '';
   errorMessage: string = '';
-
-  constructor(
-    private uploadService: UploadService, 
-    private indexedDbService: IndexedDbService
-  ) {}
-  
   imageUrl: string | undefined;
+  imageBase64: any;
+  blob: any;
+  selectedFile2: File | null = null;;
 
-  onFileChange(event: any): void {
-    const file: File = event.target.files[0];  // Pegando o primeiro arquivo selecionado
-
-    if (file) {
-      this.convertFileToBlob(file);
-
-      // Criando a URL da imagem para a pré-visualização
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.imageUrl = reader.result as string;  // A URL para a pré-visualização
-      };
-      reader.readAsDataURL(file);  // Leitura da imagem como URL
+  constructor() {}  
+  
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile2 = input.files[0];
+      this.onImagePreview(this.selectedFile2);
+      this.selectedFile = true;
     }
   }
+
+  onImagePreview(event: any): void {
+    const file: File = event;
+    if (file) {
+      // this.convertFileToBlob(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.imageUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async uploadFile(): Promise<void> {
+    if (!this.selectedFile2) {
+      this.errorMessage = 'Nenhum arquivo selecionado.';
+      this.successMessage= '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64File = (reader.result as string).split(',')[1]; // Obtém apenas o Base64
+        const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
+          method: 'POST',
+          body: base64File
+        });
+
+        const result = await response.json();
+        if (result.success) {          
+          this.errorMessage = '';
+          this.successMessage= `Arquivo enviado com sucesso! ID: ${result.fileId}, ${result.sheetId}`;
+        } else {
+          this.errorMessage = `Erro: ${result.message}`;
+          this.successMessage= ``;
+        }
+      } catch (error) {
+        this.errorMessage = `Erro ao enviar arquivo: ${error}`;
+        this.successMessage= ``;
+      }
+    };
+    reader.readAsDataURL(this.selectedFile2);
+  }
+
 
   convertFileToBlob(file: File): void {
     const reader = new FileReader();
     
     reader.onloadend = () => {
       const arrayBuffer = reader.result as ArrayBuffer;
-      const blob = new Blob([arrayBuffer], { type: file.type });
-      console.log('Imagem convertida para Blob:', blob);
-
-      // this.uploadImage(blob);
-      this.saveImageToIndexedDB(blob);
-      this.selectedFile = true;
+      this.imageBase64 = reader.result;
+      this.blob = new Blob([arrayBuffer], { type: file.type });
+      
+      console.log(reader.result);
+      console.log('Imagem convertida para Blob:', this.blob);
+      
     };
-
-    reader.readAsArrayBuffer(file);
-  }
-
-  // uploadImage(blob: Blob): void {
-  //   const formData = new FormData();
-  //   formData.append('file', blob, 'image.jpg');
-  //   console.log('Pronto para enviar o FormData:', formData);
-  //   this.selectedFile = true;
-  //   this.onUpload(formData)
-  // }
-
-  uploadImage(blob: Blob): void {
-    const formData = new FormData();
-    formData.append('file', blob, 'image.jpg');  // O nome do campo 'file' deve ser o mesmo que no Google Apps Script
-  
-    fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Imagem enviada com sucesso:", data);
-      // Aqui você pode processar a resposta, como mostrar a URL do arquivo salvo
-    })
-    .catch(error => {
-      console.error("Erro ao enviar a imagem:", error);
-    });
-  }
-
-
-  onUpload(): void {
-    if (this.selectedFile) {
-      // Chama o serviço de upload
-      const formData = new FormData();
-      this.indexedDbService.getImageById(1).then((imageData: { blob: any; }) => {
-        // A imagem recuperada do IndexedDB será um Blob
-        const imageBlob = imageData.blob;
-        // Criando o FormData        
-        formData.append('file', imageBlob, 'image.jpg');
-      });
-
-      fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Imagem enviada com sucesso:', data);
-      })
-      .catch(error => {
-        console.error('Erro ao enviar a imagem:', error);
-      }); 
-
-      // this.uploadService.uploadImage(formData).subscribe(
-      //   (response) => {
-      //     this.successMessage = `Imagem enviada com sucesso! ${response}`;
-      //     this.errorMessage = '';
-      //   },
-      //   (error) => {
-      //     this.errorMessage = 'Erro ao enviar a imagem!';
-      //     this.successMessage = '';
-      //   }
-      // );
-
-    } else {
-      this.errorMessage = 'Por favor, selecione uma imagem primeiro!';
-      this.successMessage = '';
-    }
-  }
-
-   // Função para salvar a imagem no IndexedDB
-   saveImageToIndexedDB(imageBlob: Blob): void {
-    this.indexedDbService.saveImage(imageBlob)
-      .then((message) => {
-        console.log(message);  // Exibe mensagem de sucesso
-      })
-      .catch((error) => {
-        console.error(error);  // Exibe erro caso ocorra
-      });
-  }
-
-  // Função para exibir as imagens armazenadas
-  showAllImages(): void {
-    this.indexedDbService.getAllImages()
-      .then((images) => {
-        console.log('Imagens armazenadas:', images);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    reader.readAsDataURL(file);  
   }
 
 }
