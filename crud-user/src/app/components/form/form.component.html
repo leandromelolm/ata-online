@@ -1,5 +1,8 @@
 <div style="text-align:center; margin-top: 50px;">
-    <h1>Enviar Imagem para o Google Drive</h1>
+
+    <h2>Salvar Informações na Planilha Google e envia imagem para o Google Drive</h2>
+
+    <input [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" class="input-form" type="text" placeholder="Digite seu nome">
 
     <div *ngIf="imageUrl">
         <h3>Pré-visualização:</h3>
@@ -7,7 +10,7 @@
     </div> 
 
     <div class="container mt-5">
-        <input type="file" (change)="onFileSelected($event)" />
+        <input type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
         <button (click)="uploadFile()" [disabled]="!selectedFile">Upload</button>
     </div>
 

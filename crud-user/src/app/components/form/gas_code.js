@@ -5,12 +5,12 @@ const sheet = doc.getSheetByName('page1');
 
 function doPost(e) {
  try {
-    const base64Content = e.postData.contents;
-    const imageBlob = processImageBlob(base64Content);
+    let dados = JSON.parse(e.postData.contents);
+    const imageBlob = processImageBlob(dados.base64File);
     const folder = DriveApp.getFolderById(folderId);
     const id = sheet.getLastRow() + 1;
     const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-    sheet.appendRow([new Date(), id, file.getDownloadUrl()]);
+    sheet.appendRow([new Date(), id, dados.userName ,file.getDownloadUrl()]);
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
