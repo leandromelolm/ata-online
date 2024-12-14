@@ -38,10 +38,7 @@ export class FormComponent {
         img.onload = () => {
           this.redimensionarImagem(img, 280, 360);  // Reduz a resolução para 800x600
         };
-        img.src = e.target.result;  // Define o conteúdo da imagem
-        this.imageUrl = img.src;
-        console.log(this.imageUrl);
-        
+        img.src = e.target.result;  // Define o conteúdo da imagem        
       };
       reader.readAsDataURL(file);
     }
@@ -97,7 +94,7 @@ export class FormComponent {
       this.imageBase64 = reader.result;
       this.blob = new Blob([arrayBuffer], { type: file.type });
       
-      console.log(reader.result);
+      // console.log(reader.result);
       console.log('Imagem convertida para Blob:', this.blob);
       
     };
@@ -121,6 +118,7 @@ export class FormComponent {
 
     // Exibe a imagem redimensionada no template
     this.imageUrl = novaImagemBase64;
+    console.log(this.imageUrl.length);    
   }
 
 }
