@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-camera',
@@ -7,10 +7,18 @@ import { Component } from '@angular/core';
 })
 export class CameraComponent {
 
-  fotoCapturada: string | null = null;
+  fotoCapturada: string;
+  @Output() enviarParaPai: EventEmitter<string> = new EventEmitter<string>();
+
+  @ViewChild('videoElement') videoElement: ElementRef<HTMLVideoElement> | undefined;
+  private stream: MediaStream | undefined;
 
   ngOnInit(): void {
-    // this.abrirCamera();
+    this.abrirCamera();
+  }
+
+  enviarValorParaPai() {
+    this.enviarParaPai.emit(this.fotoCapturada);
   }
 
   abrirCamera() {
@@ -30,27 +38,53 @@ export class CameraComponent {
         });
     } else {
       console.log('Acesso à câmera não disponível neste navegador.');
+      alert('Acesso à câmera não disponível neste navegador.')
     }
   }
 
   capturarFoto() {
-    // Seleciona o elemento <video> e o <canvas> para capturar a foto
     const video = document.querySelector('video') as HTMLVideoElement;
     const canvas = document.createElement('canvas');
     
     if (video) {
-      // Ajusta o tamanho do canvas para o tamanho do vídeo
       canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      // Desenha o vídeo no canvas
+      canvas.height = video.videoHeight;      
+
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Converte a imagem do canvas para uma URL de imagem
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);        
+
         this.fotoCapturada = canvas.toDataURL('image/png');
       }
     }
   }
+
+  // startCamera(): void {
+  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //     navigator.mediaDevices.getUserMedia({ video: true })
+  //       .then((stream) => {
+  //         this.stream = stream;
+  //         // Atribui o stream de vídeo ao elemento <video>
+  //         if (this.videoElement && this.videoElement.nativeElement) {
+  //           this.videoElement.nativeElement.srcObject = stream;
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error('Erro ao acessar a câmera: ', error);
+  //       });
+  //   } else {
+  //     console.error('A API getUserMedia não é suportada neste navegador.');
+  //   }
+  // }
+
+  // Função para parar a câmera
+  // stopCamera(): void {
+  //   if (this.stream) {
+  //     const tracks = this.stream.getTracks();
+  //     tracks.forEach((track) => track.stop());  // Para todos os tracks do stream (vídeo, áudio)
+  //     if (this.videoElement && this.videoElement.nativeElement) {
+  //       this.videoElement.nativeElement.srcObject = null;  // Remove o stream do vídeo
+  //     }
+  //   }
+  // }
 }

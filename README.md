@@ -16,6 +16,7 @@ ng new crud-user --no-standalone
 
 ## executar projeto
 ng serve -o
+ng serve --host {HOST_LOCAL_PARA_ABRIR_NO_MOBILE}
 
 ## instalar boostrap
 npm install bootstrap@5.3.3

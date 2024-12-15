@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-form',
@@ -14,8 +15,54 @@ export class FormComponent {
   blob: any;
   selectedFile: File | null = null;
   userName: string;
+  matricula: string;
+  cpf: string;
+  distrito: string;
+  unidade: string;
+  valorRecebido: string = 'mostrar';
 
-  constructor() {}  
+  constructor(private router: Router) {}
+
+  redirectLogin() {
+    this.router.navigate(['login']);
+  }
+
+  receberValorDoFilho(valor: string) {
+    this.selectedFile = this.retornarUmFile(valor, 'imagem.png', 'image/png');
+    console.log(this.selectedFile);    
+    this.onImagePreview(this.selectedFile);
+    this.valorRecebido = 'ocultar'
+  }
+
+  alterarValor(valor: string) {
+    this.valorRecebido = valor;
+  }
+
+  retornarUmFile(base64: string, nomeArquivo: string, tipo: string): File {
+    // Remover o prefixo "data:image/png;base64," (ou outros tipos de mídia) da string Base64
+    const base64Data = base64.split(',')[1];
+  
+    // Converter a string Base64 para um array de bytes
+    const byteCharacters = atob(base64Data);
+  
+    // Criar um array de bytes
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+      const slice = byteCharacters.slice(offset, offset + 1024);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      byteArrays.push(new Uint8Array(byteNumbers));
+    }
+  
+    // Criar o Blob a partir do array de bytes
+    const blob = new Blob(byteArrays, { type: tipo });
+  
+    // Retornar o File com o nome especificado
+    return new File([blob], nomeArquivo, { type: tipo });
+  }
+  
   
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -58,7 +105,11 @@ export class FormComponent {
 
         let obj = {
           base64File: base64File,
-          userName: this.userName
+          userName: this.userName,
+          matricula: this.matricula,
+          cpf: this.cpf,
+          distrito: this.distrito,
+          unidade: this.unidade
         }
         
         const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
@@ -71,8 +122,7 @@ export class FormComponent {
           this.errorMessage = '';
           this.successMessage= `Arquivo enviado com sucesso! ID: ${result.fileId}, ${result.sheetId}`;
           this.selectedFile = null;
-          this.userName = '';
-          this.imageUrl = '';
+          this.limparCampos();
         } else {
           this.errorMessage = `Erro: ${result.message}`;
           this.successMessage= ``;
@@ -83,8 +133,15 @@ export class FormComponent {
       }
     };
     reader.readAsDataURL(this.selectedFile);
+  } 
+  limparCampos() {
+    this.userName = '';
+    this.matricula = '';
+    this.cpf = '';
+    this.distrito = '';
+    this.unidade = '';
+    this.imageUrl = '';
   }
-
 
   convertFileToBlob(file: File): void {
     const reader = new FileReader();

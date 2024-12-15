@@ -1,17 +1,26 @@
-<div style="text-align:center; margin-top: 50px;">
-
-    <h2>Salvar Informações na Planilha Google e envia imagem para o Google Drive</h2>
-
-    <input [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" class="input-form" type="text" placeholder="Digite seu nome">
-
-    <div *ngIf="imageUrl">
+<div style="text-align:center" class="d-inline-grid">
+    
+    <h2 (click)="redirectLogin()" class="titulo">Ata Online [Beta]</h2>
+    <span class="subtitulo">Salvar Informações na Planilha Google e envia imagem para o Google Drive</span>
+    
+    <app-camera (enviarParaPai)="receberValorDoFilho($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+    
+    <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+    <!-- <div *ngIf="imageUrl"> -->
+    <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
         <h3>Pré-visualização:</h3>
-        <img [src]="imageUrl" alt="Pré-visualização da imagem" width="200">
+        <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
     </div> 
-
-    <div class="container mt-5">
-        <input type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
-        <button (click)="uploadFile()" [disabled]="!selectedFile">Upload</button>
+    
+    <div class="d-inline-grid">
+        <input class="" type="file" (change)="onFileSelected($event)" [disabled]="!userName" class="d-none" />
+        <input class="" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite seu nome">        
+        <input class="" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite o número da matrícula">
+        <input class="" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite o número do cpf">
+        <input class="" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite seu distrito">
+        <input class="" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite nome da sua unidade">
+        <!-- <button class="d-block" (click)="uploadFile()" [disabled]="!selectedFile">Upload</button> -->
+        <app-button class="mt-2 mb-4" (click)="uploadFile()" *ngIf="selectedFile && userName" textButton="Enviar"></app-button>
     </div>
 
     <div *ngIf="successMessage" style="color: green; margin-top: 20px;">

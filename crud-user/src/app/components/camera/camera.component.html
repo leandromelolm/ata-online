@@ -1,16 +1,24 @@
 <div class="container">
-    <h1>Câmera no Angular</h1>
-    <div class="d-grid">
+    <h4>Capturar Imagem</h4>
+    <div class="">
         <div class="mb-1">
-            <app-button textButton="Abrir Camera" (click)="abrirCamera()"></app-button>
+            <!-- <app-button textButton="Abrir Camera" (click)="abrirCamera()"></app-button> -->
         </div>
-        <video id="video" width="640" height="480" autoplay></video>
+        <video id="video" width="360" height="640" autoplay></video>
     </div>    
     <hr>
-    <app-button textButton="Capturar Foto" (click)="capturarFoto()"></app-button>
+    <app-button textButton="Capturar Foto" (click)="capturarFoto()" (click)="enviarValorParaPai()"></app-button>
 
     <div *ngIf="fotoCapturada">
         <h3>Foto Capturada</h3>
-        <img [src]="fotoCapturada" alt="Foto da câmera" width="640">
+        <img [src]="fotoCapturada" alt="Foto da câmera" width="360">
     </div>
+
+
+    <!-- <div class="camera-container">
+        <video #videoElement width="100%" height="auto" autoplay></video>
+        <button (click)="startCamera()">Iniciar Câmera</button>
+        <button (click)="stopCamera()">Parar Câmera</button>
+    </div> -->
+
 </div>

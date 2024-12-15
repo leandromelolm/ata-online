@@ -14,6 +14,7 @@ import { MatIconModule} from '@angular/material/icon';
 import { CameraComponent } from './components/camera/camera.component';
 import { FormComponent } from './components/form/form.component';
 import { HttpClientModule } from '@angular/common/http';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     FormsModule,
     MatIconModule,
-    HttpClientModule
+    HttpClientModule,
+    MatFormFieldModule
   ],
   providers: [
     provideAnimationsAsync()
