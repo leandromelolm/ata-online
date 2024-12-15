@@ -8,7 +8,7 @@ import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular
 export class CameraComponent {
 
   fotoCapturada: string;
-  @Output() enviarParaPai: EventEmitter<string> = new EventEmitter<string>();
+  @Output() enviarParaForm: EventEmitter<string> = new EventEmitter<string>();
 
   @ViewChild('videoElement') videoElement: ElementRef<HTMLVideoElement> | undefined;
   private stream: MediaStream | undefined;
@@ -17,8 +17,8 @@ export class CameraComponent {
     this.abrirCamera();
   }
 
-  enviarValorParaPai() {
-    this.enviarParaPai.emit(this.fotoCapturada);
+  enviarValorParaFormComponent() {
+    this.enviarParaForm.emit(this.fotoCapturada);
   }
 
   abrirCamera() {
@@ -56,6 +56,18 @@ export class CameraComponent {
 
         this.fotoCapturada = canvas.toDataURL('image/png');
       }
+    }
+    this.pararCamera(video);
+  }
+
+  pararCamera(video: HTMLVideoElement | null) {
+    if (video && video.srcObject) {
+      const stream = video.srcObject as MediaStream;
+      const tracks = stream.getTracks();      
+      // Parar todas as tracks (vídeo e áudio, se houver)
+      tracks.forEach(track => track.stop());  
+      // Limpar o objeto de mídia do vídeo
+      video.srcObject = null;
     }
   }
 

@@ -7,7 +7,7 @@
         <video id="video" width="360" height="640" autoplay></video>
     </div>    
     <hr>
-    <app-button textButton="Capturar Foto" (click)="capturarFoto()" (click)="enviarValorParaPai()"></app-button>
+    <app-button textButton="Capturar Foto" (click)="capturarFoto()" (click)="enviarValorParaFormComponent()"></app-button>
 
     <div *ngIf="fotoCapturada">
         <h3>Foto Capturada</h3>

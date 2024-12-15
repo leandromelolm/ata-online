@@ -3,7 +3,7 @@
     <h2 (click)="redirectLogin()" class="titulo">Ata Online [Beta]</h2>
     <span class="subtitulo">Salvar Informações na Planilha Google e envia imagem para o Google Drive</span>
     
-    <app-camera (enviarParaPai)="receberValorDoFilho($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+    <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
     
     <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
     <!-- <div *ngIf="imageUrl"> -->

@@ -27,7 +27,7 @@ export class FormComponent {
     this.router.navigate(['login']);
   }
 
-  receberValorDoFilho(valor: string) {
+  receberValorDaCamera(valor: string) {
     this.selectedFile = this.retornarUmFile(valor, 'imagem.png', 'image/png');
     console.log(this.selectedFile);    
     this.onImagePreview(this.selectedFile);
