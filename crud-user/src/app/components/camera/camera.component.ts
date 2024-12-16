@@ -63,40 +63,18 @@ export class CameraComponent {
   pararCamera(video: HTMLVideoElement | null) {
     if (video && video.srcObject) {
       const stream = video.srcObject as MediaStream;
-      const tracks = stream.getTracks();      
-      // Parar todas as tracks (vídeo e áudio, se houver)
-      tracks.forEach(track => track.stop());  
-      // Limpar o objeto de mídia do vídeo
+      
+      // Parar todas as tracks (de vídeo e áudio) associadas ao stream
+      const tracks = stream.getTracks();
+      tracks.forEach(track => {
+        track.stop(); // Para cada track (de vídeo ou áudio)
+      });
+  
+      // Limpar a referência do srcObject
       video.srcObject = null;
+  
+      // Esconder o elemento video, se desejado
+      video.style.display = 'none';  
     }
   }
-
-  // startCamera(): void {
-  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  //     navigator.mediaDevices.getUserMedia({ video: true })
-  //       .then((stream) => {
-  //         this.stream = stream;
-  //         // Atribui o stream de vídeo ao elemento <video>
-  //         if (this.videoElement && this.videoElement.nativeElement) {
-  //           this.videoElement.nativeElement.srcObject = stream;
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error('Erro ao acessar a câmera: ', error);
-  //       });
-  //   } else {
-  //     console.error('A API getUserMedia não é suportada neste navegador.');
-  //   }
-  // }
-
-  // Função para parar a câmera
-  // stopCamera(): void {
-  //   if (this.stream) {
-  //     const tracks = this.stream.getTracks();
-  //     tracks.forEach((track) => track.stop());  // Para todos os tracks do stream (vídeo, áudio)
-  //     if (this.videoElement && this.videoElement.nativeElement) {
-  //       this.videoElement.nativeElement.srcObject = null;  // Remove o stream do vídeo
-  //     }
-  //   }
-  // }
 }

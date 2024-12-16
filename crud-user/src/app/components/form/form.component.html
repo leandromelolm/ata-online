@@ -1,18 +1,26 @@
-<div style="text-align:center" class="d-inline-grid">
+<div style="text-align:center" class="d-inline-grid">    
     
     <h2 (click)="redirectLogin()" class="titulo">Ata Online [Beta]</h2>
     <span class="subtitulo">Salvar Informações na Planilha Google e envia imagem para o Google Drive</span>
+
+    <div class="camera" *ngIf="localizacaoAtiva">        
+        <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+        
+        <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+        
+        <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
+            <h3>Pré-visualização:</h3>
+            <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
+        </div> 
+    </div>
+
+    <div *ngIf="!localizacaoAtiva">
+        <span>Ative a localização e atualize a página</span>
+    </div>
+
+    <app-location class="mt-2"></app-location>
     
-    <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
-    
-    <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
-    <!-- <div *ngIf="imageUrl"> -->
-    <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
-        <h3>Pré-visualização:</h3>
-        <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
-    </div> 
-    
-    <div class="d-inline-grid">
+    <div class="d-inline-grid"  *ngIf="localizacaoAtiva && imageUrl">
         <input class="" type="file" (change)="onFileSelected($event)" [disabled]="!userName" class="d-none" />
         <input class="" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite seu nome">        
         <input class="" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite o número da matrícula">
@@ -20,15 +28,18 @@
         <input class="" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite seu distrito">
         <input class="" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" class="input-form mt-4" type="text" placeholder="Digite nome da sua unidade">
         <!-- <button class="d-block" (click)="uploadFile()" [disabled]="!selectedFile">Upload</button> -->
-        <app-button class="mt-2 mb-4" (click)="uploadFile()" *ngIf="selectedFile && userName" textButton="Enviar"></app-button>
-    </div>
 
+        <app-button class="mt-2 mb-4" (click)="uploadFile()" *ngIf="selectedFile && userName" [textButton]="buttonText"></app-button>
+    </div>
+    
     <div *ngIf="successMessage" style="color: green; margin-top: 20px;">
         {{ successMessage }}
     </div>
     <div *ngIf="errorMessage" style="color: red; margin-top: 20px;">
         {{ errorMessage }}
-    </div>    
+    </div>
+
+    <app-button class="mt-4 mb-4 float-end" (click)="sair()"  textButton="Sair"></app-button>        
     
 </div>
   

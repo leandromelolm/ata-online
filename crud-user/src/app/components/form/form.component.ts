@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { LocalizacaoService } from '../../services/localizacao.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form',
@@ -20,8 +22,28 @@ export class FormComponent {
   distrito: string;
   unidade: string;
   valorRecebido: string = 'mostrar';
+  buttonText: string = 'Enviar';
+  localizacaoAtiva: boolean;
+  private subscription: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private localizacaoService: LocalizacaoService) {}
+
+  ngOnInit() {
+    // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
+    this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
+      (status) => {
+        this.localizacaoAtiva = status;
+        console.log('Localização ativa:', this.localizacaoAtiva);
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    // Cancela a inscrição ao destruir o componente para evitar vazamentos de memória
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
 
   redirectLogin() {
     this.router.navigate(['login']);
@@ -36,6 +58,7 @@ export class FormComponent {
 
   alterarValor(valor: string) {
     this.valorRecebido = valor;
+    this.imageUrl = '';
   }
 
   retornarUmFile(base64: string, nomeArquivo: string, tipo: string): File {
@@ -111,13 +134,14 @@ export class FormComponent {
           distrito: this.distrito,
           unidade: this.unidade
         }
-        
+        this.buttonText = 'Aguarde';
         const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
           method: 'POST',
           body: JSON.stringify(obj)
         });
 
         const result = await response.json();
+        this.buttonText = 'Enviar';
         if (result.success) {          
           this.errorMessage = '';
           this.successMessage= `Arquivo enviado com sucesso! ID: ${result.fileId}, ${result.sheetId}`;
@@ -176,6 +200,10 @@ export class FormComponent {
     // Exibe a imagem redimensionada no template
     this.imageUrl = novaImagemBase64;
     console.log(this.imageUrl.length);    
+  }
+
+  sair() {
+    window.location.href = '/'
   }
 
 }
