@@ -49,6 +49,10 @@ export class FormComponent {
     this.router.navigate(['login']);
   }
 
+  reloadPage() {
+    window.location.href = '/home'
+  }
+
   receberValorDaCamera(valor: string) {
     this.selectedFile = this.retornarUmFile(valor, 'imagem.png', 'image/png');
     console.log(this.selectedFile);    

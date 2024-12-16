@@ -14,8 +14,9 @@
         </div> 
     </div>
 
-    <div *ngIf="!localizacaoAtiva">
+    <div *ngIf="!localizacaoAtiva" class="d-inline-grid">
         <span>Ative a localização e atualize a página</span>
+        <a (click)="reloadPage()" class="mt-4 mb-4 float-end">Atualizar Página</a>
     </div>
 
     <app-location class="mt-2"></app-location>
@@ -39,7 +40,7 @@
         {{ errorMessage }}
     </div>
 
-    <app-button class="mt-4 mb-4 float-end" (click)="sair()"  textButton="Sair"></app-button>        
+    <a (click)="sair()" class="mt-4 mb-4 float-end">Sair</a>        
     
 </div>
   
