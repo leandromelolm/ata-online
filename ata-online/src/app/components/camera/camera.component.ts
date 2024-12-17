@@ -7,6 +7,7 @@ import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular
 })
 export class CameraComponent {
 
+  errorMessage: string = '';  
   fotoCapturada: string;
   @Output() enviarParaForm: EventEmitter<string> = new EventEmitter<string>();
 
@@ -22,6 +23,7 @@ export class CameraComponent {
   }
 
   abrirCamera() {
+    this.errorMessage = '';
     // Verifica se a API está disponível no navegador
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       // Solicita acesso à câmera
@@ -35,10 +37,12 @@ export class CameraComponent {
         })
         .catch((error) => {
           console.error('Erro ao acessar a câmera: ', error);
+          this.errorMessage = 'Erro ao acessar a câmera';
         });
     } else {
       console.log('Acesso à câmera não disponível neste navegador.');
-      alert('Acesso à câmera não disponível neste navegador.')
+      alert('Acesso à câmera não disponível neste navegador.');
+      this.errorMessage = 'Erro ao acessar a câmera';
     }
   }
 

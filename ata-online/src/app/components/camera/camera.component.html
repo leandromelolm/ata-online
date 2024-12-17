@@ -1,17 +1,20 @@
 <div class="container">
-    <h4>Capturar Imagem</h4>
-    <div class="">
-        <div class="mb-1">
-            <!-- <app-button textButton="Abrir Camera" (click)="abrirCamera()"></app-button> -->
-        </div>
+    
+    <div class="my-3">
+        <h4>Capturar Imagem</h4>
         <video id="video" width="360" height="640" autoplay></video>
-    </div>    
-    <hr>
-    <app-button textButton="Capturar Foto" (click)="capturarFoto()" (click)="enviarValorParaFormComponent()"></app-button>
+        <div class="mt-3">
+            <app-button textButton="Capturar Foto" (click)="capturarFoto()" (click)="enviarValorParaFormComponent()"></app-button>
+        </div>
+    </div>
 
     <div *ngIf="fotoCapturada">
         <h3>Foto Capturada</h3>
         <img [src]="fotoCapturada" alt="Foto da câmera" width="360">
+    </div>
+
+    <div *ngIf="errorMessage" style="color: red; margin-top: 20px;">
+        {{ errorMessage }}
     </div>
 
 </div>
