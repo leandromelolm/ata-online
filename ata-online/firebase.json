@@ -1,7 +1,7 @@
 {
     "hosting": {
       "site": "sindatsb",
-      "public": "dist/crud-user/browser",
+      "public": "dist/ata-online/browser",
       "ignore": [
         "firebase.json",
         "**/.*",

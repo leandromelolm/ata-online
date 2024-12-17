@@ -1,9 +1,12 @@
-# crud-user-angular
+# ata-online-angular
 
 Configuração do projeto
 
 ### Comandos
 ```sh
+
+#limpar cache do npm (opcional)
+npm cache clean --force
 
 # instalar versão Angular 17
 npm install -g @angular/cli@17
@@ -12,7 +15,7 @@ npm install -g @angular/cli@17
 ng version
 
 # criar projeto
-ng new crud-user --no-standalone
+ng new ata-online --no-standalone
 
 # executar projeto
 ng serve -o

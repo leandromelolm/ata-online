@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'crud-user';
+  title = 'ata-online';
   textRegisterUser = 'Cadastrar Usuário';
 }

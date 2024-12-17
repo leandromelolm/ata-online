@@ -41,7 +41,7 @@ function env_() {
 }
 
 /**
- *  Projeto Google Apps Script
+ *  Projeto AtaOnline Google Apps Script *  
  * 
  * criar o projeto do tipo: web app
  * permissão de acesso: qualquer pessoa * 
