@@ -1,15 +1,5 @@
-.input-form{
-    justify-self: center;
-    outline: none;
-    padding: 8px 10px;
-    width: 90%;
-    border-radius: 4px;
-    border: 1px solid #00000000;    
-    transition: 0.3 linear all;
-    box-shadow: inset 1px 1px 2px #aaadb980, inset -1px -1px 2px #bebebeb0;
-    &:focus{
-        border: 1px solid var(--primary-color);
-    }
+.container{
+    text-align: center;
 }
 
 .titulo{
@@ -34,9 +24,9 @@
 .preview-image {
     width: 50%;
     height: auto;
-    max-width: 100%; /* Garante que o vídeo não ultrapasse a largura da tela */
+    max-width: 100%;
     display: block;
-    margin: 0 auto; /* Centraliza o vídeo na tela */
+    margin: 0 auto;
 }
 
 a{ 
@@ -44,4 +34,47 @@ a{
     &:hover {
         cursor: pointer;
     }
+}
+
+.btn-link{
+    text-decoration: none;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input-field {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 8px;
+}
+
+.input-field:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.file-input {
+    display: none;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
 }

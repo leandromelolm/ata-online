@@ -27,6 +27,8 @@ npm install bootstrap@5.3.3
 # instalar material angular
 ng add @angular/material
 
+# para adicionar máscaras de input
+npm install ngx-mask --save
 
 ### comandos angular
 

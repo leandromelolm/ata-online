@@ -19,8 +19,6 @@ export class LocationComponent {
     road: ''
   };
 
-  @Output() valorEnviado = new EventEmitter<boolean>();
-
   constructor(private localizacaoService: LocalizacaoService) {}
   
   ngOnInit(){
@@ -60,7 +58,7 @@ export class LocationComponent {
           switch (error.code) {
             case error.PERMISSION_DENIED:
               console.log("Usuário negou a solicitação de geolocalização.");
-              alert("Você precisa permitir o acesso à sua localização para continuar.");
+              alert("Você precisa ativar e permitir o acesso à sua localização para continuar.");
               break;
             case error.POSITION_UNAVAILABLE:
               console.log("Informação de localização indisponível.");

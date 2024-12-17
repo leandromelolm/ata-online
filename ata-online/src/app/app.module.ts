@@ -15,6 +15,7 @@ import { CameraComponent } from './components/camera/camera.component';
 import { FormComponent } from './components/form/form.component';
 import { HttpClientModule } from '@angular/common/http';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 @NgModule({
   declarations: [
@@ -33,10 +34,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     FormsModule,
     MatIconModule,
     HttpClientModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    NgxMaskDirective,
+    NgxMaskPipe
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    provideNgxMask()
   ],
   bootstrap: [AppComponent]
 })

@@ -16,9 +16,9 @@ export class FormComponent {
   imageBase64: any;
   blob: any;
   selectedFile: File | null = null;
-  userName: string;
-  matricula: string;
-  cpf: string;
+  userName: string = '';
+  matricula: string = '';
+  cpf: string = '';
   distrito: string;
   unidade: string;
   valorRecebido: string = 'mostrar';
@@ -43,6 +43,13 @@ export class FormComponent {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  validarForm() {
+    if (!this.cpf && !this.matricula || !this.userName)
+      return true;
+    else
+      return false;
   }
 
   redirectLogin() {
