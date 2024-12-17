@@ -16,7 +16,8 @@ export class LocationComponent {
     city: '', 
     postcode: '',
     suburb: '',
-    road: ''
+    road: '',
+    house_number: ''
   };
 
   constructor(private localizacaoService: LocalizacaoService) {}
