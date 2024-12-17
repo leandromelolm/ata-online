@@ -155,7 +155,7 @@ export class FormComponent {
         this.buttonText = 'Enviar';
         if (result.success) {          
           this.errorMessage = '';
-          this.successMessage= `Arquivo enviado com sucesso! ID: ${result.fileId}, ${result.sheetId}`;
+          this.successMessage= `Arquivo enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
           this.selectedFile = null;
           this.limparCampos();
         } else {

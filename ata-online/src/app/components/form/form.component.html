@@ -1,9 +1,11 @@
 <div class="container">    
     
-    <h2 (click)="redirectLogin()" class="titulo">Ata Online [Beta]</h2>
-    <span class="subtitulo">Salvar Informações na Planilha Google e envia imagem para o Google Drive</span>
+    <div class="my-2">
+        <h2 (click)="redirectLogin()" class="titulo">Ata Online [Beta]</h2>
+        <span class="subtitulo">Registro de presença online</span>
+    </div>
 
-    <div class="camera" *ngIf="localizacaoAtiva">        
+    <div class="camera" *ngIf="localizacaoAtiva && !successMessage">        
         <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
         
         <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
@@ -40,8 +42,11 @@
     </div>
 
     <div class="mt-4 mb-4">
+        <button *ngIf="successMessage" (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Fazer novo registro</button>
+    </div>
+    <div class="mt-4 mb-4">
         <button (click)="sair()" class="btn btn-link">Sair</button>
-    </div>       
+    </div>
     
 </div>
   
