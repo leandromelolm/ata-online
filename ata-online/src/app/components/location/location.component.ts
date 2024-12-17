@@ -20,6 +20,8 @@ export class LocationComponent {
     house_number: ''
   };
 
+  @Output() enviarEndParaFormComponent: EventEmitter<any> = new EventEmitter<any>()
+
   constructor(private localizacaoService: LocalizacaoService) {}
   
   ngOnInit(){
@@ -102,13 +104,18 @@ export class LocationComponent {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`)
     const e = await res.json();
     console.log(e);
-    this.endereco = e.address;    
+    this.endereco = e.address;
+    this.enviarValorParaForm();
   }
 
   async getAddres(str: String) {
     const res = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${str}&format=jsonv2`)  
     const e = await res.json();
     console.log(e);      
+  }
+
+  enviarValorParaForm() {
+    this.enviarEndParaFormComponent.emit(this.endereco);
   }
 
 }

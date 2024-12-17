@@ -24,7 +24,8 @@ export class FormComponent {
   valorRecebido: string = 'mostrar';
   buttonText: string = 'Enviar';
   localizacaoAtiva: boolean;
-  private subscription: Subscription;
+  enderecoLocal: any;
+  private subscription: Subscription;  
 
   constructor(private router: Router, private localizacaoService: LocalizacaoService) {}
 
@@ -65,6 +66,12 @@ export class FormComponent {
     console.log(this.selectedFile);    
     this.onImagePreview(this.selectedFile);
     this.valorRecebido = 'ocultar'
+  }
+
+  receberValorDaLocalizacao(e: any) {
+    const endereco = {"state": e.state,  "city": e.city,  "postcode": e.postcode, "suburb": e.suburb, "road": e.road, "house_number": e.house_number};
+    this.enderecoLocal = endereco;
+    
   }
 
   alterarValor(valor: string) {
@@ -125,7 +132,7 @@ export class FormComponent {
     }
   }
 
-  async uploadFile(): Promise<void> {
+  async upload(): Promise<void> {
     if (!this.selectedFile) {
       this.errorMessage = 'Nenhum arquivo selecionado.';
       this.successMessage= '';
@@ -143,7 +150,8 @@ export class FormComponent {
           matricula: this.matricula,
           cpf: this.cpf,
           distrito: this.distrito,
-          unidade: this.unidade
+          unidade: this.unidade,
+          enderecoLocal: JSON.stringify(this.enderecoLocal)
         }
         this.buttonText = 'Aguarde';
         const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
