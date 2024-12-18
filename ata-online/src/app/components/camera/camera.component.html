@@ -8,13 +8,17 @@
         </div>
     </div>
 
-    <div *ngIf="fotoCapturada">
+    <!-- <div *ngIf="fotoCapturada">
         <h3>Foto Capturada</h3>
         <img [src]="fotoCapturada" alt="Foto da câmera" width="360">
-    </div>
+    </div> -->
 
-    <div *ngIf="errorMessage" style="color: red; margin-top: 20px;">
-        {{ errorMessage }}
+    <div *ngIf="errorMessage">
+        <div style="color: red; margin-top: 20px;">
+            {{ errorMessage }}
+        </div>
+        <div>Para prosseguir é preciso conceder permissão para o acesso à câmera.</div>
+        <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
     </div>
 
 </div>

@@ -22,18 +22,28 @@ export class CameraComponent {
     this.enviarParaForm.emit(this.fotoCapturada);
   }
 
+  reloadPage(): void {
+    window.location.href = '/home'
+  }
+
   abrirCamera() {
     this.errorMessage = '';
-    // Verifica se a API está disponível no navegador
+    
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      // Solicita acesso à câmera
       navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
-          // Exibe o stream da câmera no elemento <video>
           const video = document.querySelector('video') as HTMLVideoElement;
-          if (video) {  // Verifica se o video não é null
+          if (video) {
             video.srcObject = stream;
           }
+          stream.getTracks().forEach(track => {
+            track.onended = () => {
+              console.log('A câmera foi desconectada ou a permissão foi revogada.');
+              alert('A câmera foi desconectada ou a permissão foi revogada.');
+              this.errorMessage = 'A câmera foi desconectada ou a permissão foi revogada.';
+              this.reloadPage();
+            };
+          });
         })
         .catch((error) => {
           console.error('Erro ao acessar a câmera: ', error);
@@ -42,9 +52,10 @@ export class CameraComponent {
     } else {
       console.log('Acesso à câmera não disponível neste navegador.');
       alert('Acesso à câmera não disponível neste navegador.');
-      this.errorMessage = `Acesso à câmera não disponível neste navegador.`;
+      this.errorMessage = 'Acesso à câmera não disponível neste navegador.';
     }
   }
+  
 
   capturarFoto() {
     const video = document.querySelector('video') as HTMLVideoElement;
@@ -67,17 +78,11 @@ export class CameraComponent {
   pararCamera(video: HTMLVideoElement | null) {
     if (video && video.srcObject) {
       const stream = video.srcObject as MediaStream;
-      
-      // Parar todas as tracks (de vídeo e áudio) associadas ao stream
       const tracks = stream.getTracks();
       tracks.forEach(track => {
-        track.stop(); // Para cada track (de vídeo ou áudio)
+        track.stop();
       });
-  
-      // Limpar a referência do srcObject
       video.srcObject = null;
-  
-      // Esconder o elemento video, se desejado
       video.style.display = 'none';  
     }
   }
