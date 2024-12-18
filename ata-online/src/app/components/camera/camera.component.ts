@@ -37,12 +37,12 @@ export class CameraComponent {
         })
         .catch((error) => {
           console.error('Erro ao acessar a câmera: ', error);
-          this.errorMessage = 'Erro ao acessar a câmera';
+          this.errorMessage = `Erro ao acessar a câmera: ${error}`;
         });
     } else {
       console.log('Acesso à câmera não disponível neste navegador.');
       alert('Acesso à câmera não disponível neste navegador.');
-      this.errorMessage = 'Erro ao acessar a câmera';
+      this.errorMessage = `Acesso à câmera não disponível neste navegador.`;
     }
   }
 
