@@ -35,6 +35,7 @@ export class CameraComponent {
           const video = document.querySelector('video') as HTMLVideoElement;
           if (video) {
             video.srcObject = stream;
+            video.style.transform = 'scaleX(-1)'; // efeito espelho na camera
           }
           stream.getTracks().forEach(track => {
             track.onended = () => {
