@@ -37,6 +37,8 @@ ng generate component components/button
 ng generate component components/location
 ng generate component pages/login
 
+# criar serviço
+ng g s services/NOME_DO_SERVICO
 
 ### implantar projeto no firebase
 npm install firebase
@@ -45,10 +47,15 @@ firebase login
 firebase init
 # dar o build no projeto
 ng build
+# o ng build deve ser dentro do diretório ata-online
 # escolher a opcão App Hosting
 # usar um projeto existente que ja foi criado no firebase
 # configurar arquivo firebase.json para localizar pasta index
 firebase deploy --only hosting:sindatsb
+
+# deploy de preview - teste
+# https://firebase.google.com/docs/hosting/test-preview-deploy
+firebase hosting:channel:deploy preview_name
 
 
 ### Outros comandos úteis
