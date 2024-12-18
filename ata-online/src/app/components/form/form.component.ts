@@ -25,7 +25,8 @@ export class FormComponent {
   buttonText: string = 'Enviar';
   localizacaoAtiva: boolean;
   enderecoLocal: any;
-  private subscription: Subscription;  
+  isLoading: boolean = false;
+  private subscription: Subscription;
 
   constructor(private router: Router, private localizacaoService: LocalizacaoService) {}
 
@@ -46,7 +47,7 @@ export class FormComponent {
     }
   }
 
-  validarForm() {
+  validarForm(): boolean {
     if (!this.cpf && !this.matricula || !this.userName)
       return true;
     else
@@ -154,6 +155,7 @@ export class FormComponent {
           enderecoLocal: JSON.stringify(this.enderecoLocal)
         }
         this.buttonText = 'Aguarde';
+        this.isLoading = true;
         const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
           method: 'POST',
           body: JSON.stringify(obj)
@@ -166,13 +168,16 @@ export class FormComponent {
           this.successMessage= `Arquivo enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
           this.selectedFile = null;
           this.limparCampos();
+          this.isLoading = false;
         } else {
           this.errorMessage = `Erro: ${result.message}`;
           this.successMessage= ``;
+          this.isLoading = false;
         }
       } catch (error) {
         this.errorMessage = `Erro ao enviar arquivo: ${error}`;
         this.successMessage= ``;
+        this.isLoading = false;
       }
     };
     reader.readAsDataURL(this.selectedFile);

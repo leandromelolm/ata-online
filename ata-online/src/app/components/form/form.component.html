@@ -31,7 +31,7 @@
         <input class="input-field" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
         <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" placeholder="Digite nome da sua unidade">      
 
-        <app-button class="upload-btn" (click)="upload()" *ngIf="selectedFile" [disabled]="validarForm()" [textButton]="buttonText"></app-button>
+        <app-button class="upload-btn" (click)="upload()" *ngIf="selectedFile" [disabled]="validarForm() || isLoading" [textButton]="buttonText"></app-button>
     </div>
     
     <div *ngIf="successMessage" style="color: green; margin-top: 20px;">
