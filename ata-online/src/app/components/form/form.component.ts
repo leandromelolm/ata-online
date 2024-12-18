@@ -54,6 +54,10 @@ export class FormComponent {
       return false;
   }
 
+  onUserNameChange(): void {
+    this.userName = this.userName.toUpperCase();  // Converte para maiúsculas
+  }
+
   redirectLogin() {
     this.router.navigate(['login']);
   }

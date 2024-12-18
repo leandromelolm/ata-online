@@ -25,7 +25,7 @@
 
     <div class="form-container" *ngIf="localizacaoAtiva && imageUrl">
         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
-        <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" placeholder="Digite seu nome">        
+        <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">        
         <input class="input-field" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="000000000" placeholder="Digite o número da matrícula">
         <input class="input-field" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
         <input class="input-field" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
