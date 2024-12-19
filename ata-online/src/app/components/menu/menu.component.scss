@@ -20,13 +20,19 @@
     // }
 }
 
+img{ 
+    vertical-align: bottom;
+    width: 32px;
+    height: 32px;
+}
+
 .menu-mobile{
-    height: 24px;
+    height: 32px;
 }
 
 .menu-mobile-titulo { 
     align-self: center;
-    font-size: 14px;
+    font-size: 26px;
     font-weight: 500;
     letter-spacing: 7px;
 }
@@ -43,8 +49,8 @@ ul {
     padding: 0;
 }
   
-.logo {
-    font-size: 14px;
+.span__titulo {
+    font-size: 26px;
     font-weight: bold;
     margin-left: 4px;
     color: white;
@@ -69,18 +75,22 @@ li {
 
     @media (width < 769px){
         width: auto;        
-    }
-
-    mat-icon {
-        margin-right: 14px;
-        font-size: 22px;
-    }
+    }    
 
     &:hover {
         background: #e6e6e6;
         cursor: pointer;
         color: var(--primary-color);
     }
+}
+
+mat-icon {
+    margin: 0px 5px 0px 5px;
+    font-size: 24px;
+}
+
+.menu-mobile-icon {
+    font-size: 32px;
 }
 
 .logout{
@@ -94,5 +104,3 @@ li {
 }
 
 a{ text-decoration: none;}
-
-img{ vertical-align: text-bottom;}
