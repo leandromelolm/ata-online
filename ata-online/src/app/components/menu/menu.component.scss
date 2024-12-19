@@ -11,7 +11,7 @@
     display: block;
     float: left;
     background-color: var(--primary-color) !important;
-    padding: 10px 0px;
+    padding: 0px 0px;
     box-shadow: 0x 0px 10px 4px #00000030;
     margin-right: 16px;
 
@@ -85,7 +85,7 @@ li {
 
 .logout{
     position: absolute;
-    bottom: 0;
+    bottom: 46px;
     width: 280px;
 
     // @media (min-width: 769px) and (max-width: 1200px){
