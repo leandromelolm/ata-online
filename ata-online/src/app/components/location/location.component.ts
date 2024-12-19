@@ -52,8 +52,8 @@ export class LocationComponent {
           this.long = lon1;
           this.getAddressWithLatLon(lat1, lon1);
   
-          const distancia = this.calcularDistancia(lat1, lon1, lat2, lon2);
-          console.log(`Distância: ${distancia} km`);
+          // const distancia = this.calcularDistancia(lat1, lon1, lat2, lon2);
+          // console.log(`Distância: ${distancia} km`);
         },
         (error) => {
           // Caso o usuário negue a permissão ou haja algum erro

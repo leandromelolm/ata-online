@@ -1,22 +1,40 @@
-<nav class="sidemenu">
-    <ul>
-      <li>
-        <!-- <img src="../../assets/logo.png" width="40px" /> -->
-        <span class="logo">Ata Online [Beta]</span>
-      </li>
-      <li routerLink="/home">
-        <mat-icon>home</mat-icon>Home
-      </li>
-      <li (click)="aviso()" routerLink="/usuarios">
-        <mat-icon>person_add</mat-icon>Cadastros
-      </li>
-      <a href="https://github.com/leandromelolm/crud-user-angular" target="_blank">
-        <li>
-          <mat-icon>description</mat-icon>Projeto Github
+
+<div class="d-flex menu-mobile d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasResponsive" aria-controls="offcanvasResponsive">
+  <div class="d-md-none menu-mobile-icon">
+    <mat-icon>menu</mat-icon>
+  </div>
+  <span class="menu-mobile-titulo">Ata Online</span>
+</div>
+
+<div class="side-menu offcanvas-md offcanvas-start" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+  <div class="offcanvas-body p-0">
+    <nav>
+      <ul>
+        <li class="justify-content-between li__titulo">
+          <div>
+            <img src="../../assets/logo.png" width="20px"/> 
+            <span class="logo">Ata Online</span>
+          </div>
+          <div data-bs-theme="dark">
+            <button type="button" class="btn-close btn-sm d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
+          </div>
+        </li>       
+        <li routerLink="/home">
+          <mat-icon>home</mat-icon>Home
         </li>
-      </a>      
-      <li routerLink="/login" class="logout">
-        <mat-icon>logout</mat-icon>Sair
-      </li>
-    </ul>
-</nav>
+        <li (click)="aviso()" routerLink="/usuarios">
+          <mat-icon>person_add</mat-icon>Cadastros
+        </li>
+        <a href="https://github.com/leandromelolm/ata-online" target="_blank">
+          <li>
+            <mat-icon>description</mat-icon>Projeto Github
+          </li>
+        </a>      
+        <li routerLink="/login" class="logout">
+          <mat-icon>logout</mat-icon>Sair
+        </li>
+      </ul>
+  </nav>
+    
+  </div>
+</div>

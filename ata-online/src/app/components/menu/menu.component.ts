@@ -7,8 +7,7 @@ import { Component } from '@angular/core';
 })
 export class MenuComponent {
 
-
-  aviso() {
+  aviso(): void {
     alert('Não implementado');
   }
 
