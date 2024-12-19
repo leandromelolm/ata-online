@@ -28,17 +28,19 @@ img{
 
 .menu-mobile{
     height: 32px;
+    margin-top: 14px;
 }
 
 .menu-mobile-titulo { 
     align-self: center;
     font-size: 26px;
-    font-weight: 500;
+    font-weight: bold;
     letter-spacing: 7px;
 }
 
 .li__titulo {
     padding: 14px 20px 14px 10px;
+    align-items: baseline;
     
     // @media (min-width: 769px) and (max-width: 1200px){
     //     width: 25%;        
