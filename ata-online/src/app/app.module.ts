@@ -16,6 +16,7 @@ import { FormComponent } from './components/form/form.component';
 import { HttpClientModule } from '@angular/common/http';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
     HomeComponent,
     MenuComponent,
     CameraComponent,
-    FormComponent
+    FormComponent,
+    QrcodeComponent
   ],
   imports: [
     BrowserModule,
