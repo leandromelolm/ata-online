@@ -95,12 +95,12 @@ mat-icon {
 
 .logout{
     position: absolute;
-    bottom: 46px;
+    bottom: 50px;
     width: 280px;
 
-    // @media (min-width: 769px) and (max-width: 1200px){
-    //     width: 25%;        
-    // }
+    @media (min-width: 769px){
+        bottom: 0px;   
+    }
 }
 
 a{ text-decoration: none;}
