@@ -5,34 +5,42 @@
         <span class="subtitulo">Registro de presença online</span>
     </div>
 
-    <div class="camera" *ngIf="localizacaoAtiva && !successMessage">        
-        <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+    <div class="row">
+        <div class="left__container col-md">
+            <div class="div__camera" *ngIf="localizacaoAtiva && !successMessage">        
+                <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+                
+                <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+                
+                <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
+                    <h4 class="mb-0">Pré-visualização:</h4>
+                    <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
+                </div> 
+            </div>
         
-        <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+            <div *ngIf="!localizacaoAtiva" class="d-grid">
+                <h3 class="mt-4">Ative a localização e atualize a página para poder prosseguir com o registro</h3>
+                <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
+            </div>
         
-        <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
-            <h3>Pré-visualização:</h3>
-            <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
-        </div> 
+            <app-location (enviarEndParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
+        </div>
+    
+        <div class="right__container col-md" *ngIf="localizacaoAtiva && imageUrl">
+            <h3>Formulário</h3>
+            <div class="form__container">
+                <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
+                <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">        
+                <input class="input-field" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="000000000" placeholder="Digite o número da matrícula">
+                <input class="input-field" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
+                <input class="input-field" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
+                <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" placeholder="Digite nome da sua unidade">      
+        
+                <app-button class="upload-btn" (click)="upload()" *ngIf="selectedFile" [disabled]="validarForm() || isLoading" [textButton]="buttonText"></app-button>
+            </div>
+        </div>
     </div>
 
-    <div *ngIf="!localizacaoAtiva" class="d-grid">
-        <h3 class="mt-4">Ative a localização e atualize a página para poder prosseguir com o registro</h3>
-        <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
-    </div>
-
-    <app-location (enviarEndParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>    
-
-    <div class="form-container" *ngIf="localizacaoAtiva && imageUrl">
-        <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
-        <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">        
-        <input class="input-field" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="000000000" placeholder="Digite o número da matrícula">
-        <input class="input-field" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
-        <input class="input-field" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
-        <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" placeholder="Digite nome da sua unidade">      
-
-        <app-button class="upload-btn" (click)="upload()" *ngIf="selectedFile" [disabled]="validarForm() || isLoading" [textButton]="buttonText"></app-button>
-    </div>
     
     <div *ngIf="successMessage" style="color: green; margin-top: 20px;">
         {{ successMessage }}
