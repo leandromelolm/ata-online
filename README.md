@@ -18,7 +18,7 @@ ng version
 ng new ata-online --no-standalone
 
 # executar projeto
-ng serve -o
+npm start || ng serve -o ||
 ng serve --host {HOST_LOCAL_PARA_ABRIR_NO_MOBILE}
 
 # instalar boostrap
