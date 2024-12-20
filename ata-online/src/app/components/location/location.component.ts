@@ -61,7 +61,8 @@ export class LocationComponent {
           switch (error.code) {
             case error.PERMISSION_DENIED:
               console.log("Usuário negou a solicitação de geolocalização.");
-              alert("Você precisa ativar e permitir o acesso à sua localização para continuar.");
+              alert(`Você precisa ativar a geolocalização e permitir o acesso.
+Veja se seu navegador permite acessar a sua localização.`);
               break;
             case error.POSITION_UNAVAILABLE:
               console.log("Informação de localização indisponível.");
