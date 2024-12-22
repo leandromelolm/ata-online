@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  selector: 'app-index',
+  templateUrl: './index.component.html',
+  styleUrl: './index.component.scss'
 })
-export class LoginComponent {
+export class IndexComponent {
 
   userName: string;
 
