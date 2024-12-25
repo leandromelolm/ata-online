@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { QrcodeComponent } from './pages/qrcode/qrcode.component';
     HttpClientModule,
     MatFormFieldModule,
     NgxMaskDirective,
-    NgxMaskPipe
+    NgxMaskPipe,
+    MatProgressSpinnerModule
   ],
   providers: [
     provideAnimationsAsync(),

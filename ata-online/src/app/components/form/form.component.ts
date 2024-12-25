@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
@@ -29,6 +29,7 @@ export class FormComponent {
   isMeeting: boolean = false;
   infoReuniao: string = '';
   isLoading: boolean = false;
+  isSpinner: boolean = true;
   private subscription: Subscription;
 
   constructor(
@@ -92,7 +93,8 @@ export class FormComponent {
       this.infoReuniao = 'Reunião pausada.'
     } 
     if (response.result.status === 'Object Not Found') {
-      this.infoReuniao = 'Reunião não encontrada'
+      this.infoReuniao = 'Reunião não encontrada';
+      this.isSpinner = false;
     }
   }
 
@@ -129,7 +131,7 @@ export class FormComponent {
   receberValorDaLocalizacao(e: any) {
     const endereco = {"state": e.state,  "city": e.city,  "postcode": e.postcode, "suburb": e.suburb, "road": e.road, "house_number": e.house_number};
     this.enderecoLocal = endereco;
-    
+    this.isSpinner = false;
   }
 
   alterarValor(valor: string) {

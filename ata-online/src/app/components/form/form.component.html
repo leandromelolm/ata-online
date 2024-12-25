@@ -5,6 +5,8 @@
         <span class="subtitulo">Registro de presença online</span>
     </div>
 
+    <mat-spinner *ngIf="isSpinner" class="mat__spinner" color="warn"></mat-spinner>
+
     <div *ngIf="!isMeeting">
         <div class="div__info-reuniao_fechada">
             {{infoReuniao}}
