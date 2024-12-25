@@ -62,15 +62,22 @@ export class FormComponent {
     let urlParams = new URLSearchParams(window.location.search);    
     this.apiService.getMeeting(urlParams.get('reuniao'))
     .subscribe({
-      next: (response) =>{
-        this.messageMeeting(response)
+      next: (response) => {
+        this.messageMeeting(response);
+        sessionStorage.setItem('reuniao-status', response.result.status);
+        sessionStorage.setItem('sheet-page-id', response.result.id);
+        sessionStorage.setItem('folder-id', response.result.idfolder);
+      },
+      error: (err) => {
+        console.error('Erro ao buscar dados da reunião:', err);
+        alert('Ocorreu um erro ao tentar carregar os dados da reunião. Por favor, verifique sua conexão ou tente novamente mais tarde.');
       }
-    })
+    });
   }
   
   messageMeeting(response: any) {
     console.log(response);
-    if(response.result.status === 'ABERTO') {
+    if(response.result.status === 'ABERTO' || response.result.status === 'TEST') {
       this.isMeeting = true;
       this.infoReuniao = `
       ${response.result.data} |
@@ -105,7 +112,11 @@ export class FormComponent {
   }
 
   reloadPage() {
-    window.location.href = '/home'
+    let urlParams = window.location.search;
+    if (urlParams)
+      window.location.href = '/home' + urlParams;
+    else
+      window.location.href = '/home'
   }
 
   receberValorDaCamera(valor: string) {
@@ -198,11 +209,14 @@ export class FormComponent {
           cpf: this.cpf,
           distrito: this.distrito,
           unidade: this.unidade,
-          enderecoLocal: JSON.stringify(this.enderecoLocal)
+          enderecoLocal: JSON.stringify(this.enderecoLocal),
+          status: sessionStorage.getItem('reuniao-status'),
+          folderId: sessionStorage.getItem('folder-id'),
+          sheetPageId: sessionStorage.getItem('sheet-page-id')
         }
         this.buttonText = 'Aguarde';
         this.isLoading = true;
-        const response = await fetch('https://script.google.com/a/macros/a.recife.ifpe.edu.br/s/AKfycbxXnDhv5TFKZmEYXmAGXfSp6ePKrqiHROTvAI-Bp-CgbSZsR_jd6p6HtBrmaHddZD9E/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
           method: 'POST',
           body: JSON.stringify(obj)
         });

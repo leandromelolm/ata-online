@@ -40,6 +40,10 @@ ng generate component pages/login
 # criar serviço
 ng g s services/NOME_DO_SERVICO
 
+# criar class
+ng generate class models/meeting
+
+
 ### implantar projeto no firebase
 npm install firebase
 npm install -g firebase-tools

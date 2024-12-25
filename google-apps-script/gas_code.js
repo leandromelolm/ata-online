@@ -1,7 +1,7 @@
 const spreadsheetId = env().envSpreadsheetId;
 const folderId = env().envFolderId;
 const doc = SpreadsheetApp.openById(spreadsheetId);
-const sheet = doc.getSheetByName('page1');
+const sheet = doc.getSheetByName('test'); // nome da Aba da planilha
 const sheetInfoReuniao = doc.getSheetByName('info-reuniao');
 
 
@@ -93,18 +93,20 @@ const doPost = (e) => {
     let dados = JSON.parse(e.postData.contents);
     const imageBlob = processImageBlob(dados.base64File);
   
-    if (dados.reuniao === 'home') {
+    if (dados.status === 'ABERTA') {
       const folder = DriveApp.getFolderById(dados.folderId);
-      const sh = doc.getSheetByName(dados.sheetPageId);
-      const id = sh.getLastRow() + 1;
+      const shPage = doc.getSheetByName(dados.sheetPageId);
+      const id = shPage.getLastRow() + 1;
       const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      sh.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+      shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     } 
-    if (dados.reuniao === 'test') {
+    if (dados.status === 'TEST') {
       const folder = DriveApp.getFolderById(folderId);
-      const id = sheet.getLastRow() + 1;
+      const shPage = doc.getSheetByName(dados.sheetPageId);
+      // const id = shPage.getLastRow() + 1;
+      const id = Utilities.getUuid();
       const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+      shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     }
 
     return ContentService.createTextOutput(JSON.stringify({

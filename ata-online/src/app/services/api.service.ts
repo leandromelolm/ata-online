@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
+import { Meeting } from '../models/meeting';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,21 @@ export class ApiService {
 
   private readonly httpClient = inject(HttpClient);
 
-  getMeeting(idReuniao: string | null): Observable<{reuniao: any}> {
-    return this.httpClient.get<any>(`${this.apiUrl}?reuniao=${idReuniao}`)
+  getMeeting(idReuniao: string | null): Observable<{result: Meeting}> {
+    return this.httpClient.get<any>(`${this.apiUrl}?reuniao=${idReuniao}`).pipe(
+      catchError(this.handleError) // Chama o método de tratamento de erro
+    );
   }
+
+  private handleError(error: any): Observable<never> {
+    let errorMessage = 'Ocorreu um erro desconhecido';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Erro: ${error.error.message}`;
+    } else {
+      errorMessage = `Código do erro: ${error.status}, Mensagem: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
+  }
+  
 }
