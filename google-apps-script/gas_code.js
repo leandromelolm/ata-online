@@ -92,20 +92,21 @@ const doPost = (e) => {
  try {
     let dados = JSON.parse(e.postData.contents);
     const imageBlob = processImageBlob(dados.base64File);
-  
-    if (dados.status === 'ABERTA') {
+    let id;
+    let file;
+    if (dados.status === 'ABERTO') {
       const folder = DriveApp.getFolderById(dados.folderId);
       const shPage = doc.getSheetByName(dados.sheetPageId);
-      const id = shPage.getLastRow() + 1;
-      const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+      id = shPage.getLastRow() + 1;
+      file = folder.createFile(imageBlob.setName(`${id}_image.png`));
       shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     } 
     if (dados.status === 'TEST') {
       const folder = DriveApp.getFolderById(folderId);
       const shPage = doc.getSheetByName(dados.sheetPageId);
       // const id = shPage.getLastRow() + 1;
-      const id = Utilities.getUuid();
-      const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+      id = Utilities.getUuid();
+      file = folder.createFile(imageBlob.setName(`${id}_image.png`));
       shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     }
 

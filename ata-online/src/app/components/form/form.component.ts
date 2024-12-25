@@ -222,8 +222,9 @@ export class FormComponent {
         });
 
         const result = await response.json();
+        
         this.buttonText = 'Enviar';
-        if (result.success) {          
+        if (result.success) {
           this.errorMessage = '';
           this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
           this.selectedFile = null;

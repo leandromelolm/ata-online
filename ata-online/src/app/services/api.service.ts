@@ -16,7 +16,7 @@ export class ApiService {
 
   getMeeting(idReuniao: string | null): Observable<{result: Meeting}> {
     return this.httpClient.get<any>(`${this.apiUrl}?reuniao=${idReuniao}`).pipe(
-      catchError(this.handleError) // Chama o método de tratamento de erro
+      catchError(this.handleError)
     );
   }
 
