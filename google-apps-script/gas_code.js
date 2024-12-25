@@ -2,15 +2,110 @@ const spreadsheetId = env().envSpreadsheetId;
 const folderId = env().envFolderId;
 const doc = SpreadsheetApp.openById(spreadsheetId);
 const sheet = doc.getSheetByName('page1');
+const sheetInfoReuniao = doc.getSheetByName('info-reuniao');
 
-function doPost(e) {
+
+const doGet = (e) => {
+  const lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {    
+    const reuniao = e.parameter['reuniao'] || '';
+    let infoMeeting;
+    if (reuniao) {
+      infoMeeting = buscarInfoReuniao(reuniao);
+    } else {
+      throw  error = {statusCode: 404, message: `Pagina não encontrada`, status: "Error", details: reuniao};
+    }
+
+    let response = ContentService
+      .createTextOutput(JSON.stringify({
+        "reuniao": reuniao,        
+        "result": infoMeeting
+      }));
+    
+    return response.setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+
+    return ContentService
+      .createTextOutput(JSON.stringify({
+         'result': 'error', 
+         'message': error 
+      })).setMimeType(ContentService.MimeType.JSON);
+
+  } finally {
+    lock.releaseLock();
+  } 
+}
+
+function buscarInfoReuniao(reuniao) {
+  return findByColumn(reuniao);
+}
+
+function findByColumn(txtBuscado) {
+  try { 
+    let guia = sheetInfoReuniao;  
+    let colunaParaPesquisar = "A";
+    let textFinder = guia.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
+    let resultados = textFinder.findAll();
+
+    if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
+      return error = {
+        statusCode: 404,
+        message: `Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`,
+        status: "Object Not Found",
+        details: ""
+      };
+    }
+
+    let reuniao;
+    for (let i = 0; i < resultados.length; i++) {
+      let resultado = resultados[i];
+      let linha = resultado.getRow();      
+      let colunaG = guia.getRange("H" + linha).getValue();
+      let r = JSON.parse(colunaG);
+
+      reuniao = {
+        id: r.id,
+        data: r.data,
+        hora: r.hora,
+        local: r.local,
+        obj: r.obs,
+        status: r.status,
+        idfolder: r.idfolder
+      };
+
+    };    
+    return reuniao;
+
+  } catch(e) {
+    throw  error = {
+      statusCode: 404,
+      message: `Nenhum resultado encontrado: ${txtBuscado}`,
+      status: "Error",
+      details: ""
+    };
+  }  
+}
+
+const doPost = (e) => {
  try {
     let dados = JSON.parse(e.postData.contents);
     const imageBlob = processImageBlob(dados.base64File);
-    const folder = DriveApp.getFolderById(folderId);
-    const id = sheet.getLastRow() + 1;
-    const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-    sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade ,file.getDownloadUrl()]);
+  
+    if (dados.reuniao === 'home') {
+      const folder = DriveApp.getFolderById(dados.folderId);
+      const sh = doc.getSheetByName(dados.sheetPageId);
+      const id = sh.getLastRow() + 1;
+      const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+      sh.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+    } 
+    if (dados.reuniao === 'test') {
+      const folder = DriveApp.getFolderById(folderId);
+      const id = sheet.getLastRow() + 1;
+      const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+      sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+    }
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
@@ -28,6 +123,12 @@ function doPost(e) {
   }
 }
 
+function criarPasta() {  
+      let nomeDaPasta = `ata-online-${new Date().toISOString().split('T')[0]}`;  
+      let pasta = DriveApp.createFolder(nomeDaPasta);
+      return {'url': pasta.getUrl(),"id":pasta.getId()}
+}
+
 function processImageBlob(base64Content) {
   const decodedContent = Utilities.base64Decode(base64Content); 
   const blob = Utilities.newBlob(decodedContent, 'image/png', 'uploaded_image.png');
@@ -41,7 +142,7 @@ function env_() {
 }
 
 /**
- *  Projeto AtaOnline Google Apps Script *  
+ *  Projeto Google Apps Script
  * 
  * criar o projeto do tipo: web app
  * permissão de acesso: qualquer pessoa * 

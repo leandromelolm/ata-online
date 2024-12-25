@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-form',
@@ -25,12 +26,21 @@ export class FormComponent {
   buttonText: string = 'Enviar';
   localizacaoAtiva: boolean;
   enderecoLocal: any;
+  isMeeting: boolean = false;
+  infoReuniao: string = '';
   isLoading: boolean = false;
   private subscription: Subscription;
 
-  constructor(private router: Router, private localizacaoService: LocalizacaoService) {}
+  constructor(
+    private router: Router, 
+    private localizacaoService: LocalizacaoService,
+    private apiService: ApiService
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+
+    this.getMeetingData();
+
     // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
     this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
       (status) => {
@@ -38,12 +48,44 @@ export class FormComponent {
         console.log('Localização ativa:', this.localizacaoAtiva);
       }
     );
-  }
 
+  }
+  
   ngOnDestroy() {
     // Cancela a inscrição ao destruir o componente para evitar vazamentos de memória
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+  }
+  
+  getMeetingData() {
+    let urlParams = new URLSearchParams(window.location.search);    
+    this.apiService.getMeeting(urlParams.get('reuniao'))
+    .subscribe({
+      next: (response) =>{
+        this.messageMeeting(response)
+      }
+    })
+  }
+  
+  messageMeeting(response: any) {
+    console.log(response);
+    if(response.result.status === 'ABERTO') {
+      this.isMeeting = true;
+      this.infoReuniao = `
+      ${response.result.data} |
+      ${response.result.hora} |
+      ${response.result.local}
+      `;
+    }
+    if(response.result.status === 'ENCERRADO') {
+      this.infoReuniao = 'Reunião encerrada.';
+    }
+    if(response.result.status === 'PAUSADO') {
+      this.infoReuniao = 'Reunião pausada.'
+    } 
+    if (response.result.status === 'Object Not Found') {
+      this.infoReuniao = 'Reunião não encontrada'
     }
   }
 
