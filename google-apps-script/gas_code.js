@@ -97,7 +97,8 @@ const doPost = (e) => {
     if (dados.status === 'ABERTO') {
       const folder = DriveApp.getFolderById(dados.folderId);
       const shPage = doc.getSheetByName(dados.sheetPageId);
-      id = shPage.getLastRow() + 1;
+      // id = shPage.getLastRow() + 1;
+      id = Utilities.getUuid();
       file = folder.createFile(imageBlob.setName(`${id}_image.png`));
       shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     } 
@@ -112,7 +113,7 @@ const doPost = (e) => {
 
     return ContentService.createTextOutput(JSON.stringify({
       success: true,
-      fileId: file.getId(),
+      // fileId: file.getId(),
       sheetId: id,
       message: "Arquivo enviado com sucesso!"
     })).setMimeType(ContentService.MimeType.JSON);
@@ -148,7 +149,7 @@ function env_() {
  *  Projeto Google Apps Script
  * 
  * criar o projeto do tipo: web app
- * permissão de acesso: qualquer pessoa * 
+ * permissão de acesso: qualquer pessoa 
  * 
  * envFolderId = id da pasta que será salva no google drive
  * envSpreadsheetId: id da panilha google
