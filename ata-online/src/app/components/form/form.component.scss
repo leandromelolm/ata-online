@@ -106,3 +106,7 @@ a{
 .mat__spinner {
     margin: 0 auto 30px auto;
 }
+
+::ng-deep .mat__spinner circle {
+    stroke: #2541e0;
+}
