@@ -21,7 +21,7 @@
         
         <div class="row">
             <div class="left__container col-md">
-                <div class="div__camera" *ngIf="localizacaoAtiva && !successMessage">        
+                <div class="div__camera" *ngIf="isLocationActive && !successMessage">        
                     <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
                     
                     <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
@@ -32,7 +32,7 @@
                     </div> 
                 </div>
                 
-                <div *ngIf="!localizacaoAtiva" class="d-grid">
+                <div *ngIf="!isLocationActive" class="d-grid">
                     <h3 class="mt-4">Ative a localização e permita o acesso. Em seguida atualize a página para poder prosseguir com o registro</h3>
                     <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
                 </div>
@@ -40,7 +40,7 @@
                 <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
             </div>
             
-            <div class="right__container col-md" *ngIf="localizacaoAtiva && imageUrl">
+            <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
                 <h3>Formulário</h3>
                 <div class="form__container">
                     <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
@@ -67,6 +67,10 @@
             <button *ngIf="successMessage" (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Fazer novo registro</button>
         </div>
         
+    </div>
+
+    <div class="mt-4 mb-4" *ngIf="!isMeeting">
+        <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
     </div>
     
     <div class="mt-4 mb-4">

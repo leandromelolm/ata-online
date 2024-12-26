@@ -24,13 +24,14 @@ export class FormComponent {
   unidade: string;
   valorRecebido: string = 'mostrar';
   buttonText: string = 'Enviar';
-  localizacaoAtiva: boolean;
   enderecoLocal: any;
+  isLocationActive: boolean;
   isMeeting: boolean = false;
   infoReuniao: string = '';
   isLoading: boolean = false;
   isSpinner: boolean = true;
   private subscription: Subscription;
+  reuniao: string = '';
 
   constructor(
     private router: Router, 
@@ -45,8 +46,8 @@ export class FormComponent {
     // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
     this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
       (status) => {
-        this.localizacaoAtiva = status;
-        console.log('Localização ativa:', this.localizacaoAtiva);
+        this.isLocationActive = status;
+        console.log('Localização ativa:', this.isLocationActive);
       }
     );
 
@@ -64,6 +65,15 @@ export class FormComponent {
     if(urlParams.size === 0) {
       return this.messageRandom();
     }
+
+    if(sessionStorage.getItem('reuniao-status') === 'ABERTO' && urlParams.get('reuniao') === sessionStorage.getItem('sheet-page-id')) {
+      return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
+    }
+
+    if(sessionStorage.getItem('reuniao-status') === 'TEST' && urlParams.get('reuniao') === sessionStorage.getItem('sheet-page-id')) {
+      return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
+    }
+
     this.apiService.getMeeting(urlParams.get('reuniao'))
     .subscribe({
       next: (response) => {
@@ -81,13 +91,14 @@ export class FormComponent {
   
   messageMeeting(response: any) {
     this.isSpinner = false;
-    if(response.result.status === 'ABERTO' || response.result.status === 'TEST') {
+    if(response.result.status === 'ABERTO') {
       this.isMeeting = true;
       this.infoReuniao = `
       ${response.result.data} |
       ${response.result.hora} |
       ${response.result.local}
       `;
+      sessionStorage.setItem('reuniao', JSON.stringify(response));
     }
     if(response.result.status === 'ENCERRADO') {
       this.infoReuniao = 'Reunião encerrada.';
@@ -97,12 +108,16 @@ export class FormComponent {
     } 
     if (response.result.status === 'Object Not Found') {
       this.infoReuniao = 'Reunião não encontrada';
-      this.isSpinner = false;
+    }
+    if (response.result.status === 'TEST') {
+      this.isMeeting = true;
+      this.infoReuniao = `TESTE - ${response.result.data} | ${response.result.hora} | ${response.result.local} `;
+      sessionStorage.setItem('reuniao', JSON.stringify(response));
     }
   }
 
   messageRandom() {
-    this.infoReuniao = 'Leia o QRCode válido da reunião';
+    this.infoReuniao = 'Leia o QRCode feito para a reunião';
     this.isSpinner = false;
   }
 
