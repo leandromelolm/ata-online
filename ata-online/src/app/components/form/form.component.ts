@@ -251,7 +251,7 @@ export class FormComponent {
         this.buttonText = 'Enviar';
         if (result.success) {
           this.errorMessage = '';
-          this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
+          this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId}`;
           this.selectedFile = null;
           this.limparCampos();
           this.isLoading = false;
