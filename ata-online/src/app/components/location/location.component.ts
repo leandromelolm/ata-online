@@ -8,8 +8,6 @@ import { LocalizacaoService } from '../../services/localizacao.service';
 })
 export class LocationComponent {
 
-  lat: number = 0;
-  long: number = 0;
   btnClickLocation: string = "Localizar"
   endereco: {
     state: '', 
@@ -20,40 +18,23 @@ export class LocationComponent {
     house_number: ''
   };
 
-  @Output() enviarEndParaFormComponent: EventEmitter<any> = new EventEmitter<any>()
+  @Output() enviarEnderecoParaFormComponent: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private localizacaoService: LocalizacaoService) {}
   
   ngOnInit(){
     this.getCurrentLocation();
-    // this.getAddres('Av. Oliveira Lima, 1029 - Soledade, Recife - PE, 50030-230'); 
-  }
-
-  public clickLocation(): void {
-    this.getCurrentLocation();
+    // this.getAddress('Av. Oliveira Lima, 1029 - Soledade, Recife - PE, 50030-230');
   }
   
   getCurrentLocation() {
     if (navigator.geolocation) {
       console.log('Geolocalização disponível.');      
-      
       // Verificar se a geolocalização foi ativada ou se o navegador tem permissão
       navigator.geolocation.getCurrentPosition(
         (position) => {
           this.localizacaoService.atualizarLocalizacaoAtiva(true);
-          const lat1 = position.coords.latitude;
-          const lon1 = position.coords.longitude;
-  
-          // Coordenadas do segundo ponto
-          const lat2 = -8.079862866502374;
-          const lon2 = -34.908358728835786;
-  
-          this.lat = lat1;
-          this.long = lon1;
-          this.getAddressWithLatLon(lat1, lon1);
-  
-          // const distancia = this.calcularDistancia(lat1, lon1, lat2, lon2);
-          // console.log(`Distância: ${distancia} km`);
+          this.getAddressWithLatLon(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
           // Caso o usuário negue a permissão ou haja algum erro
@@ -85,7 +66,21 @@ Veja se seu navegador permite acessar a sua localização.`);
       alert("A geolocalização não é suportada neste navegador.");
 
     }
-  }  
+  }
+
+  async getAddressWithLatLon(lat: number, lon: number) {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`)
+    const e = await res.json();
+    console.log(e);
+    this.endereco = e.address;
+    this.enviarValorParaForm();
+  }
+
+  enviarValorParaForm() {
+    this.enviarEnderecoParaFormComponent.emit(this.endereco);
+  }
+
+  
 
   calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371; // Raio da Terra em km
@@ -101,22 +96,15 @@ Veja se seu navegador permite acessar a sua localização.`);
     return R * c; // Distância em km
   }
 
-  async getAddressWithLatLon(lat: number, lon: number) {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`)
-    const e = await res.json();
-    console.log(e);
-    this.endereco = e.address;
-    this.enviarValorParaForm();
-  }
-
-  async getAddres(str: String) {
+  async getAddress(str: String) {
     const res = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${str}&format=jsonv2`)  
     const e = await res.json();
-    console.log(e);      
+    console.log(e);
+    // retorna com informações de coordenadas e detalhes do endereço
   }
 
-  enviarValorParaForm() {
-    this.enviarEndParaFormComponent.emit(this.endereco);
-  }
+  public clickLocation(): void {
+    this.getCurrentLocation();
+  }  
 
 }

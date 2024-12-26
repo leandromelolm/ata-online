@@ -60,7 +60,10 @@ export class FormComponent {
   }
   
   getMeetingData() {
-    let urlParams = new URLSearchParams(window.location.search);    
+    let urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.size === 0) {
+      return this.messageRandom();
+    }
     this.apiService.getMeeting(urlParams.get('reuniao'))
     .subscribe({
       next: (response) => {
@@ -77,7 +80,7 @@ export class FormComponent {
   }
   
   messageMeeting(response: any) {
-    console.log(response);
+    this.isSpinner = false;
     if(response.result.status === 'ABERTO' || response.result.status === 'TEST') {
       this.isMeeting = true;
       this.infoReuniao = `
@@ -96,6 +99,11 @@ export class FormComponent {
       this.infoReuniao = 'Reunião não encontrada';
       this.isSpinner = false;
     }
+  }
+
+  messageRandom() {
+    this.infoReuniao = 'Leia o QRCode válido da reunião';
+    this.isSpinner = false;
   }
 
   validarForm(): boolean {

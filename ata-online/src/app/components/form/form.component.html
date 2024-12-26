@@ -37,7 +37,7 @@
                     <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
                 </div>
                 
-                <app-location (enviarEndParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
+                <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
             </div>
             
             <div class="right__container col-md" *ngIf="localizacaoAtiva && imageUrl">
