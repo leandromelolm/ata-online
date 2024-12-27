@@ -49,7 +49,7 @@ a{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 .input-field {
@@ -100,7 +100,9 @@ a{
 
 .success-msg {
     color: green; 
-    margin-top: 20px;
+    margin-top: 40px;
+    font-weight: 500;
+    font-size: medium;
 }
 
 .error-msg {
@@ -115,4 +117,25 @@ a{
 ::ng-deep .mat__spinner circle {
     // stroke: #2541e0;
     stroke: #ea33f7;
+}
+
+.h3__formulario {
+    margin: 10px 0 0 0;
+}
+
+.input__error {
+    text-align: left;
+    padding: 0 0 0 10px;
+    display: block;
+    color: #ff0000;    
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }

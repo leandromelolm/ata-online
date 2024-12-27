@@ -39,15 +39,21 @@
                 
                 <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
             </div>
-            
+
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
-                <h3>Formulário</h3>
+                <h3 class="h3__formulario">Formulário</h3>
                 <div class="form__container">
-                    <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
-                    <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">        
-                    <input class="input-field" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="000000000" placeholder="Digite o número da matrícula">
-                    <input class="input-field" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
-                    <input class="input-field" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
+                    <div>
+                        <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
+                        <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">
+                        <div class="input__error" *ngIf="!userName">Campo Nome é obrigatório.</div>
+                    </div>
+                    <div>
+                        <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" placeholder="Digite o número da matrícula">
+                        <div class="input__error" *ngIf="!matricula">Campo Matrícula é obrigatório.</div>
+                    </div>
+                    <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
+                    <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
                     <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" placeholder="Digite nome da sua unidade">      
                     
                     <app-button class="upload-btn" (click)="upload()" *ngIf="selectedFile" [disabled]="validarForm() || isLoading" [textButton]="buttonText"></app-button>
@@ -57,7 +63,10 @@
 
         
         <div *ngIf="successMessage" class="success-msg">
-            {{ successMessage }}
+            <div class="d-grid">
+                <div class="mb-2">{{ successMessage }}</div>
+                <div>ID: {{ sheetId }}</div>            
+            </div>
         </div>
         <div *ngIf="errorMessage" class="error-msg">
             {{ errorMessage }}

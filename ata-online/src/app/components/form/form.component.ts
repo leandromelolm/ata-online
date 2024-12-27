@@ -13,6 +13,7 @@ import { LeadingComment } from '@angular/compiler';
 export class FormComponent {
   
   successMessage: string = '';
+  sheetId: string = '';
   errorMessage: string = '';
   imageUrl: string | undefined;
   imageBase64: any;
@@ -26,9 +27,9 @@ export class FormComponent {
   valorRecebido: string = 'mostrar';
   buttonText: string = 'Enviar';
   enderecoLocal: any;
+  infoReuniao: string = '';
   isLocationActive: boolean;
   isMeeting: boolean = false;
-  infoReuniao: string = '';
   isLoading: boolean = false;
   isSpinner: boolean = true;
   private subscription: Subscription;
@@ -53,7 +54,6 @@ export class FormComponent {
         console.log('Localização ativa:', this.isLocationActive);
       }
     );
-
   }
   
   ngOnDestroy() {
@@ -246,11 +246,11 @@ export class FormComponent {
 
         let obj = {
           base64File: base64File,
-          userName: this.userName,
-          matricula: this.matricula,
-          cpf: this.cpf,
-          distrito: this.distrito,
-          unidade: this.unidade,
+          userName: this.userName.trim(),
+          matricula: this.matricula.trim(),
+          cpf: this.cpf.trim(),
+          distrito: this.distrito ? this.distrito.trim() : '',
+          unidade: this.unidade ? this.unidade.trim() : '',
           enderecoLocal: JSON.stringify(this.enderecoLocal),
           status: sessionStorage.getItem('reuniao-status'),
           folderId: sessionStorage.getItem('folder-id'),
@@ -268,7 +268,8 @@ export class FormComponent {
         this.buttonText = 'Enviar';
         if (result.success) {
           this.errorMessage = '';
-          this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
+          this.successMessage= `Registro enviado com sucesso!`;
+          this.sheetId = result.sheetId;
           this.selectedFile = null;
           this.limparCampos();
           this.isLoading = false;
