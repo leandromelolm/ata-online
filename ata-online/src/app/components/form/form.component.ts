@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { LeadingComment } from '@angular/compiler';
 
 @Component({
   selector: 'app-form',
@@ -41,8 +42,10 @@ export class FormComponent {
 
   async ngOnInit() {
 
-    this.getMeetingData();
+    this.tempoDesdeUltimaRequisicaoGet();
 
+    this.getMeetingData();
+    
     // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
     this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
       (status) => {
@@ -60,6 +63,19 @@ export class FormComponent {
     }
   }
   
+  clearSessionStorage() {
+    sessionStorage.clear();
+  }
+  
+  tempoDesdeUltimaRequisicaoGet() {
+    let tInicial = sessionStorage.getItem('get-time') || "";
+    let tFinal = new Date().getTime()
+    if (tFinal - parseInt(tInicial) >= 15 * 60 * 1000) {
+      console.log("Já se passaram 15 minutos desde a última requisição get.");
+      this.clearSessionStorage();
+    }
+  }
+
   getMeetingData() {
     let urlParams = new URLSearchParams(window.location.search);
     if(urlParams.size === 0) {
@@ -81,6 +97,7 @@ export class FormComponent {
         sessionStorage.setItem('reuniao-status', response.result.status);
         sessionStorage.setItem('sheet-page-id', response.result.id);
         sessionStorage.setItem('folder-id', response.result.idfolder);
+        sessionStorage.setItem('get-time', new Date().getTime().toString())
       },
       error: (err) => {
         console.error('Erro ao buscar dados da reunião:', err);
@@ -251,7 +268,7 @@ export class FormComponent {
         this.buttonText = 'Enviar';
         if (result.success) {
           this.errorMessage = '';
-          this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId}`;
+          this.successMessage= `Registro enviado com sucesso! ID: ${result.sheetId} - ${result.fileId}`;
           this.selectedFile = null;
           this.limparCampos();
           this.isLoading = false;
