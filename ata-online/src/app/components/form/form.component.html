@@ -40,7 +40,7 @@
                 <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
             </div>
 
-            <div class="right__container col-md" *a">
+            <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
                 <h3 class="h3__formulario">Formulário</h3>
                 <div class="form__container">
                     <div>
