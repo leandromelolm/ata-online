@@ -40,17 +40,20 @@
                 <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
             </div>
 
-            <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
+            <!-- <div class="right__container col-md" *ngIf="isLocationActive && imageUrl"> -->
+            <div class="right__container col-md" >
                 <h3 class="h3__formulario">Formulário</h3>
                 <div class="form__container">
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
-                        <input class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" placeholder="Digite seu nome">
-                        <div class="input__error" *ngIf="!userName">Campo Nome é obrigatório.</div>
+                        <input id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" 
+                            placeholder="Digite seu nome" (blur)="onBlurUserName()">
+                        <div id="msgUserName" class="input__error" *ngIf="!userName && errorInputUserName">Campo nome é obrigatório.</div>
                     </div>
                     <div>
-                        <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" placeholder="Digite o número da matrícula">
-                        <div class="input__error" *ngIf="!matricula">Campo Matrícula é obrigatório.</div>
+                        <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" 
+                            placeholder="Digite o número da matrícula" (blur)="onBlurMatricula()">
+                        <div class="input__error" *ngIf="!matricula && errorInputMatricula">Campo matrícula é obrigatório.</div>
                     </div>
                     <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
                     <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">

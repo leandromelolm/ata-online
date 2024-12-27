@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { LeadingComment } from '@angular/compiler';
 
 @Component({
   selector: 'app-form',
@@ -34,6 +33,8 @@ export class FormComponent {
   isSpinner: boolean = true;
   private subscription: Subscription;
   reuniao: string = '';
+  errorInputUserName: boolean = false;
+  errorInputMatricula: boolean = false;
 
   constructor(
     private router: Router, 
@@ -147,6 +148,18 @@ export class FormComponent {
 
   onUserNameChange(): void {
     this.userName = this.userName.toUpperCase();  // Converte para maiúsculas
+  }
+
+  onBlurUserName(): void {
+    if (!this.userName) {
+      this.errorInputUserName = true;  // Mostra a mensagem de erro
+    }
+  }
+
+  onBlurMatricula(): void {
+    if (!this.userName) {
+      this.errorInputMatricula = true;  // Mostra a mensagem de erro
+    }
   }
 
   redirectLogin() {
