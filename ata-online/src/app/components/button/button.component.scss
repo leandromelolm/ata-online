@@ -1,8 +1,7 @@
-.btn__primary{
+.btn__{
     width: auto;
     outline: none;
     border: 0;
-    background: #3b96b9;
     color: #fff;
     font-weight: 400;
     font-size: 16px;
@@ -15,4 +14,12 @@
         box-shadow: 0px 0px 5px 3px #0a0a0a40;
     }
     &:disabled{ cursor: default; opacity: 0.7;}
+}
+
+.btn__primary {
+    background: #3b96b9;
+}
+
+.btn__secondary {
+    background: #d3d3d3;
 }

@@ -35,6 +35,7 @@ export class FormComponent {
   reuniao: string = '';
   errorInputUserName: boolean = false;
   errorInputMatricula: boolean = false;
+  btnColor: string = "btn__2";
 
   constructor(
     private router: Router, 
@@ -146,6 +147,13 @@ export class FormComponent {
       return false;
   }
 
+  validarCampos(): string {
+    if (!this.cpf && !this.matricula || !this.userName)
+      return 'btn__2';
+    else
+      return 'btn__primary';
+  }
+
   onUserNameChange(): void {
     this.userName = this.userName.toUpperCase();  // Converte para maiúsculas
   }
@@ -245,12 +253,35 @@ export class FormComponent {
     }
   }
 
-  async upload(): Promise<void> {
+  erroValidacaoFormulario(): boolean {
+    let nError = 0;
+
+    if (!this.userName) {
+      this.errorInputUserName = true;
+      nError = 1;
+    }
+
+    if(!this.matricula){
+      this.errorInputMatricula = true;
+      nError = 1;
+    }
+
     if (!this.selectedFile) {
       this.errorMessage = 'Nenhum arquivo selecionado.';
       this.successMessage= '';
-      return;
+      nError = 1;
     }
+
+    if(nError === 1)
+      return true;
+    else
+      return false
+  }
+
+  async submitForm(): Promise<void> {
+    
+    if(this.erroValidacaoFormulario())
+      return;    
 
     const reader = new FileReader();
     reader.onload = async () => {
@@ -297,7 +328,8 @@ export class FormComponent {
         this.isLoading = false;
       }
     };
-    reader.readAsDataURL(this.selectedFile);
+    if(this.selectedFile)
+      reader.readAsDataURL(this.selectedFile);
   } 
   limparCampos() {
     this.userName = '';

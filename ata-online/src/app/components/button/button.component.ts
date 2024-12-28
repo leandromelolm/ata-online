@@ -10,5 +10,6 @@ export class ButtonComponent {
   @Input() textButton: string;
   @Input() size: string = 'auto';
   @Input() disabled: boolean = false;
+  @Input() btnColor: string = 'btn__primary'
 
 }
