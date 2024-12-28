@@ -14,17 +14,16 @@
     </div>
 
     <div *ngIf="isMeeting">
-
         <div class="div__info-reuniao_aberta">
             {{infoReuniao}}
         </div>
-        
+
         <div class="row">
             <div class="left__container col-md">
                 <div class="div__camera" *ngIf="isLocationActive && !successMessage">        
                     <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
                     
-                    <app-button textButton="Tirar outra foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+                    <app-button textButton="Tirar Outra Foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
                     
                     <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
                         <h4 class="mb-0">Pré-visualização:</h4>
@@ -46,8 +45,9 @@
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
                         <input id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" 
-                            placeholder="Digite seu nome" (blur)="onBlurUserName()">
+                            placeholder="Digite seu nome" (blur)="onBlurUserName()" maxlength="50">
                         <div id="msgUserName" class="input__error" *ngIf="!userName && errorInputUserName">Campo nome é obrigatório.</div>
+                        <p *ngIf="userName">{{ userName.length || 0 }}/50 caracteres</p>
                     </div>
                     <div>
                         <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" 
@@ -56,8 +56,9 @@
                     </div>
                     <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
                     <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
-                    <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" placeholder="Digite nome da sua unidade">      
-                    
+                    <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Digite nome da sua unidade">
+                    <p *ngIf="unidade">{{ unidade?.length || 0 }}/50 caracteres</p>
+
                     <app-button class="btn-submit-form" [btnColor]="validarCampos()" *ngIf="selectedFile" (click)="submitForm()" [disabled]="isLoading" [textButton]="buttonText"></app-button>
                 </div>
             </div>
