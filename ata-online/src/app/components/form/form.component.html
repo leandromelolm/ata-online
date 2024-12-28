@@ -56,8 +56,10 @@
                     </div>
                     <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
                     <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
-                    <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Digite nome da sua unidade">
-                    <p *ngIf="unidade">{{ unidade?.length || 0 }}/50 caracteres</p>
+                    <div>
+                        <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Digite nome da sua unidade">
+                        <p *ngIf="unidade">{{ unidade.length || 0 }}/50 caracteres</p>
+                    </div>
 
                     <app-button class="btn-submit-form" [btnColor]="validarCampos()" *ngIf="selectedFile" (click)="submitForm()" [disabled]="isLoading" [textButton]="buttonText"></app-button>
                 </div>
