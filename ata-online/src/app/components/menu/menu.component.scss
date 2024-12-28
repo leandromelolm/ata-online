@@ -5,6 +5,7 @@
 // xxl 1400px
 
 .side-menu {
+    position: fixed;
     width: 280px;
     height: 100vh;
     min-height: 100vh;
@@ -14,10 +15,6 @@
     padding: 0px 0px;
     box-shadow: 0x 0px 10px 4px #00000030;
     margin-right: 16px;
-
-    // @media (min-width: 769px) and (max-width: 1200px){
-    //     width: 25%;        
-    // }
 }
 
 img {
@@ -37,6 +34,7 @@ img {
     font-weight: bold;
     letter-spacing: 7px;
     margin: 0 0 0 4px;
+    text-wrap: nowrap;
 }
 
 .li__titulo {
