@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RegistrosComponent } from './pages/registros/registros.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MenuComponent,
     CameraComponent,
     FormComponent,
-    QrcodeComponent
+    QrcodeComponent,
+    RegistrosComponent
   ],
   imports: [
     BrowserModule,
