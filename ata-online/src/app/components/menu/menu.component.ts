@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -7,8 +8,20 @@ import { Component } from '@angular/core';
 })
 export class MenuComponent {
 
-  aviso(): void {
-    alert('Não implementado');
+  rotaParaRegistros: string = '';
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    // this.getUrlParameterToRegistrosPage();
   }
 
+  getSessionUrlParameter(rota: string): void {
+    const urlParamMeeting = sessionStorage.getItem('url-param-meeting');
+    const queryParams = urlParamMeeting ? { reuniao: urlParamMeeting } : {};
+
+    this.rotaParaRegistros = rota;
+
+    this.router.navigate([this.rotaParaRegistros], { queryParams });
+  }
 }

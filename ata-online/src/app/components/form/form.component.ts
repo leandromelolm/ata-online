@@ -49,6 +49,8 @@ export class FormComponent {
 
     this.getMeetingData();
     
+    this.getUrl();
+
     // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
     this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
       (status) => {
@@ -57,12 +59,20 @@ export class FormComponent {
       }
     );
   }
+
   
   ngOnDestroy() {
     // Cancela a inscrição ao destruir o componente para evitar vazamentos de memória
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  getUrl() {
+    let urlParams = new URLSearchParams(window.location.search)
+    let urlMeeting = urlParams.get('reuniao') || null;
+    if (urlMeeting)
+      sessionStorage.setItem('url-param-meeting', urlMeeting);
   }
   
   clearSessionStorage() {

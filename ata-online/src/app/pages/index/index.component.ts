@@ -12,8 +12,11 @@ export class IndexComponent {
 
   constructor(private router: Router) {}
 
-  login() {
-    sessionStorage.setItem('user', this.userName);
+  ngOnInit() {
+    sessionStorage.clear();
+  }
+
+  redirectHome() {
     this.router.navigate(['home']);
   }
 }

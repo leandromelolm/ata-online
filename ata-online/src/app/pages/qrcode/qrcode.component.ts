@@ -7,4 +7,16 @@ import { Component } from '@angular/core';
 })
 export class QrcodeComponent {
 
+  strQRCode: string = '';
+
+  ngOnInit() {
+    
+    // let urlParam = sessionStorage.getItem('url-param-meeting');
+    let urlParamMeeting = new URLSearchParams(window.location.search);
+    let urlParam = urlParamMeeting.get('reuniao');
+    
+    if (urlParam === 'test')
+      this.strQRCode = urlParam;
+  }
+
 }
