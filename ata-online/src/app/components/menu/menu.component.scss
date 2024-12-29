@@ -25,7 +25,13 @@ img {
 
 .menu-mobile {
     height: 32px;
-    margin-top: 14px;
+    width: 106vh;
+    background-color: white;
+    align-items: center;
+    // margin-top: 14px;
+    padding-top: 24px;
+    padding-bottom: 16px;
+    opacity: 0.9;
 }
 
 .menu-mobile-titulo { 
