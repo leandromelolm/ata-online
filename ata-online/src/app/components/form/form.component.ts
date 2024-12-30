@@ -59,7 +59,6 @@ export class FormComponent {
       }
     );
   }
-
   
   ngOnDestroy() {
     // Cancela a inscrição ao destruir o componente para evitar vazamentos de memória
@@ -70,7 +69,7 @@ export class FormComponent {
 
   getUrl() {
     let urlParams = new URLSearchParams(window.location.search)
-    let urlMeeting = urlParams.get('reuniao') || null;
+    let urlMeeting = urlParams.get('ata') || null;
     if (urlMeeting)
       sessionStorage.setItem('url-param-meeting', urlMeeting);
   }
@@ -96,7 +95,7 @@ export class FormComponent {
 
     const reuniaoStatus = sessionStorage.getItem('reuniao-status');
     const sheetPageId = sessionStorage.getItem('sheet-page-id');
-    const urlReuniao = urlParams.get('reuniao');
+    const urlReuniao = urlParams.get('ata');
 
     if (
       (reuniaoStatus === 'ABERTO' || reuniaoStatus === 'TEST') &&
@@ -105,7 +104,7 @@ export class FormComponent {
       return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
     }
 
-    this.apiService.getMeeting(urlParams.get('reuniao'))
+    this.apiService.getMeeting(urlParams.get('ata'))
     .subscribe({
       next: (response) => {
         this.messageMeeting(response);

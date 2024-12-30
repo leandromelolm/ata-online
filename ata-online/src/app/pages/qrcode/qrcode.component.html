@@ -6,12 +6,16 @@
               <div class="row">
                   <div class="div__qrcode row">
                     <div *ngIf="strQRCode === ''">
-                        <img src="../../assets/qrcode.png"/>
+                        <img src="../../assets/qrcode_index.png"/>
                         <span>sindatsb.web.app</span>
                     </div>
                     <div *ngIf="strQRCode === 'test'">
-                        <img src="../../assets/qrcode_test.png"/>
+                        <img src="../../assets/qrcode_ata_test.png"/>
                         <span>QRCode de Reunião teste</span>
+                    </div>
+                    <div *ngIf="strQRCode === '2605'">
+                        <img src="../../assets/qrcode_ata_2605.png"/>
+                        <span>QRCode de reunião</span>
                     </div>
                   </div>
               </div>

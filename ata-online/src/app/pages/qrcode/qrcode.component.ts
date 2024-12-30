@@ -13,10 +13,13 @@ export class QrcodeComponent {
     
     // let urlParam = sessionStorage.getItem('url-param-meeting');
     let urlParamMeeting = new URLSearchParams(window.location.search);
-    let urlParam = urlParamMeeting.get('reuniao');
+    let urlParam = urlParamMeeting.get('ata');
     
     if (urlParam === 'test')
       this.strQRCode = urlParam;
+    
+    if (urlParam?.startsWith('2605'))
+      this.strQRCode = '2605'
   }
 
 }

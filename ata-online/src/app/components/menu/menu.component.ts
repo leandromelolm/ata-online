@@ -18,7 +18,7 @@ export class MenuComponent {
 
   getSessionUrlParameter(rota: string): void {
     const urlParamMeeting = sessionStorage.getItem('url-param-meeting');
-    const queryParams = urlParamMeeting ? { reuniao: urlParamMeeting } : {};
+    const queryParams = urlParamMeeting ? { ata: urlParamMeeting } : {};
 
     this.rotaParaRegistros = rota;
 
