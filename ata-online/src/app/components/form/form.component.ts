@@ -89,16 +89,19 @@ export class FormComponent {
   }
 
   getMeetingData() {
-    let urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.size === 0) {
       return this.messageRandom();
     }
 
-    if(sessionStorage.getItem('reuniao-status') === 'ABERTO' && urlParams.get('reuniao') === sessionStorage.getItem('sheet-page-id')) {
-      return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
-    }
+    const reuniaoStatus = sessionStorage.getItem('reuniao-status');
+    const sheetPageId = sessionStorage.getItem('sheet-page-id');
+    const urlReuniao = urlParams.get('reuniao');
 
-    if(sessionStorage.getItem('reuniao-status') === 'TEST' && urlParams.get('reuniao') === sessionStorage.getItem('sheet-page-id')) {
+    if (
+      (reuniaoStatus === 'ABERTO' || reuniaoStatus === 'TEST') &&
+      urlReuniao === sheetPageId
+    ) {
       return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
     }
 
