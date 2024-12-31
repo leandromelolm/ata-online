@@ -5,6 +5,6 @@ export class Meeting {
     local: string;
     obj: string;
     status: string;
-    idFolder: string;
+    idfolder: string;
 }
 

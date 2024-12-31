@@ -1,8 +1,8 @@
 const spreadsheetId = env().envSpreadsheetId;
 const folderId = env().envFolderId;
-const doc = SpreadsheetApp.openById(spreadsheetId);
-const sheet = doc.getSheetByName('test'); // nome da Aba da planilha
-const sheetInfoReuniao = doc.getSheetByName('info-reuniao');
+const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
+const sheet = spreadSheet.getSheetByName('test');
+const sheetInfoReuniao = spreadSheet.getSheetByName('info-reuniao');
 
 
 const doGet = (e) => {
@@ -58,25 +58,26 @@ function findByColumn(txtBuscado) {
       };
     }
 
-    let reuniao;
+    let evento;
     for (let i = 0; i < resultados.length; i++) {
       let resultado = resultados[i];
       let linha = resultado.getRow();      
-      let colunaG = guia.getRange("H" + linha).getValue();
-      let r = JSON.parse(colunaG);
+      let colunaJ = guia.getRange("J" + linha).getValue();
+      let e = JSON.parse(colunaJ);
 
-      reuniao = {
-        id: r.id,
-        data: r.data,
-        hora: r.hora,
-        local: r.local,
-        obj: r.obs,
-        status: r.status,
-        idfolder: r.idfolder
+      evento = {
+        id: e.id,
+        data: e.data,
+        hora: e.hora,
+        local: e.local,
+        titulo: e.titulo,
+        descricao: e.descricao,
+        status: e.status,
+        idfolder: e.idfolder
       };
 
     };    
-    return reuniao;
+    return evento;
 
   } catch(e) {
     throw  error = {
@@ -96,19 +97,19 @@ const doPost = (e) => {
     let file;
     if (dados.status === 'ABERTO') {
       const folder = DriveApp.getFolderById(dados.folderId);
-      const shPage = doc.getSheetByName(dados.sheetPageId);
-      // id = shPage.getLastRow() + 1;
+      const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
+      // id = _sheet.getLastRow() + 1;
       id = Utilities.getUuid();
       file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+      _sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     } 
     if (dados.status === 'TEST') {
       const folder = DriveApp.getFolderById(folderId);
-      const shPage = doc.getSheetByName(dados.sheetPageId);
-      // const id = shPage.getLastRow() + 1;
+      const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
+      // id = _sheet.getLastRow() + 1;
       id = Utilities.getUuid();
       file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      shPage.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
+      _sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
     }
 
     return ContentService.createTextOutput(JSON.stringify({
@@ -127,12 +128,6 @@ const doPost = (e) => {
   }
 }
 
-function criarPasta() {  
-      let nomeDaPasta = `ata-online-${new Date().toISOString().split('T')[0]}`;  
-      let pasta = DriveApp.createFolder(nomeDaPasta);
-      return {'url': pasta.getUrl(),"id":pasta.getId()}
-}
-
 function processImageBlob(base64Content) {
   const decodedContent = Utilities.base64Decode(base64Content); 
   const blob = Utilities.newBlob(decodedContent, 'image/png', 'uploaded_image.png');
@@ -149,7 +144,7 @@ function env_() {
  *  Projeto Google Apps Script
  * 
  * criar o projeto do tipo: web app
- * permissão de acesso: qualquer pessoa 
+ * permissão de acesso: qualquer pessoa
  * 
  * envFolderId = id da pasta que será salva no google drive
  * envSpreadsheetId: id da panilha google

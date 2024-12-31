@@ -110,7 +110,7 @@ export class FormComponent {
         this.messageMeeting(response);
         sessionStorage.setItem('reuniao-status', response.result.status);
         sessionStorage.setItem('sheet-page-id', response.result.id);
-        sessionStorage.setItem('folder-id', response.result.idFolder);
+        sessionStorage.setItem('folder-id', response.result.idfolder);
         sessionStorage.setItem('get-time', new Date().getTime().toString())
       },
       error: (err) => {
