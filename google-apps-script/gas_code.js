@@ -1,8 +1,8 @@
 const spreadsheetId = env().envSpreadsheetId;
 const folderId = env().envFolderId;
 const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
-const sheet = spreadSheet.getSheetByName('test');
-const sheetInfoReuniao = spreadSheet.getSheetByName('info-reuniao');
+const sheet = spreadSheet.getSheetByName('test'); // nome da Aba da planilha
+const sheetInfoReuniao = spreadSheet.getSheetByName(env().sheetNameInfoAta);
 
 
 const doGet = (e) => {
@@ -73,7 +73,7 @@ function findByColumn(txtBuscado) {
         titulo: e.titulo,
         descricao: e.descricao,
         status: e.status,
-        idfolder: e.idfolder
+        idFolder: e.idFolder
       };
 
     };    

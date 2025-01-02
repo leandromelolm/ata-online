@@ -3,8 +3,9 @@ export class Meeting {
     data: string;
     hora: string;
     local: string;
-    obj: string;
+    titulo: string;
+    descricao: string;
     status: string;
-    idfolder: string;
+    idFolder: string;
 }
 
