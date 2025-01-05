@@ -107,11 +107,7 @@ export class FormComponent {
     this.apiService.getMeeting(urlParams.get('ata'))
     .subscribe({
       next: (response) => {
-        this.messageMeeting(response);
-        sessionStorage.setItem('reuniao-status', response.result.status);
-        sessionStorage.setItem('sheet-page-id', response.result.id);
-        sessionStorage.setItem('folder-id', response.result.idFolder);
-        sessionStorage.setItem('get-time', new Date().getTime().toString())
+        this.messageMeeting(response)
       },
       error: (err) => {
         console.error('Erro ao buscar dados da reunião:', err);
@@ -121,30 +117,41 @@ export class FormComponent {
   }
   
   messageMeeting(response: any) {
+    // console.log(response);
     this.isSpinner = false;
-    if(response.result.status === 'ABERTO') {
+    if (!response.success) {
+      this.infoReuniao = 'Nenhum resultado encontrado';
+      return;
+    }
+
+    if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
       this.infoReuniao = `
-      ${response.result.data} |
-      ${response.result.hora} |
-      ${response.result.local}
+      ${response.content.data} |
+      ${response.content.hora} |
+      ${response.content.local}
       `;
-      sessionStorage.setItem('reuniao', JSON.stringify(response));
     }
-    if(response.result.status === 'ENCERRADO') {
+    if(response.content.status === 'ENCERRADO') {
       this.infoReuniao = 'Reunião encerrada.';
     }
-    if(response.result.status === 'PAUSADO') {
+    if(response.content.status === 'PAUSADO') {
       this.infoReuniao = 'Reunião pausada.'
-    } 
-    if (response.result.status === 'Object Not Found') {
-      this.infoReuniao = 'Reunião não encontrada';
     }
-    if (response.result.status === 'TEST') {
+    if (response.content.status === 'TEST') {
       this.isMeeting = true;
-      this.infoReuniao = `TESTE - ${response.result.data} | ${response.result.hora} | ${response.result.local} `;
-      sessionStorage.setItem('reuniao', JSON.stringify(response));
+      this.infoReuniao = `
+      TESTE - 
+      ${response.content.data} | 
+      ${response.content.hora} | 
+      ${response.content.local} 
+      `;
     }
+    sessionStorage.setItem('reuniao', JSON.stringify(response));
+    sessionStorage.setItem('reuniao-status', response.content.status);
+    sessionStorage.setItem('sheet-page-id', response.content.id);
+    sessionStorage.setItem('folder-id', response.content.idFolder);
+    sessionStorage.setItem('get-time', new Date().getTime().toString())
   }
 
   messageRandom() {
@@ -196,7 +203,7 @@ export class FormComponent {
 
   receberValorDaCamera(valor: string) {
     this.selectedFile = this.retornarUmFile(valor, 'imagem.png', 'image/png');
-    console.log(this.selectedFile);    
+    // console.log(this.selectedFile);   
     this.onImagePreview(this.selectedFile);
     this.valorRecebido = 'ocultar'
   }
@@ -249,11 +256,7 @@ export class FormComponent {
   onImagePreview(event: any): void {
     const file: File = event;
     if (file) {
-      // this.convertFileToBlob(file);
       const reader = new FileReader();
-      // reader.onloadend = () => {
-      //   this.imageUrl = reader.result as string;
-      // };
       reader.onload = (e: any) => {
         const img = new Image();
         img.onload = () => {
@@ -310,7 +313,8 @@ export class FormComponent {
           enderecoLocal: JSON.stringify(this.enderecoLocal),
           status: sessionStorage.getItem('reuniao-status'),
           folderId: sessionStorage.getItem('folder-id'),
-          sheetPageId: sessionStorage.getItem('sheet-page-id')
+          sheetPageId: sessionStorage.getItem('sheet-page-id'),
+          action:  'addParticipante'
         }
         this.buttonText = 'Aguarde';
         this.isLoading = true;
@@ -319,18 +323,18 @@ export class FormComponent {
           body: JSON.stringify(obj)
         });
 
-        const result = await response.json();
-        
+        const res = await response.json();
+
         this.buttonText = 'Enviar';
-        if (result.success) {
+        if (res.success) {
           this.errorMessage = '';
           this.successMessage= `Registro enviado com sucesso!`;
-          this.sheetId = result.sheetId;
+          this.sheetId = res.content.sheetId;
           this.selectedFile = null;
           this.limparCampos();
           this.isLoading = false;
         } else {
-          this.errorMessage = `Erro: ${result.message}`;
+          this.errorMessage = `Erro: ${res.message}`;
           this.successMessage= ``;
           this.isLoading = false;
         }
@@ -368,23 +372,14 @@ export class FormComponent {
   }
 
   redimensionarImagem(imagem: HTMLImageElement, novaLargura: number, novaAltura: number): void {
-    // Cria um canvas para redimensionar a imagem
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
-    
-    // Define as novas dimensões
     canvas.width = novaLargura;
     canvas.height = novaAltura;
-
-    // Desenha a imagem redimensionada no canvas
     ctx.drawImage(imagem, 0, 0, novaLargura, novaAltura);
-
-    // Converte a imagem no canvas de volta para uma URL Base64
-    const novaImagemBase64 = canvas.toDataURL('image/jpeg', 0.2);  // 0.7 define a qualidade (de 0 a 1)
-
-    // Exibe a imagem redimensionada no template
+    const novaImagemBase64 = canvas.toDataURL('image/jpeg', 0.3);  // 0.3 define a qualidade (de 0 a 1)
     this.imageUrl = novaImagemBase64;
-    console.log(this.imageUrl.length);    
+    // console.log(this.imageUrl.length);
   }
 
   sair() {

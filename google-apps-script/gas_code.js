@@ -4,45 +4,38 @@ const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
 const sheet = spreadSheet.getSheetByName('test'); // nome da Aba da planilha
 const sheetInfoReuniao = spreadSheet.getSheetByName(env().sheetNameInfoAta);
 
-
+/** GET **/
 const doGet = (e) => {
   const lock = LockService.getScriptLock();
   lock.tryLock(10000);
   try {    
-    const reuniao = e.parameter['reuniao'] || '';
-    let infoMeeting;
-    if (reuniao) {
-      infoMeeting = buscarInfoReuniao(reuniao);
+    const ata = e.parameter['ata'] || '';
+    if (ata) {      
+      return findByMeeting(ata);
     } else {
-      throw  error = {statusCode: 404, message: `Pagina não encontrada`, status: "Error", details: reuniao};
+      throw  error = {"status": 404, "details": `url não encontrada`};
     }
-
-    let response = ContentService
-      .createTextOutput(JSON.stringify({
-        "reuniao": reuniao,        
-        "result": infoMeeting
-      }));
-    
-    return response.setMimeType(ContentService.MimeType.JSON);
-
   } catch (error) {
-
-    return ContentService
-      .createTextOutput(JSON.stringify({
-         'result': 'error', 
-         'message': error 
-      })).setMimeType(ContentService.MimeType.JSON);
-
+    return outputError(false, 'erro na requisição', error);
   } finally {
     lock.releaseLock();
   } 
 }
 
-function buscarInfoReuniao(reuniao) {
-  return findByColumn(reuniao);
+/** POST **/
+const doPost = (e) => {
+ try {
+    let data = JSON.parse(e.postData.contents);
+    let op = data.action || '';
+    if (op === 'addParticipante')
+      return addParticipanteNoEvento(data);    
+  } catch (error) {
+    return outputError(false, error.message, e);
+  }
 }
 
-function findByColumn(txtBuscado) {
+// GET
+function findByMeeting(txtBuscado) {
   try { 
     let guia = sheetInfoReuniao;  
     let colunaParaPesquisar = "A";
@@ -50,12 +43,7 @@ function findByColumn(txtBuscado) {
     let resultados = textFinder.findAll();
 
     if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
-      return error = {
-        statusCode: 404,
-        message: `Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`,
-        status: "Object Not Found",
-        details: ""
-      };
+      return outputError(false, `Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`, "Object Not Found");
     }
 
     let evento;
@@ -77,61 +65,54 @@ function findByColumn(txtBuscado) {
       };
 
     };    
-    return evento;
+    return outputSuccess(true, 'Objeto encontrado com sucesso', evento);
 
   } catch(e) {
-    throw  error = {
-      statusCode: 404,
-      message: `Nenhum resultado encontrado: ${txtBuscado}`,
-      status: "Error",
-      details: ""
-    };
+    throw  error = {"details": `Erro ao buscar evento: ${txtBuscado}, mensagem de erro: ${e}`};
   }  
 }
 
-const doPost = (e) => {
- try {
-    let dados = JSON.parse(e.postData.contents);
-    const imageBlob = processImageBlob(dados.base64File);
-    let id;
-    let file;
-    if (dados.status === 'ABERTO') {
-      const folder = DriveApp.getFolderById(dados.folderId);
-      const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
-      // id = _sheet.getLastRow() + 1;
-      id = Utilities.getUuid();
-      file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      _sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
-    } 
-    if (dados.status === 'TEST') {
-      const folder = DriveApp.getFolderById(folderId);
-      const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
-      // id = _sheet.getLastRow() + 1;
-      id = Utilities.getUuid();
-      file = folder.createFile(imageBlob.setName(`${id}_image.png`));
-      _sheet.appendRow([new Date(), id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal ,file.getDownloadUrl()]);
-    }
-
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      // fileId: file.getId(),
-      sheetId: id,
-      message: "Arquivo enviado com sucesso!"
-    })).setMimeType(ContentService.MimeType.JSON);
-
-  } catch (error) {
-
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      message: error.message
-    })).setMimeType(ContentService.MimeType.JSON);
+// POST
+function addParticipanteNoEvento(dados) {
+  let folder;
+  if (dados.status === 'ABERTO' || dados.status === 'TEST') {
+    folder = DriveApp.getFolderById(dados.status === 'ABERTO' ? dados.folderId : folderId);
   }
+  const imageBlob = processImageBlob(dados.base64File);
+  const id = Utilities.getUuid();
+  const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+  const timeStamp = new Date();
+  const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
+  _sheet.appendRow([timeStamp, id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal, file.getDownloadUrl()]);
+  return outputSuccess(true, 'Arquivo enviado com sucesso!', {"sheetId": id, 'momento': timeStamp});
 }
 
 function processImageBlob(base64Content) {
   const decodedContent = Utilities.base64Decode(base64Content); 
   const blob = Utilities.newBlob(decodedContent, 'image/png', 'uploaded_image.png');
   return blob;
+}
+
+function outputSuccess(s, m, c) {
+  let output = ContentService.createTextOutput(), data = {};
+  data = {
+    "success": s,
+    "message": m,
+    "content": c
+  };  
+  output.setContent(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+  return output;
+}
+
+function outputError(s, m, e) {
+  let output = ContentService.createTextOutput();
+  let error = {
+    "success": s,
+    "message": m,
+    "error": e
+  };
+  output.setContent(JSON.stringify(error)).setMimeType(ContentService.MimeType.JSON);
+  return output;
 }
 
 function env_() {

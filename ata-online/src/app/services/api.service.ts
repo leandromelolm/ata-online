@@ -14,8 +14,8 @@ export class ApiService {
 
   private readonly httpClient = inject(HttpClient);
 
-  getMeeting(idReuniao: string | null): Observable<{result: Meeting}> {
-    return this.httpClient.get<any>(`${this.apiUrl}?reuniao=${idReuniao}`).pipe(
+  getMeeting(idReuniao: string | null): Observable<{content: Meeting}> {
+    return this.httpClient.get<any>(`${this.apiUrl}?ata=${idReuniao}`).pipe(
       catchError(this.handleError)
     );
   }
