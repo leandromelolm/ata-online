@@ -1,37 +1,44 @@
-const spreadsheetId = env().envSpreadsheetId;
-const folderId = env().envFolderId;
+const spreadsheetId = env().ENV_SPREADSHEET_ID;
+const folderId = env().ENV_FOLDER_ID;
 const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
 const sheet = spreadSheet.getSheetByName('test'); // nome da Aba da planilha
-const sheetInfoReuniao = spreadSheet.getSheetByName(env().sheetNameInfoAta);
+const sheetInfoReuniao = spreadSheet.getSheetByName(env().SHEETNAME_INFO_ATA);
 
 /** GET **/
 const doGet = (e) => {
-  const lock = LockService.getScriptLock();
-  lock.tryLock(10000);
+//  const lock = LockService.getScriptLock();
+//  lock.tryLock(10000);
   try {    
     const ata = e.parameter['ata'] || '';
-    if (ata) {      
+    if (ata)    
       return findByMeeting(ata);
-    } else {
-      throw  error = {"status": 404, "details": `url não encontrada`};
-    }
+    throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
-    return outputError(false, 'erro na requisição', error);
-  } finally {
-    lock.releaseLock();
-  } 
+    return outputError(false, 'erro na requisição get', error.message);
+  }
+//   finally {
+//    lock.releaseLock();
+//  }
 }
 
 /** POST **/
 const doPost = (e) => {
- try {
+//  const lock = LockService.getScriptLock();
+//  if (!lock.tryLock(10000))
+//   return outputError(false, 'Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
+  try {
     let data = JSON.parse(e.postData.contents);
     let op = data.action || '';
     if (op === 'addParticipante')
-      return addParticipanteNoEvento(data);    
+      return addParticipanteNoEvento(data);
+    if (op === 'addEvento')
+      return addEvento(data);
   } catch (error) {
-    return outputError(false, error.message, e);
-  }
+    return outputError(false, 'erro na requisicao post' , error.message);
+  } 
+//  finally {
+//    lock.releaseLock();
+//  }
 }
 
 // GET
@@ -68,7 +75,7 @@ function findByMeeting(txtBuscado) {
     return outputSuccess(true, 'Objeto encontrado com sucesso', evento);
 
   } catch(e) {
-    throw  error = {"details": `Erro ao buscar evento: ${txtBuscado}, mensagem de erro: ${e}`};
+    throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e.message}`};
   }  
 }
 
@@ -93,32 +100,110 @@ function processImageBlob(base64Content) {
   return blob;
 }
 
-function outputSuccess(s, m, c) {
+// POST
+function addEvento(d){
+  let uuid = gerarUuidParticionado();
+  let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
+  let pasta = criarPasta(`${dt}_${uuid}`);
+  // let idPlanilha = criarFolhaNaPlanilha(`${dt}_${uuid}`);
+  let idPlanilha = dublicarAbaModelo(`${dt}_${uuid}`);
+  return salvaNaPlanilha(idPlanilha, formatDate(d.data), d.hora, d.local, d.titulo, d.descricao, 'ABERTO', pasta.folderId, pasta.folderUrl);
+}
+
+const formatDate = (dateString) => {
+  const [year, month, day] = dateString.split('-');
+  return `${day}-${month}-${year}`;
+};
+
+function gerarUuidParticionado() {
+  var uuid = Utilities.getUuid();
+  let parte = uuid.split('-');
+  let uuidModificado = `${parte[0]}-${parte[1]}-${parte[4]}`
+  return uuidModificado;
+}
+
+function criarPasta(nomeDaPasta) {    
+  let pasta = DriveApp.createFolder(nomeDaPasta);  
+  Logger.log("Pasta criada com sucesso. URL: " + pasta.getUrl() +" "+ pasta.getId()); 
+  return {"folderId":pasta.getId(), "folderUrl":pasta.getUrl()}; 
+}
+
+function criarFolhaNaPlanilha(nomeDaFolha) {  
+  var abasExistentes = spreadSheet.getSheets().map(function(sheet) {
+    return sheet.getName();
+  });  
+  if (abasExistentes.includes(nomeDaFolha)) {
+    Logger.log("Uma folha com o nome '" + nomeDaAba + "' já existe.");
+    return;
+  }
+  var novaAba = spreadSheet.insertSheet(nomeDaFolha);  
+  if (novaAba) {
+    Logger.log("A folha '" + nomeDaFolha + "' foi criada com sucesso!");
+    return nomeDaFolha;
+  } else {
+    throw  error = {'status': 'error', 'details': `Não foi possível criar a folha na planilha.`};
+  }
+}
+
+function dublicarAbaModelo(nomeDaFolha) {
+  let abaModelo = spreadSheet.getSheetByName('ATA_MODELO');
+  if (abaModelo) {
+    let novaAba = abaModelo.copyTo(spreadSheet);
+    novaAba.setName(nomeDaFolha);
+  } else {
+    throw  error = {"status": 'error', "details": `Não foi possível duplicar a aba`};
+  }
+  return nomeDaFolha;
+}
+
+function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPasta, urlPasta) {
+  try {
+    const sheet = sheetInfoReuniao;
+    let obj = {
+      id: id,
+      data: data,
+      hora: hora,
+      local: local,
+      titulo: titulo,
+      descricao: descricao,
+      status: status,
+      idFolder: idPasta,
+      urlFolder: urlPasta
+    } 
+    sheet.appendRow([id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]);
+    return outputSuccess(true, 'evento criado com sucesso!', {"id": id});
+  } catch(e) {
+    return outputError(false, 'erro ao salvar na planilha', e.message );
+  }  
+}
+
+function outputSuccess(success, message, content) {
   let output = ContentService.createTextOutput(), data = {};
   data = {
-    "success": s,
-    "message": m,
-    "content": c
+    "success": success, // boolean
+    "message": message,
+    "content": content
   };  
   output.setContent(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
   return output;
 }
 
-function outputError(s, m, e) {
+function outputError(success, message, error) {
   let output = ContentService.createTextOutput();
-  let error = {
-    "success": s,
-    "message": m,
-    "error": e
+  let res = {
+    "success": success, // boolean
+    "message": message,
+    "error": error
   };
-  output.setContent(JSON.stringify(error)).setMimeType(ContentService.MimeType.JSON);
+  output.setContent(JSON.stringify(res)).setMimeType(ContentService.MimeType.JSON);
   return output;
 }
 
-function env_() {
-  const envSpreadsheetId = '';
-  const envFolderId = '';
-  return {envSpreadsheetId, envFolderId};
+function env_example() {
+  const ENV_SPREADSHEET_ID = '';
+  const ENV_FOLDER_ID = '';
+  const SHEETNAME_INFO_ATA = '';
+  return {ENV_SPREADSHEET_ID, ENV_FOLDER_ID, SHEETNAME_INFO_ATA};
 }
 
 /**
@@ -127,9 +212,10 @@ function env_() {
  * criar o projeto do tipo: web app
  * permissão de acesso: qualquer pessoa
  * 
- * envFolderId = id da pasta que será salva no google drive
- * envSpreadsheetId: id da panilha google
+ * ENV_FOLDER_ID = id da pasta que será salva no google drive
+ * ENV_SPREADSHEET_ID: id da panilha google
  * 
- * renover função env_() para env()
+ * renomear função env_example() para env()
  * 
  * */
+ 

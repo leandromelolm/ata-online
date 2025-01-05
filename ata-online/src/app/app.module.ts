@@ -19,6 +19,7 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RegistrosComponent } from './pages/registros/registros.component';
+import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { RegistrosComponent } from './pages/registros/registros.component';
     CameraComponent,
     FormComponent,
     QrcodeComponent,
-    RegistrosComponent
+    RegistrosComponent,
+    CriarEventoComponent
   ],
   imports: [
     BrowserModule,
