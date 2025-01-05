@@ -1,0 +1,60 @@
+<div class="page__layout">
+
+    <app-menu class="app__menu"></app-menu>
+
+    <div class="container page__content">
+        
+        <div class="form__container">
+            <h3 class="h3__formulario">Criar Evento</h3>
+            <div>
+                <input id="inputUserName" type="text" class="input-field" [(ngModel)]="titulo" [ngModelOptions]="{standalone: true}" 
+                placeholder="Título"maxlength="50">
+            </div>
+            <div>
+                <input class="input-field" type="date" [(ngModel)]="data" [ngModelOptions]="{standalone: true}">
+            </div>
+            <div>
+                <input class="input-field" type="text"  [(ngModel)]="hora" [ngModelOptions]="{standalone: true}" mask="00:00" placeholder="Hora">
+            </div>
+            <div>
+                <input class="input-field" [(ngModel)]="local" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Local">
+                <p *ngIf="local">{{ local.length || 0 }}/50 caracteres</p>
+            </div>
+            
+            <div>
+                <input class="input-field" [(ngModel)]="descricao" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Descrição">
+                <p *ngIf="descricao">{{ descricao.length || 0 }}/50 caracteres</p>
+            </div>
+            
+            <app-button class="btn-submit-form" (click)="submitForm()" [textButton]="btnSubmitForm"></app-button>
+            
+            <div>
+                <div>{{ message }}</div>
+                <div>{{ idEvento }}</div>
+            </div>
+            
+            <div class="qr-container">
+                <div>
+                    <input class="input-field" type="text" 
+                    [(ngModel)]="qrText"  
+                    [ngClass]="{'input-url': qrText.length > 0}" 
+                    placeholder="URL"/>
+                </div>
+                
+                <app-button class="btn-submit-form" (click)="generateQRCode()" [textButton]="btnQRCode"></app-button>
+
+                @if (qrCodeImage) {
+                    <div>
+                        <h3>QR Code Gerado:</h3>
+                        <img [src]="qrCodeImage" alt="QR Code" />
+                    </div>
+                }
+            </div>
+            
+            <app-button *ngIf="qrCodeImage" class="btn-submit-form" (click)="downloadQRCode()" [textButton]="btnDownloadQRCode"></app-button>
+            
+        </div>
+
+    </div>
+
+</div>
