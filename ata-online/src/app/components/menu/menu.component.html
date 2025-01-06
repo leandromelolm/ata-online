@@ -11,7 +11,7 @@
   <div class="offcanvas-body p-0">
     <nav>
       <ul>
-        <li class="justify-content-between li__titulo">
+        <li class="justify-content-between li__titulo" (click)="getSessionUrlParameter('/home')">
           <div>
             <img src="../../assets/logo.png"/> 
             <span class="span__titulo">Ata Online</span>
@@ -31,6 +31,9 @@
         <!-- <li routerLink="/registros"> -->
         <li (click)="getSessionUrlParameter('/registros')">
           <mat-icon>lists</mat-icon>Registros
+        </li>
+        <li (click)="getSessionUrlParameter('/criar-evento')">
+          <mat-icon>post_add</mat-icon>Cadastrar Evento
         </li>
         <a href="https://github.com/leandromelolm/ata-online" target="_blank">
           <li>

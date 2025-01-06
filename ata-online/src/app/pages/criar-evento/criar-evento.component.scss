@@ -27,7 +27,7 @@
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
-    margin-top: 8px;
+    margin-top: 2px;
     text-transform: uppercase;
 }
 
@@ -44,4 +44,23 @@
     margin-top: 8px;
     max-width: max-content;
     align-self: center;
+}
+
+.input__error {
+    text-align: left;
+    padding: 0 0 0 10px;
+    display: block;
+    color: #ff0000;    
+}
+
+.btn-link { text-decoration: none;}
+
+.div__label {
+    text-align: start;
+    font-size: smaller;
+    padding: 0px 0px 0px 2px;
+}
+
+p {
+    margin: 0 !important;
 }

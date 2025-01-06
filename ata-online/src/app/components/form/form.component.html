@@ -61,7 +61,7 @@
                         <p *ngIf="unidade">{{ unidade.length || 0 }}/50 caracteres</p>
                     </div>
 
-                    <app-button class="btn-submit-form" [btnColor]="validarCampos()" *ngIf="selectedFile" (click)="submitForm()" [disabled]="isLoading" [textButton]="buttonText"></app-button>
+                    <app-button class="btn-submit-form" [btnColor]="validarCampos()" *ngIf="selectedFile" (click)="submitForm()" [disabled]="isSending" [textButton]="buttonText"></app-button>
                 </div>
             </div>
         </div>

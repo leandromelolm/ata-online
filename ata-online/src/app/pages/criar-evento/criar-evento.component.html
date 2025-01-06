@@ -6,28 +6,57 @@
         
         <div class="form__container">
             <h3 class="h3__formulario">Criar Evento</h3>
-            <div>
-                <input id="inputUserName" type="text" class="input-field" [(ngModel)]="titulo" [ngModelOptions]="{standalone: true}" 
-                placeholder="Título"maxlength="50">
-            </div>
-            <div>
-                <input class="input-field" type="date" [(ngModel)]="data" [ngModelOptions]="{standalone: true}">
-            </div>
-            <div>
-                <input class="input-field" type="text"  [(ngModel)]="hora" [ngModelOptions]="{standalone: true}" mask="00:00" placeholder="Hora">
-            </div>
-            <div>
-                <input class="input-field" [(ngModel)]="local" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Local">
-                <p *ngIf="local">{{ local.length || 0 }}/50 caracteres</p>
-            </div>
-            
-            <div>
-                <input class="input-field" [(ngModel)]="descricao" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Descrição">
-                <p *ngIf="descricao">{{ descricao.length || 0 }}/50 caracteres</p>
-            </div>
-            
-            <app-button class="btn-submit-form" (click)="submitForm()" [textButton]="btnSubmitForm"></app-button>
-            
+            @if(isFormEvento) {
+                <div>
+                    @if(titulo){<div class="div__label"><label for="titulo">Título</label></div>}
+                    <input type="text" matInput #input class="input-field" [(ngModel)]="titulo" maxlength="50" placeholder="Título" 
+                    (blur)="onBlurField('titulo')">
+                    <div class="input__error" *ngIf="!titulo && errorInputTitulo">Campo obrigatório.</div>
+                    <p *ngIf="titulo">{{ titulo.length || 0 }}/50 caracteres</p>
+                </div>
+                <div>
+                    @if(data){<div class="div__label"><label for="data">Data</label></div>}
+                    <input class="input-field" type="date" [(ngModel)]="data"
+                    (blur)="onBlurField('data')">
+                    <div class="input__error" *ngIf="!data && errorInputData">Campo obrigatório.</div>
+                </div>
+                <div>
+                    @if(hora){<div class="div__label"><label for="hora">Hora</label></div>}
+                    <input class="input-field" type="text"  [(ngModel)]="hora" mask="00:00" placeholder="Hora 00:00"
+                    (blur)="onBlurField('hora')">
+                    <div class="input__error" *ngIf="!hora && errorInputHora">Campo obrigatório.</div>
+                </div>
+                <div>
+                    @if(local){<div class="div__label"><label for="local">Local</label></div>}
+                    <input class="input-field" [(ngModel)]="local" maxlength="50" placeholder="Local"
+                    (blur)="onBlurField('local')">
+                    <div class="input__error" *ngIf="!local && errorInputLocal">Campo obrigatório.</div>
+                    <p *ngIf="local">{{ local.length || 0 }}/50 caracteres</p>
+                </div>            
+                <div>
+                    @if(descricao){<div class="div__label"><label for="descricao">Descrição</label></div>}
+                    <input class="input-field" [(ngModel)]="descricao" maxlength="50" placeholder="Descrição"
+                    (blur)="onBlurField('descricao')">
+                    <div class="input__error" *ngIf="!descricao && errorInputDescricao">Campo obrigatório.</div>
+                    <p *ngIf="descricao">{{ descricao.length || 0 }}/50 caracteres</p>
+                </div>
+
+                <div>
+                    @if(senha){<div class="div__label"><label for="senha">Senha</label></div>}
+                    <input class="input-field" [(ngModel)]="senha" maxlength="50" type="password" placeholder="Senha"
+                    (blur)="onBlurField('senha')" (input)="validarSenhaProvisoria(senha)">
+                    <div class="input__error" *ngIf="errorInputSenha">Senha inválida.</div>                    
+                </div>
+                
+                <app-button 
+                    class="btn-submit-form" 
+                    (click)="submitForm()" 
+                    [textButton]="btnSubmitForm" 
+                    [disabled]="isSending" 
+                    [btnColor]="validarCampos()">
+                </app-button>
+            }
+                
             <div>
                 <div>{{ message }}</div>
                 <div>{{ idEvento }}</div>
@@ -41,7 +70,7 @@
                     placeholder="URL"/>
                 </div>
                 
-                <app-button class="btn-submit-form" (click)="generateQRCode()" [textButton]="btnQRCode"></app-button>
+                <app-button class="btn-submit-form" (click)="generateQRCode()" [textButton]="btnQRCode" [disabled]="isSending"></app-button>
 
                 @if (qrCodeImage) {
                     <div>
@@ -50,9 +79,12 @@
                     </div>
                 }
             </div>
+
+            @if (qrCodeImage) {
+                <app-button class="btn-submit-form" (click)="downloadQRCode()" [textButton]="btnDownloadQRCode"></app-button>
+            }
             
-            <app-button *ngIf="qrCodeImage" class="btn-submit-form" (click)="downloadQRCode()" [textButton]="btnDownloadQRCode"></app-button>
-            
+            <button (click)="sair()" class="btn btn-link mt-2">Sair</button>
         </div>
 
     </div>

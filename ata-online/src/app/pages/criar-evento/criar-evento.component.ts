@@ -20,29 +20,144 @@ export class CriarEventoComponent {
   qrCodeImage: string = '';
   btnQRCode = 'Gerar QR Code';
   btnDownloadQRCode = 'Baixar QRCode';
+  isFormEvento: boolean = true;
+  isSending: boolean = false;
+  errorInputTitulo: boolean = false;
+  errorInputData: boolean = false;
+  errorInputHora: boolean = false;
+  errorInputLocal: boolean = false;
+  errorInputDescricao: boolean = false;
 
-  async submitForm(){
+  senha: string = ''
+  errorInputSenha: boolean = false;
+
+  onBlurField(fieldName: string): void {
+   if (fieldName === 'titulo' && !this.titulo){
+      this.errorInputTitulo = true;
+   }
+   if (fieldName === 'data' && !this.data){
+      this.errorInputData = true;
+   }
+   if (fieldName === 'hora' && !this.hora){
+      this.errorInputHora = true;
+   }
+   if (fieldName === 'local' && !this.local){
+      this.errorInputLocal = true;
+   }
+   if (fieldName === 'descricao' && !this.descricao){
+      this.errorInputDescricao = true;
+   }
+   if (fieldName === 'descricao' && !this.senha){
+      this.errorInputSenha = true;
+   }
+  }
+
+  submitForm() {
+    if(this.validarForm())
+      return;
+
     let obj = {
       data: this.data,
       hora: this.hora.substring(0,2)+":"+this.hora.substring(2,4),
-      local: this.local,
-      titulo: this.titulo,
-      descricao: this.descricao,
+      local: this.local.trim(),
+      titulo: this.titulo.toUpperCase().trim(),
+      descricao: this.descricao.trim(),
       action: 'addEvento'
     }
-    console.log(obj);
+    
     this.btnSubmitForm = 'Aguarde';
+    this.isSending = true;
 
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
-      method: 'POST',
-      body: JSON.stringify(obj)
-    });
+    this.send(obj);
+  }
 
-    const res = await response.json();
-    console.log(res);
-    this.message = res.message;
-    this.idEvento = res.content.id
-    this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`
+  async send(obj : any) {
+    try {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
+        method: 'POST',
+        body: JSON.stringify(obj)
+      });
+      
+      const res = await response.json();
+      console.log(res);
+      if (res.success){
+        this.message = res.message;
+        this.idEvento = res.content.id
+        this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
+        this.limparCampos();
+        this.isFormEvento = false;
+      } else {
+        this.message = 'Erro no envio';
+      }
+    } catch (error) {
+      this.message = `Erro: ${error}`;
+    }
+    this.isSending = false;
+    this.btnSubmitForm = 'Cadastrar Evento';
+  }
+
+  validarForm(): boolean {
+    let nError = 0;
+
+    if (!this.titulo) {
+      this.errorInputTitulo= true;
+      nError = 1;
+    }
+
+    if(!this.data) {
+      this.errorInputData = true;
+      nError = 1;
+    }
+
+    if (!this.hora) {
+      this.errorInputHora = true
+      nError = 1;
+    }
+
+    if (!this.local) {
+      this.errorInputLocal = true
+      nError = 1;
+    }
+
+    if (!this.descricao) {
+      this.errorInputDescricao = true
+      nError = 1;
+    }
+
+    if (this.errorInputSenha) {
+      nError = 1;
+    }
+
+    if(nError === 1)
+      return true;
+    else
+      return false
+  }
+
+  validarSenhaProvisoria(senha: string): boolean {
+    if (senha !== 'sindatsb12345'){  
+      this.errorInputSenha = true;
+      return true;
+    } else {
+      this.errorInputSenha = false;
+      return false;
+    }    
+  }
+
+  validarCampos() {
+    if (this.titulo && this.hora && this.data && this.local && this.descricao)
+      return 'btn__primary';
+    else
+      return 'btn__2';
+  }
+
+  limparCampos() {
+    this.titulo = '';
+    this.data = new Date();
+    this.hora = '';
+    this.local = '';
+    this.descricao = '';
+    this.senha = '';
   }
 
   generateQRCode() {
@@ -68,6 +183,10 @@ export class CriarEventoComponent {
     } else {
       alert('Nenhum QR Code gerado para download.');
     }
+  }
+
+  sair() {
+    window.location.href = '/'
   }
 
 }

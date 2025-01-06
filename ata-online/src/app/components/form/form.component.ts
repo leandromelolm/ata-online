@@ -29,7 +29,7 @@ export class FormComponent {
   infoReuniao: string = '';
   isLocationActive: boolean;
   isMeeting: boolean = false;
-  isLoading: boolean = false;
+  isSending: boolean = false;
   isSpinner: boolean = true;
   private subscription: Subscription;
   reuniao: string = '';
@@ -317,7 +317,7 @@ export class FormComponent {
           action:  'addParticipante'
         }
         this.buttonText = 'Aguarde';
-        this.isLoading = true;
+        this.isSending = true;
         const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
           method: 'POST',
           body: JSON.stringify(obj)
@@ -332,16 +332,16 @@ export class FormComponent {
           this.sheetId = res.content.sheetId;
           this.selectedFile = null;
           this.limparCampos();
-          this.isLoading = false;
+          this.isSending = false;
         } else {
           this.errorMessage = `Erro: ${res.message}`;
           this.successMessage= ``;
-          this.isLoading = false;
+          this.isSending = false;
         }
       } catch (error) {
         this.errorMessage = `Erro ao enviar arquivo: ${error}`;
         this.successMessage= ``;
-        this.isLoading = false;
+        this.isSending = false;
       }
     };
     if(this.selectedFile)
