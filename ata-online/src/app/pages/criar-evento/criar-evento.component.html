@@ -28,10 +28,10 @@
                 </div>
                 <div>
                     @if(local){<div class="div__label" @fadeInOut @fadeInUp><label for="local">Local</label></div>}
-                    <input class="input-field" [(ngModel)]="local" maxlength="50" placeholder="Local"
+                    <input class="input-field" [(ngModel)]="local" maxlength="80" placeholder="Local"
                     (blur)="onBlurField('local')">
                     <div class="input__error" *ngIf="!local && errorInputLocal">Campo obrigatório.</div>
-                    <p *ngIf="local">{{ local.length || 0 }}/50 caracteres</p>
+                    <p *ngIf="local">{{ local.length || 0 }}/80 caracteres</p>
                 </div>            
                 <div>
                     @if(descricao){<div class="div__label" @fadeInOut @fadeInUp><label for="descricao">Descrição</label></div>}

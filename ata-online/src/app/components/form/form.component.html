@@ -9,13 +9,16 @@
 
     <div *ngIf="!isMeeting">
         <div class="div__info-reuniao_fechada">
-            {{infoReuniao}}
+            {{ infoReuniao }}
         </div>
     </div>
 
     <div *ngIf="isMeeting">
-        <div class="div__info-reuniao_aberta">
-            {{infoReuniao}}
+        <div class="div__info-reuniao_aberta">            
+            <div>{{ infoReuniao }}</div>
+            <div>{{ meeting.local }}</div>
+            <div>Data: {{ meeting.data }}</div>
+            <div>Hora: {{ meeting.hora }}</div>
         </div>
 
         <div class="row">
@@ -36,12 +39,12 @@
                     <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
                 </div>
                 
-                <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2"></app-location>
+                <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2 mb-2"></app-location>
             </div>
 
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
-                <h3 class="h3__formulario">Formulário</h3>
                 <div class="form__container">
+                    <h3 class="h3__formulario">Formulário</h3>
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
                         <input id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" 

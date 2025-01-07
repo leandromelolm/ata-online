@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { Meeting } from '../../models/meeting';
 
 @Component({
   selector: 'app-form',
@@ -36,11 +37,12 @@ export class FormComponent {
   errorInputUserName: boolean = false;
   errorInputMatricula: boolean = false;
   btnColor: string = "btn__2";
+  meeting: Meeting = new Meeting();
 
   constructor(
     private router: Router, 
     private localizacaoService: LocalizacaoService,
-    private apiService: ApiService
+    private apiService: ApiService,
   ) {}
 
   async ngOnInit() {
@@ -126,16 +128,17 @@ export class FormComponent {
 
     if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
-      this.infoReuniao = `
-      ${response.content.data} |
-      ${response.content.hora} |
-      ${response.content.local}
-      `;
+      this.infoReuniao = response.content.titulo;
+      this.meeting.data = response.content.data;
+      this.meeting.hora = response.content.hora;
+      this.meeting.local = response.content.local;
     }
     if(response.content.status === 'ENCERRADO') {
+      this.isMeeting = false;
       this.infoReuniao = 'Reunião encerrada.';
     }
     if(response.content.status === 'PAUSADO') {
+      this.isMeeting = false;
       this.infoReuniao = 'Reunião pausada.'
     }
     if (response.content.status === 'TEST') {
