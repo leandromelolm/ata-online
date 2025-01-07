@@ -263,9 +263,9 @@ export class FormComponent {
       reader.onload = (e: any) => {
         const img = new Image();
         img.onload = () => {
-          this.redimensionarImagem(img, 280, 360);  // Reduz a resolução para 800x600
+          this.redimensionarImagem(img, 220, 280);
         };
-        img.src = e.target.result;  // Define o conteúdo da imagem        
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }

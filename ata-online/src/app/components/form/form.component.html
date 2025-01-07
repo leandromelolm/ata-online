@@ -29,8 +29,8 @@
                     <app-button textButton="Tirar Outra Foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
                     
                     <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
-                        <h4 class="mb-0">Pré-visualização:</h4>
-                        <img  class="preview-image" [src]="imageUrl" alt="Pré-visualização da imagem">
+                        <h4 class="mb-0">Pré-visualização</h4>
+                        <img  class="preview-image" [src]="imageUrl" alt="Pré-visualizar imagem">
                     </div> 
                 </div>
                 
