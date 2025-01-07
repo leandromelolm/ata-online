@@ -1,10 +1,34 @@
 import { Component } from '@angular/core';
 import QRCode from 'qrcode';
+import { trigger, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-criar-evento',
   templateUrl: './criar-evento.component.html',
-  styleUrl: './criar-evento.component.scss'
+  styleUrl: './criar-evento.component.scss',
+  animations: [
+
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 }))
+      ])
+    ]),
+
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('500ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+      ])
+    ])
+
+  ]
 })
 export class CriarEventoComponent {
 
@@ -47,7 +71,7 @@ export class CriarEventoComponent {
    if (fieldName === 'descricao' && !this.descricao){
       this.errorInputDescricao = true;
    }
-   if (fieldName === 'descricao' && !this.senha){
+   if (fieldName === 'senha' && !this.senha){
       this.errorInputSenha = true;
    }
   }
@@ -58,7 +82,7 @@ export class CriarEventoComponent {
 
     let obj = {
       data: this.data,
-      hora: this.hora.substring(0,2)+":"+this.hora.substring(2,4),
+      hora: this.hora,
       local: this.local.trim(),
       titulo: this.titulo.toUpperCase().trim(),
       descricao: this.descricao.trim(),

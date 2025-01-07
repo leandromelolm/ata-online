@@ -8,33 +8,33 @@
             <h3 class="h3__formulario">Cadastrar Evento</h3>
             @if(isFormEvento) {
                 <div>
-                    @if(titulo){<div class="div__label"><label for="titulo">Título</label></div>}
+                    @if(titulo){<div class="div__label" @fadeInOut @fadeInUp><label for="titulo">Título</label></div>}
                     <input type="text" matInput #input class="input-field" [(ngModel)]="titulo" maxlength="50" placeholder="Título" 
                     (blur)="onBlurField('titulo')">
                     <div class="input__error" *ngIf="!titulo && errorInputTitulo">Campo obrigatório.</div>
                     <p *ngIf="titulo">{{ titulo.length || 0 }}/50 caracteres</p>
                 </div>
                 <div>
-                    @if(data){<div class="div__label"><label for="data">Data</label></div>}
+                    @if(data){<div class="div__label" @fadeInOut @fadeInUp><label for="data">Data</label></div>}
                     <input class="input-field" type="date" [(ngModel)]="data"
                     (blur)="onBlurField('data')">
                     <div class="input__error" *ngIf="!data && errorInputData">Campo obrigatório.</div>
                 </div>
                 <div>
-                    @if(hora){<div class="div__label"><label for="hora">Hora</label></div>}
-                    <input class="input-field" type="text"  [(ngModel)]="hora" mask="00:00" placeholder="Hora 00:00"
+                    @if(hora){<div class="div__label" @fadeInOut @fadeInUp><label for="hora">Hora</label></div>}
+                    <input class="input-field" type="time"  [(ngModel)]="hora" placeholder="Hora 00:00"
                     (blur)="onBlurField('hora')">
                     <div class="input__error" *ngIf="!hora && errorInputHora">Campo obrigatório.</div>
                 </div>
                 <div>
-                    @if(local){<div class="div__label"><label for="local">Local</label></div>}
+                    @if(local){<div class="div__label" @fadeInOut @fadeInUp><label for="local">Local</label></div>}
                     <input class="input-field" [(ngModel)]="local" maxlength="50" placeholder="Local"
                     (blur)="onBlurField('local')">
                     <div class="input__error" *ngIf="!local && errorInputLocal">Campo obrigatório.</div>
                     <p *ngIf="local">{{ local.length || 0 }}/50 caracteres</p>
                 </div>            
                 <div>
-                    @if(descricao){<div class="div__label"><label for="descricao">Descrição</label></div>}
+                    @if(descricao){<div class="div__label" @fadeInOut @fadeInUp><label for="descricao">Descrição</label></div>}
                     <input class="input-field" [(ngModel)]="descricao" maxlength="50" placeholder="Descrição"
                     (blur)="onBlurField('descricao')">
                     <div class="input__error" *ngIf="!descricao && errorInputDescricao">Campo obrigatório.</div>
@@ -42,9 +42,10 @@
                 </div>
 
                 <div>
-                    @if(senha){<div class="div__label"><label for="senha">Código</label></div>}
+                    @if(senha){<div class="div__label" @fadeInOut @fadeInUp><label for="senha">Código</label></div>}
                     <input class="input-field" [(ngModel)]="senha" maxlength="50" type="password" placeholder="Código"
                     (blur)="onBlurField('senha')" (input)="validarSenhaProvisoria(senha)">
+                    <div class="input__error" *ngIf="!senha && errorInputSenha">Campo obrigatório.</div>                    
                     <div class="input__error" *ngIf="errorInputSenha">Código inválida.</div>                    
                 </div>
                 
