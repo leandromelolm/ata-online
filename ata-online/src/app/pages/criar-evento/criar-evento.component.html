@@ -5,7 +5,7 @@
     <div class="container page__content">
         
         <div class="form__container">
-            <h3 class="h3__formulario">Criar Evento</h3>
+            <h3 class="h3__formulario">Cadastrar Evento</h3>
             @if(isFormEvento) {
                 <div>
                     @if(titulo){<div class="div__label"><label for="titulo">Título</label></div>}
@@ -42,10 +42,10 @@
                 </div>
 
                 <div>
-                    @if(senha){<div class="div__label"><label for="senha">Senha</label></div>}
-                    <input class="input-field" [(ngModel)]="senha" maxlength="50" type="password" placeholder="Senha"
+                    @if(senha){<div class="div__label"><label for="senha">Código</label></div>}
+                    <input class="input-field" [(ngModel)]="senha" maxlength="50" type="password" placeholder="Código"
                     (blur)="onBlurField('senha')" (input)="validarSenhaProvisoria(senha)">
-                    <div class="input__error" *ngIf="errorInputSenha">Senha inválida.</div>                    
+                    <div class="input__error" *ngIf="errorInputSenha">Código inválida.</div>                    
                 </div>
                 
                 <app-button 

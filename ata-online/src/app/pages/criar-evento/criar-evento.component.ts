@@ -135,7 +135,7 @@ export class CriarEventoComponent {
   }
 
   validarSenhaProvisoria(senha: string): boolean {
-    if (senha !== 'sindatsb12345'){  
+    if (senha !== 'sindatsb12345' && senha.length > 5){  
       this.errorInputSenha = true;
       return true;
     } else {
