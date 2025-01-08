@@ -1,5 +1,8 @@
 .container{
     text-align: center;
+    display: grid;
+    place-items: center; /* Centraliza horizontal e verticalmente */
+    height: 100vh;
 }
 
 .titulo{
@@ -43,6 +46,7 @@ a{
 
 .form__container {
     max-width: 500px;
+    width: 100vh;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -51,6 +55,9 @@ a{
     display: flex;
     flex-direction: column;
     gap: 10px;
+    @media (width < 768px) {
+        width: auto;
+    }
 }
 
 .input-field {
@@ -79,26 +86,22 @@ a{
     display: none;
 }
 
-.mt-4 {
-    margin-top: 16px;
-}
-
-.mb-4 {
-    margin-bottom: 16px;
-}
-
 .div__info-reuniao_aberta{
-    margin: 30px 0 20px 0;
+    margin: 0 0 0 0;
     color: green;
     font-weight: 500;
     font-size: medium;
 }
 
 .div__info-reuniao_fechada{
-    margin: 30px 0 20px 0;
+    // margin: 0 0 0 280px;
     color: red;
     font-weight: 500;
     font-size: medium;
+    // position: absolute;
+    // position-area: center;
+    display: grid;
+    place-items: center;
 }
 
 .success-msg {

@@ -5,15 +5,15 @@
           <div class="col">
               <div class="row">
                   <div class="div__qrcode row">
-                    <div *ngIf="strQRCode === ''">
+                    <div *ngIf="strQRCode === ''" class="row">
                         <img src="../../assets/qrcode_index.png"/>
                         <span>sindatsb.web.app</span>
                     </div>
-                    <div *ngIf="strQRCode === 'test'">
+                    <div *ngIf="strQRCode === 'test'" class="row">
                         <img src="../../assets/qrcode_ata_test.png"/>
                         <span>QRCode de Reunião teste</span>
                     </div>
-                    <div *ngIf="strQRCode === '2605'">
+                    <div *ngIf="strQRCode === '2605'" class="row">
                         <img src="../../assets/qrcode_ata_2605.png"/>
                         <span>QRCode de reunião</span>
                     </div>

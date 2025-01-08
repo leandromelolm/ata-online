@@ -128,28 +128,22 @@ export class FormComponent {
 
     if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
-      this.infoReuniao = response.content.titulo;
+      this.meeting.titulo = response.content.titulo;
       this.meeting.data = response.content.data;
       this.meeting.hora = response.content.hora;
       this.meeting.local = response.content.local;
     }
+
     if(response.content.status === 'ENCERRADO') {
       this.isMeeting = false;
       this.infoReuniao = 'Reunião encerrada.';
     }
+
     if(response.content.status === 'PAUSADO') {
       this.isMeeting = false;
       this.infoReuniao = 'Reunião pausada.'
     }
-    if (response.content.status === 'TEST') {
-      this.isMeeting = true;
-      this.infoReuniao = `
-      TESTE - 
-      ${response.content.data} | 
-      ${response.content.hora} | 
-      ${response.content.local} 
-      `;
-    }
+
     sessionStorage.setItem('reuniao', JSON.stringify(response));
     sessionStorage.setItem('reuniao-status', response.content.status);
     sessionStorage.setItem('sheet-page-id', response.content.id);
@@ -386,7 +380,11 @@ export class FormComponent {
   }
 
   sair() {
-    window.location.href = '/'
+    if (sessionStorage.getItem('url-param-meeting')){
+      if (confirm('Ao sair as informações sobre o evento serão apagadas. Será necessário ler novamente o QRCode do evento para um novo registro'))
+        window.location.href = '/'
+    } else
+      window.location.href = '/'
   }
 
 }

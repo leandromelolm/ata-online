@@ -59,7 +59,7 @@ firebase deploy --only hosting:sindatsb
 
 # deploy de preview - teste
 # https://firebase.google.com/docs/hosting/test-preview-deploy
-firebase hosting:channel:deploy preview_name
+firebase hosting:channel:deploy preview_beta
 
 
 ### Outros comandos úteis
