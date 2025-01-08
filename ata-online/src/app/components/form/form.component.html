@@ -39,7 +39,10 @@
                     <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
                 </div>
                 
-                <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2 mb-2"></app-location>
+                @if (!successMessage) {
+                    <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2 mb-2"></app-location>
+                }
+
             </div>
 
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
@@ -47,19 +50,30 @@
                     <h3 class="h3__formulario">Formulário</h3>
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
+                    </div>
+                    <div>                        
+                        @if(userName){<div class="div__label" @fadeInOut @fadeInUp><label for="name">NOME</label></div>}
                         <input id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()" 
                             placeholder="Digite seu nome" (blur)="onBlurUserName()" maxlength="50">
                         <div id="msgUserName" class="input__error" *ngIf="!userName && errorInputUserName">Campo nome é obrigatório.</div>
                         <p *ngIf="userName">{{ userName.length || 0 }}/50 caracteres</p>
                     </div>
                     <div>
+                        @if(matricula){<div class="div__label" @fadeInOut @fadeInUp><label for="matricula">MATRÍCULA</label></div>}
                         <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" 
                             placeholder="Digite o número da matrícula" (blur)="onBlurMatricula()">
                         <div class="input__error" *ngIf="!matricula && errorInputMatricula">Campo matrícula é obrigatório.</div>
                     </div>
-                    <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">
-                    <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
                     <div>
+                        @if(cpf){<div class="div__label" @fadeInOut @fadeInUp><label for="cpf">CPF</label></div>}
+                        <input class="input-field d-none" [(ngModel)]="cpf" [ngModelOptions]="{standalone: true}" mask="000.000.000-00" placeholder="Digite o número do cpf">                        
+                    </div>
+                    <div>
+                        @if(distrito){<div class="div__label" @fadeInOut @fadeInUp><label for="distrito">DISTRITO</label></div>}
+                        <input class="input-field" type="number" [(ngModel)]="distrito" [ngModelOptions]="{standalone: true}" mask='0' placeholder="Digite seu distrito">
+                    </div>
+                    <div>
+                        @if(unidade){<div class="div__label" @fadeInOut @fadeInUp><label for="unidade">UNIDADE</label></div>}
                         <input class="input-field" [(ngModel)]="unidade" [ngModelOptions]="{standalone: true}" maxlength="50" placeholder="Digite nome da sua unidade">
                         <p *ngIf="unidade">{{ unidade.length || 0 }}/50 caracteres</p>
                     </div>

@@ -4,11 +4,35 @@ import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { Meeting } from '../../models/meeting';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
-  styleUrl: './form.component.scss'
+  styleUrl: './form.component.scss',
+  animations: [
+
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms ease-in', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('500ms ease-out', style({ opacity: 0 }))
+      ])
+    ]),
+
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('500ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' }))
+      ])
+    ])
+
+  ]
 })
 export class FormComponent {
   
