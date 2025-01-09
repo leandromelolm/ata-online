@@ -52,8 +52,8 @@ export class CriarEventoComponent {
   errorInputLocal: boolean = false;
   errorInputDescricao: boolean = false;
 
-  senha: string = ''
-  errorInputSenha: boolean = false;
+  codigo: string = ''
+  erroInputCodigo: boolean = false;
 
   onBlurField(fieldName: string): void {
    if (fieldName === 'titulo' && !this.titulo){
@@ -71,13 +71,13 @@ export class CriarEventoComponent {
    if (fieldName === 'descricao' && !this.descricao){
       this.errorInputDescricao = true;
    }
-   if (fieldName === 'senha' && !this.senha){
-      this.errorInputSenha = true;
+   if (fieldName === 'codigo' && !this.codigo){
+      this.erroInputCodigo = true;
    }
   }
 
   submitForm() {
-    if(this.validarForm())
+    if(this.checkError())
       return;
 
     let obj = {
@@ -120,56 +120,56 @@ export class CriarEventoComponent {
     this.btnSubmitForm = 'Cadastrar Evento';
   }
 
-  validarForm(): boolean {
-    let nError = 0;
+  checkError(): boolean {
+    let isError = false;
 
     if (!this.titulo) {
       this.errorInputTitulo= true;
-      nError = 1;
+      isError = true;
     }
 
     if(!this.data) {
       this.errorInputData = true;
-      nError = 1;
+      isError = true;
     }
 
     if (!this.hora) {
       this.errorInputHora = true
-      nError = 1;
+      isError = true;
     }
 
     if (!this.local) {
       this.errorInputLocal = true
-      nError = 1;
+      isError = true;
     }
 
     if (!this.descricao) {
       this.errorInputDescricao = true
-      nError = 1;
+      isError = true;
     }
 
-    if (this.errorInputSenha) {
-      nError = 1;
+    if (this.validarCodigoProvisorio(this.codigo)) {
+      isError = true;
     }
 
-    if(nError === 1)
+    if(isError)
       return true;
     else
       return false
   }
 
-  validarSenhaProvisoria(senha: string): boolean {
-    if (senha !== 'sindatsb12345' && senha.length > 5){  
-      this.errorInputSenha = true;
-      return true;
-    } else {
-      this.errorInputSenha = false;
+  validarCodigoProvisorio(codigo: string): boolean {
+    if (codigo === '241208') {  
+      this.erroInputCodigo = false;
       return false;
+    } else {
+      this.erroInputCodigo = true;
+      return true;
     }    
   }
 
   validarCampos() {
-    if (this.titulo && this.hora && this.data && this.local && this.descricao)
+    if (this.titulo && this.hora && this.data && this.local && this.descricao && this.codigo.length === 6 && !this.erroInputCodigo)
       return 'btn__primary';
     else
       return 'btn__2';
@@ -181,7 +181,7 @@ export class CriarEventoComponent {
     this.hora = '';
     this.local = '';
     this.descricao = '';
-    this.senha = '';
+    this.codigo = '';
   }
 
   generateQRCode() {

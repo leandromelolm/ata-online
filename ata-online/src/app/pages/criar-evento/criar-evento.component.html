@@ -42,11 +42,12 @@
                 </div>
 
                 <div>
-                    @if(senha){<div class="div__label" @fadeInOut @fadeInUp><label for="senha">Código</label></div>}
-                    <input class="input-field" [(ngModel)]="senha" maxlength="50" type="password" placeholder="Código"
-                    (blur)="onBlurField('senha')" (input)="validarSenhaProvisoria(senha)">
-                    <div class="input__error" *ngIf="!senha && errorInputSenha">Campo obrigatório.</div>                    
-                    <div class="input__error" *ngIf="errorInputSenha">Código inválida.</div>                    
+                    @if(codigo){<div class="div__label" @fadeInOut @fadeInUp><label for="codigo">Código</label></div>}
+                    <input class="input-field" [(ngModel)]="codigo" maxlength="6" type="password" placeholder="Código"
+                    (input)="validarCodigoProvisorio(codigo)">
+                    <p *ngIf="codigo">{{ codigo.length || 0 }}/6 caracteres</p>
+                    <div class="input__error" *ngIf="!codigo && erroInputCodigo">Campo obrigatório.</div>
+                    @if(erroInputCodigo && codigo.length === 6){<div class="input__error">Código inválida.</div>}
                 </div>
                 
                 <app-button 
