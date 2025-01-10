@@ -76,4 +76,9 @@ nvm use v18.20.5
 
 # matar projeto executado na porta 4200
 sudo kill -9 `sudo lsof -t -i:4200`
+
+# usar no githubspace
+# 1- entrar no diretorio do projeto
+npm install
+
 ```

@@ -314,6 +314,27 @@ export class FormComponent {
       return false
   }
 
+  obterIniciais(nomeCompleto: any) {
+    const palavras = nomeCompleto.trim().split(/\s+/);  
+    // ignorar preposições comuns
+    const preposicoes = ['de', 'da', 'do', 'das', 'dos'];
+    const iniciais = palavras
+      .filter((palavra: string) => !preposicoes.includes(palavra.toLowerCase()))
+      .map((palavra: string[]) => palavra[0].toUpperCase());  
+    return iniciais.join(' ');
+  }
+
+  esconderNumero(numero: string) {
+    const numeroStr = numero.toString();
+    if (numeroStr.length < 4) {
+      return "Número muito curto!";
+    }
+    let n = numeroStr.length - 4;
+    let parteOculta = "*".repeat(n);
+    const visivel = numeroStr.slice(n, -1);
+    return `${parteOculta}${visivel}*`;
+  }  
+
   async submitForm(): Promise<void> {
     
     if(this.erroValidacaoFormulario())
@@ -335,7 +356,9 @@ export class FormComponent {
           status: sessionStorage.getItem('reuniao-status'),
           folderId: sessionStorage.getItem('folder-id'),
           sheetPageId: sessionStorage.getItem('sheet-page-id'),
-          action:  'addParticipante'
+          action:  'addParticipante',
+          startLetter: this.obterIniciais(this.userName.trim()),
+          hiddenMat: this.esconderNumero(this.matricula)
         }
         this.buttonText = 'Aguarde';
         this.isSending = true;

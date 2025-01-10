@@ -1,8 +1,6 @@
 const spreadsheetId = env().ENV_SPREADSHEET_ID;
-const folderId = env().ENV_FOLDER_ID;
 const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
-const sheet = spreadSheet.getSheetByName('test'); // nome da Aba da planilha
-const sheetInfoReuniao = spreadSheet.getSheetByName(env().SHEETNAME_INFO_ATA);
+const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
 
 /** GET **/
 const doGet = (e) => {
@@ -44,7 +42,7 @@ const doPost = (e) => {
 // GET
 function findByMeeting(txtBuscado) {
   try { 
-    let guia = sheetInfoReuniao;  
+    let guia = sheetEventos;  
     let colunaParaPesquisar = "A";
     let textFinder = guia.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
     let resultados = textFinder.findAll();
@@ -81,17 +79,34 @@ function findByMeeting(txtBuscado) {
 
 // POST
 function addParticipanteNoEvento(dados) {
-  let folder;
-  if (dados.status === 'ABERTO' || dados.status === 'TEST') {
-    folder = DriveApp.getFolderById(dados.status === 'ABERTO' ? dados.folderId : folderId);
-  }
+  if (dados.status === 'ABERTO') {
+  const folder = DriveApp.getFolderById(dados.folderId);
   const imageBlob = processImageBlob(dados.base64File);
   const id = Utilities.getUuid();
   const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
   const timeStamp = new Date();
-  const _sheet = spreadSheet.getSheetByName(dados.sheetPageId);
-  _sheet.appendRow([timeStamp, id, dados.userName, dados.matricula, dados.cpf, dados.distrito, dados.unidade, dados.enderecoLocal, file.getDownloadUrl()]);
+  const _sheet = spreadSheet.getSheetByName(dados.sheetPageId); // alterar atributo para sheetNameId
+  const participanteDTO = {
+      id: id,
+      startLetter: dados.startLetter,
+      hiddenMat: dados.hiddenMat
+   }
+  _sheet.appendRow([
+    timeStamp, 
+    id, 
+    dados.userName, 
+    dados.matricula, 
+    dados.cpf, 
+    dados.distrito, 
+    dados.unidade, 
+    dados.enderecoLocal, 
+    file.getDownloadUrl(),
+    JSON.stringify(participanteDTO)   
+  ]);
   return outputSuccess(true, 'Arquivo enviado com sucesso!', {"sheetId": id, 'momento': timeStamp});
+  } else {
+    return outputError(false, 'Evento não está com status Aberto', '');
+  }
 }
 
 function processImageBlob(base64Content) {
@@ -129,8 +144,8 @@ function criarPasta(nomeDaPasta) {
 }
 
 function criarFolhaNaPlanilha(nomeDaFolha) {  
-  var abasExistentes = spreadSheet.getSheets().map(function(sheet) {
-    return sheet.getName();
+  var abasExistentes = spreadSheet.getSheets().map(function(sh) {
+    return sh.getName();
   });  
   if (abasExistentes.includes(nomeDaFolha)) {
     Logger.log("Uma folha com o nome '" + nomeDaAba + "' já existe.");
@@ -158,7 +173,7 @@ function dublicarAbaModelo(nomeDaFolha) {
 
 function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPasta, urlPasta) {
   try {
-    const sheet = sheetInfoReuniao;
+    const sheet = sheetEventos;
     let obj = {
       id: id,
       data: data,
@@ -202,8 +217,8 @@ function outputError(success, message, error) {
 function env_example() {
   const ENV_SPREADSHEET_ID = '';
   const ENV_FOLDER_ID = '';
-  const SHEETNAME_INFO_ATA = '';
-  return {ENV_SPREADSHEET_ID, ENV_FOLDER_ID, SHEETNAME_INFO_ATA};
+  const SHEETNAME_EVENTOS = '';
+  return {ENV_SPREADSHEET_ID, ENV_FOLDER_ID, SHEETNAME_EVENTOS};
 }
 
 /**
