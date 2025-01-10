@@ -77,8 +77,12 @@ nvm use v18.20.5
 # matar projeto executado na porta 4200
 sudo kill -9 `sudo lsof -t -i:4200`
 
-# usar no githubspace
+## usar o Github Codespaces pela primeira vez
 # 1- entrar no diretorio do projeto
+# 2 - instalar npm
 npm install
+# 3 - instalar o angular
+npm install -g @angular/cli@17
+#4 instalar o firebase e realizar as operações de login
 
 ```
