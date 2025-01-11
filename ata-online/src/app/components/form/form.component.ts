@@ -365,19 +365,15 @@ export class FormComponent {
           hiddenMat: this.esconderNumero(this.matricula)
         }
         this.buttonText = 'Aguarde';
-        this.isSending = true;
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
-          method: 'POST',
-          body: JSON.stringify(obj)
-        });
+        this.isSending = true;        
 
-        const res = await response.json();
+        const res =  await this.apiService.postFetchEvento(obj);
 
         this.buttonText = 'Enviar';
-        if (res.success) {
+        if (res.message) {
           this.errorMessage = '';
           this.successMessage= `Registro enviado com sucesso!`;
-          this.sheetId = res.content.sheetId;
+          this.sheetId = res.content?.sheetId!;
           this.selectedFile = null;
           this.limparCampos();
           this.isSending = false;

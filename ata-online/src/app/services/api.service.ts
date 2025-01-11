@@ -3,6 +3,15 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Meeting } from '../models/meeting';
 
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  content?: {
+    sheetId?: string;
+  };
+  error?: any;
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,6 +38,15 @@ export class ApiService {
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
+  }
+
+   async postFetchEvento(obj: any): Promise<ApiResponse> {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
+      method: 'POST',
+      body: JSON.stringify(obj)
+    });
+    let res: ApiResponse = await response.json();
+    return res;
   }
   
 }
