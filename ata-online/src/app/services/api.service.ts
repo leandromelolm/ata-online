@@ -41,9 +41,13 @@ export class ApiService {
   }
 
    async postFetchEvento(obj: any): Promise<ApiResponse> {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
+    const response = await fetch(`${this.apiUrl}`, {
+      redirect: "follow",
       method: 'POST',
-      body: JSON.stringify(obj)
+      body: JSON.stringify(obj),
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
     });
     let res: ApiResponse = await response.json();
     return res;
