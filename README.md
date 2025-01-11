@@ -1,88 +1,19 @@
 # ata-online-angular
 
+Projeto gerado com a versão Angular 17.3.11.
+
 Configuração do projeto
 
-### Comandos
+### Executar o Projeto
 ```sh
 
-#limpar cache do npm (opcional)
-npm cache clean --force
-
-# instalar versão Angular 17
-npm install -g @angular/cli@17
-
-# ver versão angular
-ng version
-
-# criar projeto
-ng new ata-online --no-standalone
-
-# executar projeto
-npm start || ng serve -o ||
-ng serve --host {HOST_LOCAL_PARA_ABRIR_NO_MOBILE}
-
-# instalar boostrap
-npm install bootstrap@5.3.3
-
-# instalar material angular
-ng add @angular/material
-
-# para adicionar máscaras de input
-npm install ngx-mask --save
-
-### comandos angular
-
-# criar componente
-ng generate component components/button
-ng generate component components/location
-ng generate component pages/login
-
-# criar serviço
-ng g s services/NOME_DO_SERVICO
-
-# criar class
-ng generate class models/meeting
-
-
-### implantar projeto no firebase
-npm install firebase
-npm install -g firebase-tools
-firebase login
-firebase init
-# dar o build no projeto
-ng build
-# o ng build deve ser dentro do diretório ata-online
-# escolher a opcão App Hosting
-# usar um projeto existente que ja foi criado no firebase
-# configurar arquivo firebase.json para localizar pasta index
-firebase deploy --only hosting:sindatsb
-
-# deploy de preview - teste
-# https://firebase.google.com/docs/hosting/test-preview-deploy
-firebase hosting:channel:deploy preview_beta
-
-
-### Outros comandos úteis
-
-# listar versões node
-nvm ls
-nvm ls-remote
-
-# instalar versão compatível com Angular 17
-nvm install v18.20.5
-
-# usar uma versão node
-nvm use v18.20.5
-
-# matar projeto executado na porta 4200
-sudo kill -9 `sudo lsof -t -i:4200`
-
-## usar o Github Codespaces pela primeira vez
-# 1- entrar no diretorio do projeto
-# 2 - instalar npm
+# Entrar no diretorio do projeto '/ata-online'
+# executar:
 npm install
-# 3 - instalar o angular
-npm install -g @angular/cli@17
-#4 instalar o firebase e realizar as operações de login
+
+# executar o projeto:
+npm start
+# ou
+npm serve
 
 ```
