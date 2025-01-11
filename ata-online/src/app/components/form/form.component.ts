@@ -342,55 +342,62 @@ export class FormComponent {
   async submitForm(): Promise<void> {
     
     if(this.erroValidacaoFormulario())
-      return;    
+      return;
+      
+    const base64File = (this.imageUrl as string).split(',')[1]; // Obtém apenas o Base64
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const base64File = (this.imageUrl as string).split(',')[1]; // Obtém apenas o Base64
+    let obj = {
+      base64File: base64File,
+      userName: this.userName.trim(),
+      matricula: this.matricula.trim(),
+      cpf: this.cpf.trim(),
+      distrito: this.distrito ? this.distrito.trim() : '',
+      unidade: this.unidade ? this.unidade.trim() : '',
+      enderecoLocal: JSON.stringify(this.enderecoLocal),
+      status: sessionStorage.getItem('reuniao-status'),
+      folderId: sessionStorage.getItem('folder-id'),
+      sheetPageId: sessionStorage.getItem('sheet-page-id'),
+      action:  'addParticipante',
+      startLetter: this.obterIniciais(this.userName.trim()),
+      hiddenMat: this.esconderNumero(this.matricula)
+    }
+    this.buttonText = 'Aguarde';
+    this.isSending = true;
 
-        let obj = {
-          base64File: base64File,
-          userName: this.userName.trim(),
-          matricula: this.matricula.trim(),
-          cpf: this.cpf.trim(),
-          distrito: this.distrito ? this.distrito.trim() : '',
-          unidade: this.unidade ? this.unidade.trim() : '',
-          enderecoLocal: JSON.stringify(this.enderecoLocal),
-          status: sessionStorage.getItem('reuniao-status'),
-          folderId: sessionStorage.getItem('folder-id'),
-          sheetPageId: sessionStorage.getItem('sheet-page-id'),
-          action:  'addParticipante',
-          startLetter: this.obterIniciais(this.userName.trim()),
-          hiddenMat: this.esconderNumero(this.matricula)
-        }
-        this.buttonText = 'Aguarde';
-        this.isSending = true;        
+    //** Usa Fetch
+    // const res =  await this.apiService.fetchPostAddParticipante(obj);
+    // this.responseMessageSuccess(res);
 
-        const res =  await this.apiService.postFetchEvento(obj);
-
-        this.buttonText = 'Enviar';
-        if (res.message) {
-          this.errorMessage = '';
-          this.successMessage= `Registro enviado com sucesso!`;
-          this.sheetId = res.content?.sheetId!;
-          this.selectedFile = null;
-          this.limparCampos();
-          this.isSending = false;
-        } else {
-          this.errorMessage = `Erro: ${res.message}`;
-          this.successMessage= ``;
-          this.isSending = false;
-        }
-      } catch (error) {
-        this.errorMessage = `Erro ao enviar arquivo: ${error}`;
+    //** Usa HttpClient
+    this.apiService.addParticipanteAoEvento(obj)
+    .subscribe({
+      next: (response) => {
+        this.responseMessageSuccess(response)
+      },
+      error: (err) => {
+        this.errorMessage = `Erro ao enviar arquivo: ${err}`;
         this.successMessage= ``;
         this.isSending = false;
       }
-    };
-    if(this.selectedFile)
-      reader.readAsDataURL(this.selectedFile);
-  } 
+    });
+
+  }
+
+  responseMessageSuccess(res: any) {
+    if (res.message) {
+      this.errorMessage = '';
+      this.successMessage= `Registro enviado com sucesso!`;
+      this.sheetId = res.content?.sheetId!;
+      this.selectedFile = null;
+      this.limparCampos();
+      this.isSending = false;
+    } else {
+      this.errorMessage = `Erro: ${res.message}`;
+      this.successMessage= ``;
+      this.isSending = false;
+    }
+  }
+
   limparCampos() {
     this.userName = '';
     this.matricula = '';

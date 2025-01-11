@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Meeting } from '../models/meeting';
@@ -29,6 +29,13 @@ export class ApiService {
     );
   }
 
+  addParticipanteAoEvento(participante: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'text/plain'
+    });
+    return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
+  }
+
   private handleError(error: any): Observable<never> {
     let errorMessage = 'Ocorreu um erro desconhecido';
     if (error.error instanceof ErrorEvent) {
@@ -40,7 +47,7 @@ export class ApiService {
     return throwError(() => new Error(errorMessage));
   }
 
-   async postFetchEvento(obj: any): Promise<ApiResponse> {
+  async fetchPostAddParticipante(obj: any): Promise<ApiResponse> {
     const response = await fetch(`${this.apiUrl}`, {
       redirect: "follow",
       method: 'POST',
