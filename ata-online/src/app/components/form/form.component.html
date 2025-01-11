@@ -60,9 +60,11 @@
                     </div>
                     <div>
                         @if(matricula){<div class="div__label" @fadeInOut @fadeInUp><label for="matricula">MATRÍCULA</label></div>}
-                        <input class="input-field" type="number" [(ngModel)]="matricula" [ngModelOptions]="{standalone: true}" mask="00000000000" 
-                            placeholder="Digite o número da matrícula" (blur)="onBlurMatricula()">
+                        <input class="input-field" type="text" [(ngModel)]="matricula" mask="00000000000" 
+                            placeholder="Digite o número da matrícula" (blur)="onBlurMatricula()" (input)="onInputMatricula()">
                         <div class="input__error" *ngIf="!matricula && errorInputMatricula">Campo matrícula é obrigatório.</div>
+                        <div class="input__error" *ngIf="errorInputMatricula">Matrícula incompleta</div>
+                        <p *ngIf="matricula">{{ matricula.length || 0 }}/11 caracteres</p>
                     </div>
                     <div>
                         @if(cpf){<div class="div__label" @fadeInOut @fadeInUp><label for="cpf">CPF</label></div>}

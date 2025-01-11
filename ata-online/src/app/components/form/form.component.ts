@@ -188,14 +188,14 @@ export class FormComponent {
   }
 
   validarCampos(): string {
-    if (!this.cpf && !this.matricula || !this.userName)
+    if (!this.cpf && this.matricula.length < 6 || !this.userName)
       return 'btn__2';
     else
       return 'btn__primary';
   }
 
   onUserNameChange(): void {
-    this.userName = this.userName.toUpperCase();  // Converte para maiúsculas
+    this.userName = this.userName.toUpperCase();
   }
 
   onBlurUserName(): void {
@@ -205,9 +205,13 @@ export class FormComponent {
   }
 
   onBlurMatricula(): void {
-    if (!this.userName) {
-      this.errorInputMatricula = true;  // Mostra a mensagem de erro
+    if (this.matricula.length < 6) {
+      this.errorInputMatricula = true;
     }
+  }
+
+  onInputMatricula(): void {
+    this.errorInputMatricula = false;
   }
 
   redirectLogin() {
@@ -297,7 +301,7 @@ export class FormComponent {
       nError = 1;
     }
 
-    if(!this.matricula){
+    if(this.matricula.length < 6){
       this.errorInputMatricula = true;
       nError = 1;
     }
@@ -326,7 +330,7 @@ export class FormComponent {
 
   esconderNumero(numero: string) {
     const numeroStr = numero.toString();
-    if (numeroStr.length < 4) {
+    if (numeroStr.length < 6) {
       return "Número muito curto!";
     }
     let n = numeroStr.length - 4;
