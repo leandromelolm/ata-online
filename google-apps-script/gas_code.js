@@ -8,8 +8,12 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {    
     const ata = e.parameter['ata'] || '';
-    if (ata)    
-      return findByMeeting(ata);
+    const participante = e.parameter.participante || '';
+    const evento_id = e.parameter['evento-id'] || ''; 
+    if (ata)
+      return findByEvento(ata);
+    if (participante === 'all' && evento_id)
+      return todosValoresDaColunaParticipantesDTO(evento_id);
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
     return outputError(false, 'erro na requisição get', error.message);
@@ -40,7 +44,7 @@ const doPost = (e) => {
 }
 
 // GET
-function findByMeeting(txtBuscado) {
+function findByEvento(txtBuscado) {
   try { 
     let guia = sheetEventos;  
     let colunaParaPesquisar = "A";
@@ -75,6 +79,13 @@ function findByMeeting(txtBuscado) {
   } catch(e) {
     throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e.message}`};
   }  
+}
+
+function todosValoresDaColunaParticipantesDTO(eventoId) {
+   const sh = spreadSheet.getSheetByName(eventoId);
+   const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues();
+   const data = values.flat();
+   return outputSuccess(true, {'eventoId': eventoId}, data);
 }
 
 // POST
@@ -128,7 +139,7 @@ function addEvento(d){
 const formatDate = (dateString) => {
   const [year, month, day] = dateString.split('-');
   return `${day}-${month}-${year}`;
-};
+}
 
 function gerarUuidParticionado() {
   var uuid = Utilities.getUuid();
@@ -182,8 +193,7 @@ function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPas
       titulo: titulo,
       descricao: descricao,
       status: status,
-      idFolder: idPasta,
-      urlFolder: urlPasta
+      idFolder: idPasta
     } 
     sheet.appendRow([id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]);
     return outputSuccess(true, 'evento criado com sucesso!', {"id": id});
