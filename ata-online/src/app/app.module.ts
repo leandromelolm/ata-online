@@ -20,6 +20,7 @@ import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { CriarEventoComponent } from './pages/criar-evento/criar-evento.componen
     MatFormFieldModule,
     NgxMaskDirective,
     NgxMaskPipe,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTableModule
   ],
   providers: [
     provideAnimationsAsync(),

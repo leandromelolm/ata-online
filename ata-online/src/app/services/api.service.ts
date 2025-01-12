@@ -17,7 +17,8 @@ interface ApiResponse {
 })
 export class ApiService {
 
-  private apiUrl = 'https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec';
+  private scriptId = 'AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT';
+  private apiUrl = `https://script.google.com/macros/s/${this.scriptId}/exec`;
 
   constructor() { }
 
@@ -34,6 +35,17 @@ export class ApiService {
       'Content-Type': 'text/plain'
     });
     return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
+  }
+
+  async getAllParticipantes(eventoId: string) {
+    const res = await fetch(`${this.apiUrl}?participante=all&evento-id=${eventoId}`,{
+      redirect: "follow",
+      method: 'GET',
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+    return await res.json();
   }
 
   private handleError(error: any): Observable<never> {
