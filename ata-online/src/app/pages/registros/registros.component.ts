@@ -13,22 +13,54 @@ export class RegistrosComponent {
   displayedColumns: string[] = ['position', 'id', 'startLetter', 'hiddenMat'];
   dataSource !: MatTableDataSource<any>;
   ELEMENT_DATA: ParticipanteDTO[] = [];
+  isUrlAta: boolean = false;
 
   constructor(private apiService: ApiService){}
 
   ngOnInit(): void {
-    this.buscarParticipantes();    
+    // this.buscarParticipantesComFetch();
+    this.buscarParticipantes();
+        
   }
 
-  async buscarParticipantes(){
+  buscarParticipantes() {
+    let urlParams = new URLSearchParams(window.location.search);
+    let urlEvento = urlParams.get('ata') || '';
+    this.apiService.getAllParticipantes(urlEvento)
+    .subscribe({
+      next: (response) => {
+        this.isUrlAta = true;
+        console.log(response['message'])
+        for( let i=0; i<response.content.length; i++) {
+          const obj = JSON.parse(response.content[i]);
+          obj.position = i+1;
+          this.ELEMENT_DATA.push(obj)
+          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao buscar dados da reunião:', err);
+        alert(`Ocorreu um erro ao tentar carregar os dados da reunião. 
+          Por favor, verifique sua conexão ou tente novamente mais tarde.`);
+      }
+    });
+  }
+
+  async buscarParticipantesComFetch(){
     let urlParams = new URLSearchParams(window.location.search)
     let urlEvento = urlParams.get('ata') || '';
-    const participantes = await this.apiService.getAllParticipantes(urlEvento);
-    for( let i=0; i<participantes.content.length; i++) {
-      const obj = JSON.parse(participantes.content[i]);
-      obj.position = i+1;
-      this.ELEMENT_DATA.push(obj)
-      this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
+    let participantes;
+    if(urlEvento){
+      participantes = await this.apiService.fetchGetAllParticipantes(urlEvento);
+      if(participantes.success){
+        this.isUrlAta = true;
+        for( let i=0; i<participantes.content.length; i++) {
+          const obj = JSON.parse(participantes.content[i]);
+          obj.position = i+1;
+          this.ELEMENT_DATA.push(obj)
+          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
+        }
+      }
     }
   }
 

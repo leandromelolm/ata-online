@@ -25,7 +25,8 @@ export class ApiService {
   private readonly httpClient = inject(HttpClient);
 
   getMeeting(idReuniao: string | null): Observable<{content: Meeting}> {
-    return this.httpClient.get<any>(`${this.apiUrl}?ata=${idReuniao}`).pipe(
+    return this.httpClient.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
+    .pipe(
       catchError(this.handleError)
     );
   }
@@ -37,15 +38,11 @@ export class ApiService {
     return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
   }
 
-  async getAllParticipantes(eventoId: string) {
-    const res = await fetch(`${this.apiUrl}?participante=all&evento-id=${eventoId}`,{
-      redirect: "follow",
-      method: 'GET',
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-    return await res.json();
+  getAllParticipantes(eventoId: string): Observable<{[message: string]: any; content: any; success: any}> {
+    return this.httpClient.get<any>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
+    .pipe(
+      catchError(this.handleError)
+    );    
   }
 
   private handleError(error: any): Observable<never> {
@@ -57,6 +54,17 @@ export class ApiService {
     }
     console.error(errorMessage);
     return throwError(() => new Error(errorMessage));
+  }
+
+  async fetchGetAllParticipantes(eventoId: string) {
+    const res = await fetch(`${this.apiUrl}?participante=all&eventoid=${eventoId}`,{
+      redirect: "follow",
+      method: 'GET',
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
+    return await res.json();
   }
 
   async fetchPostAddParticipante(obj: any): Promise<ApiResponse> {
