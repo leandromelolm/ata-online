@@ -6,14 +6,24 @@ const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
 const doGet = (e) => {
 //  const lock = LockService.getScriptLock();
 //  lock.tryLock(10000);
-  try {    
-    const ata = e.parameter['ata'] || '';
-    const participante = e.parameter.participante || '';
-    const evento_id = e.parameter['evento-id'] || ''; 
+  try {
+    const { parameter } = e;
+    const { ata, participante, eventoid, matricula } = parameter;
+    // const ata = e.parameter['ata'] || '';
+    // const participante = e.parameter.participante || '';
+
     if (ata)
-      return findByEvento(ata);
-    if (participante === 'all' && evento_id)
-      return todosValoresDaColunaParticipantesDTO(evento_id);
+      return findByEvento(ata); 
+      // ?ata={ID_EVENTO}
+
+    if (participante === 'all' && eventoid)
+      return todosValoresDaColunaParticipantesDTO(eventoid); 
+      // ?participante=all&eventoid={ID_EVENTO}
+
+    if (participante === 'matricula' && matricula && eventoid)
+      return encontrarParticipantePorMatricula(matricula, eventoid); 
+      // ?participante=matricula&matricula={MATRICULA}&eventoid={ID_EVENTO}
+
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
     return outputError(false, 'erro na requisição get', error.message);
@@ -30,11 +40,14 @@ const doPost = (e) => {
 //   return outputError(false, 'Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
   try {
     let data = JSON.parse(e.postData.contents);
-    let op = data.action || '';
-    if (op === 'addParticipante')
+
+    if (data.action === 'addParticipante')
       return addParticipanteNoEvento(data);
-    if (op === 'addEvento')
+
+    if (data.action === 'addEvento')
       return addEvento(data);
+
+  throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
   } catch (error) {
     return outputError(false, 'erro na requisicao post' , error.message);
   } 
@@ -83,9 +96,29 @@ function findByEvento(txtBuscado) {
 
 function todosValoresDaColunaParticipantesDTO(eventoId) {
    const sh = spreadSheet.getSheetByName(eventoId);
-   const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues();
+   if(!sh || eventoId == 'EVENTOS')
+    return outputError(false, 'evento não encontrado', 'erro ao buscar todos os participantes');
+   const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues(); // coluna 10 - ParticipantesDTO
    const data = values.flat();
    return outputSuccess(true, {'eventoId': eventoId}, data);
+}
+
+function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
+  if (eventoId === 'EVENTOS')
+    return outputError(false, 'evento id inválido', 'erro na pesquisa por matrícula')
+  const coluna = 4 // coluna que estão as matrículas
+  const planilha = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(eventoId);
+  if(!planilha)
+    return outputError(false, 'evento não encontrado', 'erro ao buscar participante');
+  const dados = planilha.getDataRange().getValues();
+  const indiceColuna = coluna - 1; // Índice da coluna ajustado para 0 (ex: Coluna 1 = índice 0)
+  for (let i = 0; i < dados.length; i++) {
+    if (dados[i][indiceColuna] == valorPesquisado) {
+      const idParticipante = dados[i][1]
+      return outputSuccess(true, `Valor "${valorPesquisado}" encontrado!` ,idParticipante);
+    }
+  }
+  return outputError(false, `Valor "${valorPesquisado}" não encontrado.`, 'Nenhum valor encontrado');
 }
 
 // POST
