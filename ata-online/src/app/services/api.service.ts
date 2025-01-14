@@ -2,15 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Meeting } from '../models/meeting';
-
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  content?: {
-    sheetId?: string;
-  };
-  error?: any;
-};
+import { Response } from '../models/response';
 
 @Injectable({
   providedIn: 'root'
@@ -38,8 +30,8 @@ export class ApiService {
     return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
   }
 
-  getAllParticipantes(eventoId: string): Observable<{[message: string]: any; content: any; success: any}> {
-    return this.httpClient.get<any>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
+  getAllParticipantes(eventoId: string): Observable<Response<any>> {
+    return this.httpClient.get<Response<any>>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
     .pipe(
       catchError(this.handleError)
     );    
@@ -67,7 +59,7 @@ export class ApiService {
     return await res.json();
   }
 
-  async fetchPostAddParticipante(obj: any): Promise<ApiResponse> {
+  async fetchPostAddParticipante(obj: any): Promise<Response<any>> {
     const response = await fetch(`${this.apiUrl}`, {
       redirect: "follow",
       method: 'POST',
@@ -76,7 +68,7 @@ export class ApiService {
         "Content-Type": "text/plain;charset=utf-8",
       },
     });
-    let res: ApiResponse = await response.json();
+    let res: Response<any> = await response.json();
     return res;
   }
   

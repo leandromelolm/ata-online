@@ -339,7 +339,7 @@ export class FormComponent {
     return `${parteOculta}${visivel}*`;
   }  
 
-  async submitForm(): Promise<void> {
+  submitForm() {
     
     if(this.erroValidacaoFormulario())
       return;
@@ -365,10 +365,14 @@ export class FormComponent {
     this.isSending = true;
 
     //** Usa Fetch
-    // const res =  await this.apiService.fetchPostAddParticipante(obj);
-    // this.responseMessageSuccess(res);
+    // this.saveParticipanteComFetch(obj);
 
     //** Usa HttpClient
+    this.saveParticipante(obj);
+
+  }
+
+  saveParticipante(obj: any) {
     this.apiService.addParticipanteAoEvento(obj)
     .subscribe({
       next: (response) => {
@@ -380,7 +384,11 @@ export class FormComponent {
         this.isSending = false;
       }
     });
+  }
 
+  async saveParticipanteComFetch(obj: any) {
+    const res =  await this.apiService.fetchPostAddParticipante(obj);    
+    this.responseMessageSuccess(res);
   }
 
   responseMessageSuccess(res: any) {

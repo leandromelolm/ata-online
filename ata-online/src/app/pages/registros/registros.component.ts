@@ -28,14 +28,16 @@ export class RegistrosComponent {
     let urlEvento = urlParams.get('ata') || '';
     this.apiService.getAllParticipantes(urlEvento)
     .subscribe({
-      next: (response) => {
-        this.isUrlAta = true;
-        console.log(response['message'])
-        for( let i=0; i<response.content.length; i++) {
-          const obj = JSON.parse(response.content[i]);
-          obj.position = i+1;
-          this.ELEMENT_DATA.push(obj)
-          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
+      next: (response) => {        
+        // console.log(response['message']);        
+        if (response.success){
+          this.isUrlAta = true;
+          for( let i=0; i<response.content?.length; i++) {
+            const obj = JSON.parse(response.content[i]);
+            obj.position = i+1;
+            this.ELEMENT_DATA.push(obj)
+            this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
+          }
         }
       },
       error: (err) => {
