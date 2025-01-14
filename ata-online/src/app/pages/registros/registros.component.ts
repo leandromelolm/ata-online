@@ -14,6 +14,7 @@ export class RegistrosComponent {
   dataSource !: MatTableDataSource<any>;
   ELEMENT_DATA: ParticipanteDTO[] = [];
   isUrlAta: boolean = false;
+  isEvento: boolean = true;
 
   constructor(private apiService: ApiService){}
 
@@ -26,18 +27,25 @@ export class RegistrosComponent {
   buscarParticipantes() {
     let urlParams = new URLSearchParams(window.location.search);
     let urlEvento = urlParams.get('ata') || '';
+    if (!urlEvento){
+      this.isUrlAta = false;
+      return;
+    }
     this.apiService.getAllParticipantes(urlEvento)
     .subscribe({
-      next: (response) => {        
-        // console.log(response['message']);        
+      next: (response) => {
+        console.log(response['message']);
+        this.isEvento = response.success;
         if (response.success){
-          this.isUrlAta = true;
-          for( let i=0; i<response.content?.length; i++) {
-            const obj = JSON.parse(response.content[i]);
-            obj.position = i+1;
+          const data = response.content;
+          data!.map((item, index) => {
+            const obj = JSON.parse(item);
+            obj.position = index + 1;
             this.ELEMENT_DATA.push(obj)
-            this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);      
-          }
+          });
+          this.dataSource = new MatTableDataSource(this.ELEMENT_DATA);
+          this.isUrlAta = true;
+          this.isEvento = response.success;
         }
       },
       error: (err) => {

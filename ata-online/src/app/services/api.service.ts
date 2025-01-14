@@ -30,8 +30,8 @@ export class ApiService {
     return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
   }
 
-  getAllParticipantes(eventoId: string): Observable<Response<any>> {
-    return this.httpClient.get<Response<any>>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
+  getAllParticipantes(eventoId: string): Observable<Response<string[]>> {
+    return this.httpClient.get<Response<string[]>>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
     .pipe(
       catchError(this.handleError)
     );    

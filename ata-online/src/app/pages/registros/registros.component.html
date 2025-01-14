@@ -1,7 +1,9 @@
 <div class="page__layout">
     <app-menu class="app__menu"></app-menu>
     <div class="page__content">
-      @if(isUrlAta){
+      @if (!isUrlAta) {
+        <h3> Leia QRCode do Evento</h3>
+      } @else {
         <h3>Registros</h3>
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
           
@@ -32,8 +34,9 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-      } @else {
-        <h3> Leia QRCode do Evento</h3>
-      }       
+      }
+      @if (!isEvento) {
+        <h3>Evento não encontrado</h3>
+      }
     </div>
 </div>
