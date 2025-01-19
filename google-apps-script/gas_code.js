@@ -8,9 +8,10 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const { ata, participante, eventoid, matricula } = parameter;
-    // const ata = e.parameter['ata'] || '';
-    // const participante = e.parameter.participante || '';
+    const { ata, participante, eventoid, matricula, action, novostatus, user, pw, teste } = parameter;
+
+    if(teste)
+      return outputSuccess(true, e);
 
     if (ata)
       return findByEvento(ata); 
@@ -23,6 +24,11 @@ const doGet = (e) => {
     if (participante === 'matricula' && matricula && eventoid)
       return encontrarParticipantePorMatricula(matricula, eventoid); 
       // ?participante=matricula&matricula={MATRICULA}&eventoid={ID_EVENTO}
+
+      if(action === 'editarstatusevento' && eventoid && novostatus)
+        if(authUser(user, pw))
+          return editStatusEvento(eventoid, novostatus, 'A');
+          // ?user={USER}&pw={PW}&action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
@@ -95,12 +101,17 @@ function findByEvento(txtBuscado) {
 }
 
 function todosValoresDaColunaParticipantesDTO(eventoId) {
-   const sh = spreadSheet.getSheetByName(eventoId);
-   if(!sh || eventoId == 'EVENTOS')
+  const sh = spreadSheet.getSheetByName(eventoId);
+  if(!sh || eventoId == 'EVENTOS')
     return outputError(false, 'evento não encontrado', 'erro ao buscar todos os participantes');
-   const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues(); // coluna 10 - ParticipantesDTO
-   const data = values.flat();
-   return outputSuccess(true, {'eventoId': eventoId}, data);
+  const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues(); // coluna 10 - ParticipantesDTO
+  const items = values.flat();
+  // let data = [];
+  // items.forEach(i => {
+  //   let d = JSON.parse(i);
+  //   data.push(d);
+  // })
+  return outputSuccess(true, {'eventoId': eventoId}, items);
 }
 
 function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
@@ -181,10 +192,27 @@ function gerarUuidParticionado() {
   return uuidModificado;
 }
 
-function criarPasta(nomeDaPasta) {    
-  let pasta = DriveApp.createFolder(nomeDaPasta);  
-  Logger.log("Pasta criada com sucesso. URL: " + pasta.getUrl() +" "+ pasta.getId()); 
-  return {"folderId":pasta.getId(), "folderUrl":pasta.getUrl()}; 
+function criarPasta(nomeDaPasta) {
+  var nomeDoSubdiretorio = "ata-online";
+  var nomeDaSubPasta = "ata-online_imagens";
+  var pastas = DriveApp.getFoldersByName(nomeDoSubdiretorio);
+  if (!pastas.hasNext()) {
+    throw new Error(`A pasta '${nomeDoSubdiretorio}' não foi encontrada.`);
+  }
+  var pastaPai = pastas.next();
+  
+  var subPastas = pastaPai.getFoldersByName(nomeDaSubPasta);
+  var pastaImagens;
+  if (subPastas.hasNext()) {
+    pastaImagens = subPastas.next();
+  } else {
+    pastaImagens = pastaPai.createFolder(nomeDaSubPasta);
+  }
+  var novaPasta = pastaImagens.createFolder(nomeDaPasta);
+  return {
+    "folderId": novaPasta.getId(),
+    "folderUrl": novaPasta.getUrl()
+  };
 }
 
 function criarFolhaNaPlanilha(nomeDaFolha) {  
@@ -233,6 +261,39 @@ function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPas
   } catch(e) {
     return outputError(false, 'erro ao salvar na planilha', e.message );
   }  
+}
+
+// GET - EDITAR STATUS DO EVENTO
+function editStatusEvento(idEvento, statusNovo, letraColuna) {
+  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
+  coluna = aba.getRange(`${letraColuna}:${letraColuna}`);
+  var textFinder = coluna.createTextFinder(idEvento);
+  textFinder.matchEntireCell(true);
+  var resultados = textFinder.findAll();
+  let flag = false;
+  let novoObj = {};
+  resultados.forEach(function(celula) {
+    aba.getRange(celula.getRow(), 7).setValue(statusNovo);
+    let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
+    let obj = JSON.parse(colEventoJson);
+    novoObj = {
+      id: obj.id,
+      data: obj.data,
+      hora: obj.hora,
+      local: obj.local,
+      titulo: obj.titulo,
+      descricao: obj.descricao,
+      status: statusNovo,
+      idFolder: obj.idFolder,
+      urlFolder: obj.urlFolder
+    }
+    aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(novoObj));
+    flag = true;
+  });
+  if(flag)
+    return outputSuccess(true, 'edição executada com sucesso', JSON.stringify(novoObj));
+  else
+    return outputError(false, 'evento não encontrado', 'edição de evento não foi executada' );    
 }
 
 function outputSuccess(success, message, content) {
