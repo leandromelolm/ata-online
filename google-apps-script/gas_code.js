@@ -272,10 +272,11 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
   var resultados = textFinder.findAll();
   let flag = false;
   let novoObj = {};
+  let obj = {};
   resultados.forEach(function(celula) {
     aba.getRange(celula.getRow(), 7).setValue(statusNovo);
     let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
-    let obj = JSON.parse(colEventoJson);
+    obj = JSON.parse(colEventoJson);
     novoObj = {
       id: obj.id,
       data: obj.data,
@@ -290,9 +291,16 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
     aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(novoObj));
     flag = true;
   });
-  if(flag)
-    return outputSuccess(true, 'edição executada com sucesso', JSON.stringify(novoObj));
-  else
+  if(flag) {
+    objResponse = {
+      id: obj.id,
+      data: obj.data,
+      hora: obj.hora,
+      titulo: obj.titulo,
+      status: obj.statusNovo
+    }
+    return outputSuccess(true, 'edição executada com sucesso', objResponse);
+  } else
     return outputError(false, 'evento não encontrado', 'edição de evento não foi executada' );    
 }
 

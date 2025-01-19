@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import QRCode from 'qrcode';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { CryptoService } from '../../services/crypto.service';
+import { HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-criar-evento',
@@ -50,10 +55,38 @@ export class CriarEventoComponent {
   errorInputData: boolean = false;
   errorInputHora: boolean = false;
   errorInputLocal: boolean = false;
-  errorInputDescricao: boolean = false;
-
+  errorInputDescricao: boolean = false;  
   codigo: string = ''
   erroInputCodigo: boolean = false;
+  
+  btnEditarStatus: string = 'Editar Status';
+  user: string;
+  password: string;
+  eventoid: string;
+  isUrlEdit: boolean = false;
+  responseMsgEditStatus: string = '';
+  selectedStatus: string = '';
+  statusList = [
+    { label: 'ABERTO', value: 'ABERTO' },
+    { label: 'PAUSADO', value: 'PAUSADO' },
+    { label: 'FECHADO', value: 'FECHADO' },
+    { label: 'CANCELADO', value: 'CANCELADO' },
+    { label: 'ENCERRADO', value: 'ENCERRADO' },
+  ];
+
+  constructor( 
+    private cryptoService: CryptoService,
+    private router: Router,
+    private apiService: ApiService
+  ) {}
+
+  ngOnInit() {
+    // this.preencherFormTest();
+    let pathName = this.getUrl();
+    console.log(pathName);
+    if(pathName === '/criar-evento/edit')
+      this.isUrlEdit = true;
+  }
 
   onBlurField(fieldName: string): void {
    if (fieldName === 'titulo' && !this.titulo){
@@ -208,6 +241,49 @@ export class CriarEventoComponent {
       alert('Nenhum QR Code gerado para download.');
     }
   }
+
+  getUrl(): string {
+    return this.router.url;
+  }
+
+  preencherFormTest() {
+    this.eventoid = 'evento_teste';
+    this.user = environment.userTest;
+    this.password = environment.passwordUserTest;
+    this.selectedStatus = 'ABERTO';
+  }
+
+  editStatus() {
+    this.responseMsgEditStatus = '';
+    let pw = this.cryptoService.encrypt(this.password);
+    const params = new HttpParams()
+    .set('action', 'editarstatusevento')
+    .set('eventoid', this.eventoid.trim().toLowerCase())
+    .set('novostatus', this.selectedStatus)
+    .set('user', this.user.trim().toLowerCase())
+    .set('pw', pw.trim())
+    // .set('teste', 'teste');  
+    this.apiService.getAlteraStatusEvento(params).subscribe({
+      next:(response) => {
+        this.sucessoEditarStatus(response);
+      },
+      error: (error) => {
+        this.erroEditarStatusEvento(error);
+      }
+    }
+    )
+  }
+
+  sucessoEditarStatus(response: any) {
+    console.log(response);
+    this.responseMsgEditStatus = response.message;
+  }
+
+  erroEditarStatusEvento(error: any) {
+    console.log(error);
+    this.responseMsgEditStatus = error.message;
+  }
+
 
   sair() {
     window.location.href = '/'

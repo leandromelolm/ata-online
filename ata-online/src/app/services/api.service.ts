@@ -1,15 +1,16 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Meeting } from '../models/meeting';
 import { Response } from '../models/response';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  private scriptId = 'AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT';
+  private scriptId = environment.scriptId;
   private apiUrl = `https://script.google.com/macros/s/${this.scriptId}/exec`;
 
   constructor() { }
@@ -35,6 +36,10 @@ export class ApiService {
     .pipe(
       catchError(this.handleError)
     );    
+  }
+
+  getAlteraStatusEvento(params: HttpParams): Observable<any>{
+    return this.httpClient.get<any>(`${this.apiUrl}`, { params });
   }
 
   private handleError(error: any): Observable<never> {

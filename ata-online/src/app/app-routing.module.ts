@@ -12,7 +12,8 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'qrcode', component: QrcodeComponent },
   { path: 'registros', component: RegistrosComponent },
-  { path: 'criar-evento', component: CriarEventoComponent }
+  { path: 'criar-evento', component: CriarEventoComponent },
+  { path: 'criar-evento/edit', component: CriarEventoComponent }
 ];
 
 @NgModule({
