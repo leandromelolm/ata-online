@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   scriptId:'',
-  cryptoSecret: '',
+  ENV_CRYPTO_KEY_SECRET: '',
   userTest: '',
   passwordUserTest: '',
 };
