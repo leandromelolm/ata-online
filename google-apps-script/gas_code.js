@@ -330,7 +330,17 @@ function env_example() {
   const ENV_SPREADSHEET_ID = '';
   const ENV_FOLDER_ID = '';
   const SHEETNAME_EVENTOS = '';
-  return {ENV_SPREADSHEET_ID, ENV_FOLDER_ID, SHEETNAME_EVENTOS};
+  const PRIVATE_KEY_HASH = '';
+  const SHEETNAME_USER = '';
+  const ENV_CRYPTO_KEY_SECRET = '';
+  return {
+    ENV_SPREADSHEET_ID, 
+    ENV_FOLDER_ID, 
+    SHEETNAME_EVENTOS, 
+    PRIVATE_KEY_HASH, 
+    SHEETNAME_USER, 
+    ENV_CRYPTO_KEY_SECRET
+  };
 }
 
 /**
@@ -343,6 +353,8 @@ function env_example() {
  * ENV_SPREADSHEET_ID: id da panilha google
  * 
  * renomear função env_example() para env()
+ * 
+ * versão CryptoJS no projeto: CryptoJS v3.1.2
  * 
  * */
  
