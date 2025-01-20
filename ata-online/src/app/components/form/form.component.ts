@@ -107,8 +107,8 @@ export class FormComponent {
   tempoDesdeUltimaRequisicaoGet() {
     let tInicial = sessionStorage.getItem('get-time') || "";
     let tFinal = new Date().getTime()
-    if (tFinal - parseInt(tInicial) >= 15 * 60 * 1000) {
-      console.log("Já se passaram 15 minutos desde a última requisição get.");
+    if (tFinal - parseInt(tInicial) >= 10 * 60 * 1000) {
+      console.log("Já se passaram 10 minutos desde a última requisição get.");
       this.clearSessionStorage();
     }
   }
@@ -123,10 +123,7 @@ export class FormComponent {
     const sheetPageId = sessionStorage.getItem('sheet-page-id');
     const urlReuniao = urlParams.get('ata');
 
-    if (
-      (reuniaoStatus === 'ABERTO' || reuniaoStatus === 'TEST') &&
-      urlReuniao === sheetPageId
-    ) {
+    if (reuniaoStatus === 'ABERTO' && urlReuniao === sheetPageId) {
       return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
     }
 
@@ -136,8 +133,8 @@ export class FormComponent {
         this.messageMeeting(response)
       },
       error: (err) => {
-        console.error('Erro ao buscar dados da reunião:', err);
-        alert('Ocorreu um erro ao tentar carregar os dados da reunião. Por favor, verifique sua conexão ou tente novamente mais tarde.');
+        console.error('Erro ao buscar dados da evento:', err);
+        alert('Ocorreu um erro ao tentar carregar os dados da evento. Por favor, verifique sua conexão ou tente novamente mais tarde.');
       }
     });
   }
@@ -150,6 +147,11 @@ export class FormComponent {
       return;
     }
 
+    if(response.content.status === 'FECHADO') {
+      this.isMeeting = false;
+      this.infoReuniao = 'Evento Fechado.'
+    }
+
     if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
       this.meeting.titulo = response.content.titulo;
@@ -158,15 +160,21 @@ export class FormComponent {
       this.meeting.local = response.content.local;
     }
 
-    if(response.content.status === 'ENCERRADO') {
-      this.isMeeting = false;
-      this.infoReuniao = 'Reunião encerrada.';
-    }
-
     if(response.content.status === 'PAUSADO') {
       this.isMeeting = false;
-      this.infoReuniao = 'Reunião pausada.'
+      this.infoReuniao = 'Evento Pausado.'
     }
+
+    if(response.content.status === 'ENCERRADO') {
+      this.isMeeting = false;
+      this.infoReuniao = 'Evento Encerrado.';
+    }
+
+    if(response.content.status === 'CANCELADO') {
+      this.isMeeting = false;
+      this.infoReuniao = 'Evento Cancelado.';
+    }
+
 
     sessionStorage.setItem('reuniao', JSON.stringify(response));
     sessionStorage.setItem('reuniao-status', response.content.status);
@@ -176,7 +184,7 @@ export class FormComponent {
   }
 
   messageRandom() {
-    this.infoReuniao = 'Leia o QRCode feito para a reunião';
+    this.infoReuniao = 'Leia o QRCode feito para o evento';
     this.isSpinner = false;
   }
 
