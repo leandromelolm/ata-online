@@ -130,7 +130,8 @@ export class FormComponent {
     this.apiService.getMeeting(urlParams.get('ata'))
     .subscribe({
       next: (response) => {
-        this.messageMeeting(response)
+        this.messageMeeting(response);
+        this.atualizarSessionStorage(response);        
       },
       error: (err) => {
         console.error('Erro ao buscar dados da evento:', err);
@@ -140,8 +141,8 @@ export class FormComponent {
   }
   
   messageMeeting(response: any) {
-    // console.log(response);
     this.isSpinner = false;
+
     if (!response.success) {
       this.infoReuniao = 'Nenhum resultado encontrado';
       return;
@@ -173,14 +174,15 @@ export class FormComponent {
     if(response.content.status === 'CANCELADO') {
       this.isMeeting = false;
       this.infoReuniao = 'Evento Cancelado.';
-    }
+    }    
+  }
 
-
+  atualizarSessionStorage(response: any) {
     sessionStorage.setItem('reuniao', JSON.stringify(response));
     sessionStorage.setItem('reuniao-status', response.content.status);
     sessionStorage.setItem('sheet-page-id', response.content.id);
-    sessionStorage.setItem('folder-id', response.content.idFolder);
-    sessionStorage.setItem('get-time', new Date().getTime().toString())
+    sessionStorage.setItem('folder-id', response.content.idFolder);    
+    sessionStorage.setItem('get-time', new Date().getTime().toString());
   }
 
   messageRandom() {
