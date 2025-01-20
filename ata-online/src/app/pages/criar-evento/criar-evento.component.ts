@@ -68,10 +68,10 @@ export class CriarEventoComponent {
   selectedStatus: string = '';
   statusList = [
     { label: 'ABERTO', value: 'ABERTO' },
-    { label: 'PAUSADO', value: 'PAUSADO' },
     { label: 'FECHADO', value: 'FECHADO' },
-    { label: 'CANCELADO', value: 'CANCELADO' },
+    { label: 'PAUSADO', value: 'PAUSADO' },
     { label: 'ENCERRADO', value: 'ENCERRADO' },
+    { label: 'CANCELADO', value: 'CANCELADO' },
   ];
 
   constructor( 
@@ -82,9 +82,8 @@ export class CriarEventoComponent {
 
   ngOnInit() {
     // this.preencherFormTest();
-    let pathName = this.getUrl();
-    console.log(pathName);
-    if(pathName === '/criar-evento/edit')
+
+    if(this.router.url.split('?')[0] === '/criar-evento/edit')
       this.isUrlEdit = true;
   }
 
@@ -240,10 +239,6 @@ export class CriarEventoComponent {
     } else {
       alert('Nenhum QR Code gerado para download.');
     }
-  }
-
-  getUrl(): string {
-    return this.router.url;
   }
 
   preencherFormTest() {
