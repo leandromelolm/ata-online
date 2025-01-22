@@ -1,9 +1,7 @@
 export const environment = {
   production: false,
   scriptId:'',
-  ENV_CRYPTO_KEY_SECRET: '',
-  userTest: '',
-  passwordUserTest: '',
+  ENV_CRYPTO_KEY_SECRET: ''
 };
 
 // criar os arquivos

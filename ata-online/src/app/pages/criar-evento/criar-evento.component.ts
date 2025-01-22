@@ -81,8 +81,6 @@ export class CriarEventoComponent {
   ) {}
 
   ngOnInit() {
-    // this.preencherFormTest();
-
     if(this.router.url.split('?')[0] === '/criar-evento/edit')
       this.isUrlEdit = true;
   }
@@ -239,13 +237,6 @@ export class CriarEventoComponent {
     } else {
       alert('Nenhum QR Code gerado para download.');
     }
-  }
-
-  preencherFormTest() {
-    this.eventoid = 'evento_teste';
-    this.user = environment.userTest;
-    this.password = environment.passwordUserTest;
-    this.selectedStatus = 'ABERTO';
   }
 
   editStatus() {
