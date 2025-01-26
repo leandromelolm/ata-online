@@ -2,16 +2,23 @@ const spreadsheetId = env().ENV_SPREADSHEET_ID;
 const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
 const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
 
-/** GET **/
+/** 
+ * GET
+ * **/
 const doGet = (e) => {
 //  const lock = LockService.getScriptLock();
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const { ata, participante, eventoid, matricula, action, novostatus, user, pw, teste } = parameter;
+    const { ata, participante, eventoid, matricula, action, novostatus, user, pw, rtok, deviceid, logoutdeviceid} = parameter;
 
-    if(teste)
-      return outputSuccess(true, e);
+    if (rtok)
+      return renovarToken(rtok, deviceid);
+      // ?rtok={REFRESH_TOKEN}
+    
+    if (logoutdeviceid)
+      return logout(logoutdeviceid)
+      // ?logoutdeviceid={DEVICE_ID}
 
     if (ata)
       return findByEvento(ata); 
@@ -32,18 +39,20 @@ const doGet = (e) => {
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
-    return outputError(false, 'erro na requisição get', error.message);
+    return outputError('erro na requisição get', error.message);
   }
 //   finally {
 //    lock.releaseLock();
 //  }
 }
 
-/** POST **/
+/** 
+ * POST
+ * **/
 const doPost = (e) => {
 //  const lock = LockService.getScriptLock();
 //  if (!lock.tryLock(10000))
-//   return outputError(false, 'Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
+//   return outputError('Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
   try {
     let data = JSON.parse(e.postData.contents);
 
@@ -53,9 +62,15 @@ const doPost = (e) => {
     if (data.action === 'addEvento')
       return addEvento(data);
 
+    if (data.action === 'authCredentials')
+      return login(data.username, data.password, data.deviceid);
+    
+    if (data.action === 'refreshToken')
+      return renovarToken(data.rtok, data.deviceid);
+
   throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
   } catch (error) {
-    return outputError(false, 'erro na requisicao post' , error.message);
+    return outputError('erro na requisicao post' , error.message);
   } 
 //  finally {
 //    lock.releaseLock();
@@ -71,7 +86,7 @@ function findByEvento(txtBuscado) {
     let resultados = textFinder.findAll();
 
     if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
-      return outputError(false, `Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`, "Object Not Found");
+      return outputError(`Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`, "Object Not Found");
     }
 
     let evento;
@@ -93,7 +108,7 @@ function findByEvento(txtBuscado) {
       };
 
     };    
-    return outputSuccess(true, 'Objeto encontrado com sucesso', evento);
+    return outputSuccess('Objeto encontrado com sucesso', evento);
 
   } catch(e) {
     throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e.message}`};
@@ -103,7 +118,7 @@ function findByEvento(txtBuscado) {
 function todosValoresDaColunaParticipantesDTO(eventoId) {
   const sh = spreadSheet.getSheetByName(eventoId);
   if(!sh || eventoId == 'EVENTOS')
-    return outputError(false, 'evento não encontrado', 'erro ao buscar todos os participantes');
+    return outputError('evento não encontrado', 'erro ao buscar todos os participantes');
   const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues(); // coluna 10 - ParticipantesDTO
   const items = values.flat();
   // let data = [];
@@ -111,25 +126,33 @@ function todosValoresDaColunaParticipantesDTO(eventoId) {
   //   let d = JSON.parse(i);
   //   data.push(d);
   // })
-  return outputSuccess(true, {'eventoId': eventoId}, items);
+  return outputSuccess({'eventoId': eventoId}, items);
 }
 
 function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
   if (eventoId === 'EVENTOS')
-    return outputError(false, 'evento id inválido', 'erro na pesquisa por matrícula')
+    return outputError('evento id inválido', 'erro na pesquisa por matrícula')
   const coluna = 4 // coluna que estão as matrículas
   const planilha = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(eventoId);
   if(!planilha)
-    return outputError(false, 'evento não encontrado', 'erro ao buscar participante');
+    return outputError('evento não encontrado', 'erro ao buscar participante');
   const dados = planilha.getDataRange().getValues();
   const indiceColuna = coluna - 1; // Índice da coluna ajustado para 0 (ex: Coluna 1 = índice 0)
   for (let i = 0; i < dados.length; i++) {
     if (dados[i][indiceColuna] == valorPesquisado) {
       const idParticipante = dados[i][1]
-      return outputSuccess(true, `Valor "${valorPesquisado}" encontrado!` ,idParticipante);
+      return outputSuccess(`Valor "${valorPesquisado}" encontrado!` ,idParticipante);
     }
   }
-  return outputError(false, `Valor "${valorPesquisado}" não encontrado.`, 'Nenhum valor encontrado');
+  return outputError(`Valor "${valorPesquisado}" não encontrado.`, 'Nenhum valor encontrado');
+}
+
+// GET E POST
+function renovarToken(r, deviceid) {
+  let rt = renewToken(r, deviceid);
+  if(!rt.success)
+    return outputError('erro ao atualizar', rt)
+  return outputSuccess('token atualizado', rt.content);
 }
 
 // POST
@@ -158,9 +181,9 @@ function addParticipanteNoEvento(dados) {
     file.getDownloadUrl(),
     JSON.stringify(participanteDTO)   
   ]);
-  return outputSuccess(true, 'Arquivo enviado com sucesso!', {"sheetId": id, 'momento': timeStamp});
+  return outputSuccess('Arquivo enviado com sucesso!', {"sheetId": id, 'momento': timeStamp});
   } else {
-    return outputError(false, 'Evento não está com status Aberto', '');
+    return outputError('Evento não está com status Aberto', '');
   }
 }
 
@@ -245,7 +268,6 @@ function dublicarAbaModelo(nomeDaFolha) {
 
 function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPasta, urlPasta) {
   try {
-    const sheet = sheetEventos;
     let obj = {
       id: id,
       data: data,
@@ -256,12 +278,27 @@ function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPas
       status: status,
       idFolder: idPasta
     } 
-    sheet.appendRow([id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]);
-    return outputSuccess(true, 'evento criado com sucesso!', {"id": id});
+    sheetEventos.appendRow([id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]);
+    return outputSuccess('evento criado com sucesso!', {"id": id});
   } catch(e) {
-    return outputError(false, 'erro ao salvar na planilha', e.message );
+    return outputError('erro ao salvar na planilha', e.message );
   }  
 }
+
+// POST - CHECK CREDENCIAIS
+function login(username, password, deviceid) {
+  let data = checkAuthCredentials(username, password, deviceid);
+  if(!data.success)
+    return outputError('Erro na autenticação', data.content);
+  return outputSuccess('Sucesso na autenticação', data.content);
+}
+
+function logout(deviceId) {
+  let data = deleteUserSession(undefined, deviceId);
+  if (!data.success)
+    return outputError(data.message, 'Erro ao apagar sessão de usuário');
+  return outputSuccess(data.message, data.result)
+};
 
 // GET - EDITAR STATUS DO EVENTO
 function editStatusEvento(idEvento, statusNovo, letraColuna) {
@@ -299,15 +336,15 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
       titulo: obj.titulo,
       status: obj.statusNovo
     }
-    return outputSuccess(true, 'edição executada com sucesso', objResponse);
+    return outputSuccess('edição executada com sucesso', objResponse);
   } else
-    return outputError(false, 'evento não encontrado', 'edição de evento não foi executada' );    
+    return outputError('evento não encontrado', 'edição de evento não foi executada' );    
 }
 
-function outputSuccess(success, message, content) {
+function outputSuccess(message, content) {
   let output = ContentService.createTextOutput(), data = {};
   data = {
-    "success": success, // boolean
+    "success": true,
     "message": message,
     "content": content
   };  
@@ -315,10 +352,10 @@ function outputSuccess(success, message, content) {
   return output;
 }
 
-function outputError(success, message, error) {
+function outputError(message, error) {
   let output = ContentService.createTextOutput();
   let res = {
-    "success": success, // boolean
+    "success": false,
     "message": message,
     "error": error
   };
@@ -354,7 +391,6 @@ function env_example() {
  * 
  * renomear função env_example() para env()
  * 
- * versão CryptoJS no projeto: CryptoJS v3.1.2
  * 
  * */
  
