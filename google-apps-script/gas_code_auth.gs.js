@@ -222,14 +222,13 @@ function sha256(value){
 }
 
 function authUser(user, password) {
-  const usuarioEncontrado = localizarUsuario(user);
-  if (usuarioEncontrado) {
-    let pw = decrypt(password, env().ENV_CRYPTO_KEY_SECRET);
-    if(usuarioEncontrado[3] === sha256(pw))
-    return true;
-  }
-  else
-    return false;  
+  const data = localizarUsuario(user);
+  if (!data.success)
+    return false;
+  let pw = decrypt(password, env().ENV_CRYPTO_KEY_SECRET);
+  if(data[3] !== sha256(pw))
+    return false;
+  return true;
 }
 
 function localizarUsuario(user) {
@@ -240,5 +239,8 @@ function localizarUsuario(user) {
   const resultado = textFinder.findNext();
   if(!resultado)
     return {success: false, message: 'usuário não encontrado'};
-  return aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat();
+  return {
+    success: true, 
+    data: aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat()
+  };
 }

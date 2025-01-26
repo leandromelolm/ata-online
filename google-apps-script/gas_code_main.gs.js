@@ -9,7 +9,19 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const { ata, participante, eventoid, matricula, action, novostatus, user, pw, rtok, deviceid, logoutdeviceid} = parameter;
+    const { 
+      ata, 
+      participante, 
+      eventoid, 
+      matricula, 
+      action, 
+      novostatus, 
+      user, 
+      pw, 
+      rtok, 
+      deviceid, 
+      logoutdeviceid
+    } = parameter;
 
     if (rtok)
       return renovarToken(rtok, deviceid);
@@ -198,7 +210,17 @@ function addEvento(d){
   let pasta = criarPasta(`${dt}_${uuid}`);
   // let idPlanilha = criarFolhaNaPlanilha(`${dt}_${uuid}`);
   let idPlanilha = dublicarAbaModelo(`${dt}_${uuid}`);
-  return salvaNaPlanilha(idPlanilha, formatDate(d.data), d.hora, d.local, d.titulo, d.descricao, 'ABERTO', pasta.folderId, pasta.folderUrl);
+  return salvaNaPlanilha(
+    idPlanilha, 
+    formatDate(d.data), 
+    d.hora, 
+    d.local, 
+    d.titulo, 
+    d.descricao, 
+    'ABERTO', 
+    pasta.folderId, 
+    pasta.folderUrl
+  );
 }
 
 const formatDate = (dateString) => {
@@ -276,7 +298,9 @@ function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPas
       status: status,
       idFolder: idPasta
     } 
-    sheetEventos.appendRow([id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]);
+    sheetEventos.appendRow(
+      [id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]
+    );
     return outputSuccess('evento criado com sucesso!', {"id": id});
   } catch(e) {
     return outputError('erro ao salvar na planilha', e.message );
