@@ -5,7 +5,6 @@ import { CryptoService } from '../../services/crypto.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-criar-evento',
@@ -83,6 +82,9 @@ export class CriarEventoComponent {
   ngOnInit() {
     if(this.router.url.split('?')[0] === '/criar-evento/edit')
       this.isUrlEdit = true;
+
+    this.generateDeviceId();
+    
   }
 
   onBlurField(fieldName: string): void {
@@ -270,10 +272,24 @@ export class CriarEventoComponent {
     this.responseMsgEditStatus = error.message;
   }
 
+  generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+  
+  generateDeviceId = () => {
+    let deviceId = localStorage.getItem('deviceId');
+    if (!deviceId) {
+      deviceId = `${this.generateUUID()}-${window.screen.width}-${window.screen.height}`;
+      localStorage.setItem('deviceId', deviceId);
+    }
+  }
 
   sair() {
     window.location.href = '/'
   }
 
 }
-
