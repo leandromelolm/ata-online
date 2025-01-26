@@ -226,7 +226,7 @@ function authUser(user, password) {
   if (!data.success)
     return false;
   let pw = decrypt(password, env().ENV_CRYPTO_KEY_SECRET);
-  if(data[3] !== sha256(pw))
+  if(data.content[3] !== sha256(pw))
     return false;
   return true;
 }
@@ -240,7 +240,7 @@ function localizarUsuario(user) {
   if(!resultado)
     return {success: false, message: 'usuário não encontrado'};
   return {
-    success: true, 
-    data: aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat()
+    success: true,
+    content: aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat()
   };
 }
