@@ -1,5 +1,4 @@
-const spreadsheetId = env().ENV_SPREADSHEET_ID;
-const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
+const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
 const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
 
 /** 
@@ -32,14 +31,13 @@ const doGet = (e) => {
       return encontrarParticipantePorMatricula(matricula, eventoid); 
       // ?participante=matricula&matricula={MATRICULA}&eventoid={ID_EVENTO}
 
-      if(action === 'editarstatusevento' && eventoid && novostatus)
-        if(authUser(user, pw))
-          return editStatusEvento(eventoid, novostatus, 'A');
-          // ?user={USER}&pw={PW}&action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}
+    if(action === 'editarstatusevento' && eventoid && novostatus && authUser(user, pw))
+      return editStatusEvento(eventoid, novostatus, 'A');
+      // ?user={USER}&pw={PW}&action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
-    return outputError('erro na requisição get', error.message);
+    return outputError('erro na função doGet', error.message);
   }
 //   finally {
 //    lock.releaseLock();
@@ -370,13 +368,19 @@ function env_example() {
   const PRIVATE_KEY_HASH = '';
   const SHEETNAME_USER = '';
   const ENV_CRYPTO_KEY_SECRET = '';
+  const KEY_ACCESS_TOKEN = '';
+  const KEY_REFRESH_TOKEN = '';
+  const SHEETNAME_REFRESH ='';
   return {
     ENV_SPREADSHEET_ID, 
     ENV_FOLDER_ID, 
     SHEETNAME_EVENTOS, 
     PRIVATE_KEY_HASH, 
     SHEETNAME_USER, 
-    ENV_CRYPTO_KEY_SECRET
+    ENV_CRYPTO_KEY_SECRET,
+    KEY_ACCESS_TOKEN,
+    KEY_REFRESH_TOKEN,
+    SHEETNAME_REFRESH
   };
 }
 
@@ -391,6 +395,7 @@ function env_example() {
  * 
  * renomear função env_example() para env()
  * 
+ * projeto usa CryptoJS v3.1.2 na função decrypt()
  * 
  * */
  

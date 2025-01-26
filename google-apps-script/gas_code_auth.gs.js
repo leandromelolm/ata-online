@@ -185,27 +185,13 @@ const validateToken = (strJwt, privatKeyJwt) => {
     let [header, payload, signature] = strJwt.split('.');
     let signatureBytes = Utilities.computeHmacSha256Signature(`${header}.${payload}`, privatKeyJwt);
     let validSignature = Utilities.base64EncodeWebSafe(signatureBytes);
-    if (signature === validSignature.replace(/=+$/, '')) {
-      const blob = Utilities.newBlob(Utilities.base64Decode(payload)).getDataAsString();
-      const { exp, ...data } = JSON.parse(blob);
-      // Verificar se não está expirado
-      if (new Date(exp * 1000) > new Date()) {
-        return  res = {
-          auth: true,
-          message: 'Valid signature'
-        }
-      } else {
-        return res = {
-          auth: false,
-          message: 'The token has expired'
-        }
-      }
-    } else {
-        return res = {
-          auth: false,
-          message: 'Invalid signature'
-        }
-    }
+    if (signature !== validSignature.replace(/=+$/, ''))
+      return { auth: false, message: 'Invalid signature' }
+    const blob = Utilities.newBlob(Utilities.base64Decode(payload)).getDataAsString();
+    const { exp, ...data } = JSON.parse(blob);
+    if (new Date(exp * 1000) < new Date())
+      return { auth: false,  message: 'The token has expired' }
+    return { auth: true, message: 'Valid signature' }    
   } catch(e) {
     return res = {
       auth: false,
@@ -252,8 +238,7 @@ function localizarUsuario(user) {
   const textFinder = coluna.createTextFinder(user);
   textFinder.matchEntireCell(true);
   const resultado = textFinder.findNext();
-  if(resultado)
-    return aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat();
-  else
-    return null;
+  if(!resultado)
+    return {success: false, message: 'usuário não encontrado'};
+  return aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat();
 }
