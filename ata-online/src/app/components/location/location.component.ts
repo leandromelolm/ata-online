@@ -24,7 +24,6 @@ export class LocationComponent {
   
   ngOnInit(){
     this.getCurrentLocation();
-    // this.getAddress('Av. Oliveira Lima, 1029 - Soledade, Recife - PE, 50030-230');
   }
   
   getCurrentLocation() {
@@ -34,7 +33,7 @@ export class LocationComponent {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           this.localizacaoService.atualizarLocalizacaoAtiva(true);
-          this.getAddressWithLatLon(position.coords.latitude, position.coords.longitude);
+          this.getAddressWithCoordinates(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
           // Caso o usuário negue a permissão ou haja algum erro
@@ -68,10 +67,11 @@ Veja se seu navegador permite acessar a sua localização.`);
     }
   }
 
-  async getAddressWithLatLon(lat: number, lon: number) {
-    const res = await fetch(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`)
+  async getAddressWithCoordinates(lat: number, lon: number) {
+    const url = `https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`;
+    const res = await fetch(url)
     const e = await res.json();
-    console.log(e);
+    // console.log(e);
     this.endereco = e.address;
     this.enviarValorParaForm();
   }
@@ -79,32 +79,5 @@ Veja se seu navegador permite acessar a sua localização.`);
   enviarValorParaForm() {
     this.enviarEnderecoParaFormComponent.emit(this.endereco);
   }
-
-  
-
-  calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const R = 6371; // Raio da Terra em km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    
-    return R * c; // Distância em km
-  }
-
-  async getAddress(str: String) {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${str}&format=jsonv2`)  
-    const e = await res.json();
-    console.log(e);
-    // retorna com informações de coordenadas e detalhes do endereço
-  }
-
-  public clickLocation(): void {
-    this.getCurrentLocation();
-  }  
 
 }
