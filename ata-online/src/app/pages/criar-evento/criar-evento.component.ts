@@ -72,6 +72,10 @@ export class CriarEventoComponent {
     { label: 'ENCERRADO', value: 'ENCERRADO' },
     { label: 'CANCELADO', value: 'CANCELADO' },
   ];
+  bCoordenadasParaAutorizarRegistro: boolean = false;
+  lat: string = '0';
+  long: string = '0';
+  statusEvento: string = 'ABERTO';
 
   constructor( 
     private cryptoService: CryptoService,
@@ -112,26 +116,31 @@ export class CriarEventoComponent {
     if(this.checkError())
       return;
 
-    let obj = {
+    let data = {
       data: this.data,
       hora: this.hora,
       local: this.local.trim(),
       titulo: this.titulo.toUpperCase().trim(),
       descricao: this.descricao.trim(),
-      action: 'addEvento'
-    }
+      bCoordenadasParaAutorizarRegistro: this.bCoordenadasParaAutorizarRegistro,
+      status: this.statusEvento,
+      coords: {lat: this.lat, long: this.long},
+      action: 'createEvento'
+    };
     
     this.btnSubmitForm = 'Aguarde';
     this.isSending = true;
 
-    this.send(obj);
+    this.send(data);
+    // console.log(data);
+    
   }
 
-  async send(obj : any) {
+  async send(data : any) {
     try {
       const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
         method: 'POST',
-        body: JSON.stringify(obj)
+        body: JSON.stringify(data)
       });
       
       const res = await response.json();
@@ -143,7 +152,7 @@ export class CriarEventoComponent {
         this.limparCampos();
         this.isFormEvento = false;
       } else {
-        this.message = 'Erro no envio';
+        this.message = `Falha ao salvar. mensagem de erro: ${res.error}`;
       }
     } catch (error) {
       this.message = `Erro: ${error}`;

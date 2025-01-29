@@ -38,5 +38,6 @@ export class LocalizacaoService {
     const e = await res.json();
     console.log(e);
     // retorna com informações de coordenadas e detalhes do endereço
+    return e;
   }
 }

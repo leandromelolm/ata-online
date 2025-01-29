@@ -1,5 +1,4 @@
 const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
-const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
 
 /** 
  * GET
@@ -23,9 +22,12 @@ const doGet = (e) => {
       logoutdeviceid
     } = parameter;
 
+    if (e.pathInfo == 'index')
+      return HtmlService.createHtmlOutputFromFile("index").setTitle("Formulário de Envio");
+
     if (rtok)
       return renovarToken(rtok, deviceid);
-      // ?rtok={REFRESH_TOKEN}
+      // ?rtok={REFRESH_TOKEN}&deviceid={DEVICE_ID}
     
     if (logoutdeviceid)
       return logout(logoutdeviceid)
@@ -69,8 +71,8 @@ const doPost = (e) => {
     if (data.action === 'addParticipante')
       return addParticipanteNoEvento(data);
 
-    if (data.action === 'addEvento')
-      return addEvento(data);
+    if (data.action === 'createEvento')
+      return createEvento(data);
 
     if (data.action === 'authCredentials')
       return login(data.username, data.password, data.deviceid);
@@ -90,9 +92,9 @@ const doPost = (e) => {
 // GET
 function findByEvento(txtBuscado) {
   try { 
-    let guia = sheetEventos;  
+    let guiaEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
     let colunaParaPesquisar = "A";
-    let textFinder = guia.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
+    let textFinder = guiaEventos.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
     let resultados = textFinder.findAll();
 
     if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
@@ -103,7 +105,7 @@ function findByEvento(txtBuscado) {
     for (let i = 0; i < resultados.length; i++) {
       let resultado = resultados[i];
       let linha = resultado.getRow();      
-      let colunaJ = guia.getRange("J" + linha).getValue();
+      let colunaJ = guiaEventos.getRange("J" + linha).getValue();
       let e = JSON.parse(colunaJ);
 
       evento = {
@@ -114,6 +116,7 @@ function findByEvento(txtBuscado) {
         titulo: e.titulo,
         descricao: e.descricao,
         status: e.status,
+        bCoordenadasParaAutorizarRegistro: e.bCoordenadasParaAutorizarRegistro,
         idFolder: e.idFolder
       };
 
@@ -204,23 +207,31 @@ function processImageBlob(base64Content) {
 }
 
 // POST
-function addEvento(d){
+function createEvento(d){
   let uuid = gerarUuidParticionado();
   let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
   let pasta = criarPasta(`${dt}_${uuid}`);
   // let idPlanilha = criarFolhaNaPlanilha(`${dt}_${uuid}`);
   let idPlanilha = dublicarAbaModelo(`${dt}_${uuid}`);
-  return salvaNaPlanilha(
-    idPlanilha, 
-    formatDate(d.data), 
-    d.hora, 
-    d.local, 
-    d.titulo, 
-    d.descricao, 
-    'ABERTO', 
-    pasta.folderId, 
-    pasta.folderUrl
-  );
+  try{
+    const evento = new Evento(
+      idPlanilha, 
+      formatDate(d.data), 
+      d.hora, 
+      d.local, 
+      d.titulo, 
+      d.descricao, 
+      d.status, 
+      d.bCoordenadasParaAutorizarRegistro, 
+      pasta.folderId, 
+      pasta.folderUrl, 
+      { lat: d.coords.lat, long: d.coords.long }
+    )
+    return salvaNaPlanilha(evento);
+  } catch(err) {
+    console.error(err.message);
+    return outputError('erro ao criar evento', err.message)
+  }  
 }
 
 const formatDate = (dateString) => {
@@ -286,22 +297,13 @@ function dublicarAbaModelo(nomeDaFolha) {
   return nomeDaFolha;
 }
 
-function salvaNaPlanilha(id, data, hora, local, titulo, descricao, status, idPasta, urlPasta) {
+function salvaNaPlanilha(e) {
   try {
-    let obj = {
-      id: id,
-      data: data,
-      hora: hora,
-      local: local,
-      titulo: titulo,
-      descricao: descricao,
-      status: status,
-      idFolder: idPasta
-    } 
+    const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
     sheetEventos.appendRow(
-      [id, data, hora, local, titulo, descricao, status, idPasta, urlPasta, JSON.stringify(obj)]
+      [e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.idPasta, e.urlPasta, JSON.stringify(e)]
     );
-    return outputSuccess('evento criado com sucesso!', {"id": id});
+    return outputSuccess('evento criado com sucesso!', {"id": e.id});
   } catch(e) {
     return outputError('erro ao salvar na planilha', e.message );
   }  
@@ -344,6 +346,7 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
       titulo: obj.titulo,
       descricao: obj.descricao,
       status: statusNovo,
+      bCoordenadasParaAutorizarRegistro : obj.bCoordenadasParaAutorizarRegistro,
       idFolder: obj.idFolder,
       urlFolder: obj.urlFolder
     }
@@ -356,7 +359,8 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
       data: obj.data,
       hora: obj.hora,
       titulo: obj.titulo,
-      status: obj.statusNovo
+      status: obj.statusNovo,
+      bCoordenadasParaAutorizarRegistro: obj.bCoordenadasParaAutorizarRegistro
     }
     return outputSuccess('edição executada com sucesso', objResponse);
   } else
