@@ -38,7 +38,7 @@ const doGet = (e) => {
       // ?ata={ID_EVENTO}
 
     if (participante === 'all' && eventoid)
-      return todosValoresDaColunaParticipantesDTO(eventoid); 
+      return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
       // ?participante=all&eventoid={ID_EVENTO}
 
     if (participante === 'matricula' && matricula && eventoid)
@@ -51,7 +51,7 @@ const doGet = (e) => {
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
-    return outputError('erro na função doGet', error.message);
+    return outputError('erro na função doGet', error);
   }
 //   finally {
 //    lock.releaseLock();
@@ -89,7 +89,7 @@ const doPost = (e) => {
 //  }
 }
 
-// GET
+/** Encontrar Evento */
 function findByEvento(txtBuscado) {
   try { 
     let guiaEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
@@ -101,34 +101,111 @@ function findByEvento(txtBuscado) {
       return outputError(`Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`, "Object Not Found");
     }
 
-    let evento;
     for (let i = 0; i < resultados.length; i++) {
       let resultado = resultados[i];
       let linha = resultado.getRow();      
       let colunaJ = guiaEventos.getRange("J" + linha).getValue();
       let e = JSON.parse(colunaJ);
 
-      evento = {
-        id: e.id,
-        data: e.data,
-        hora: e.hora,
-        local: e.local,
-        titulo: e.titulo,
-        descricao: e.descricao,
-        status: e.status,
-        bCoordenadasParaAutorizarRegistro: e.bCoordenadasParaAutorizarRegistro,
-        idFolder: e.idFolder
-      };
-
+      eventoEncontrado = new Evento(
+        e.id,
+        e.data,
+        e.hora,
+        e.local,
+        e.titulo,
+        e.descricao,
+        e.status,
+        e.bCoordenadasParaAutorizarRegistro,
+        e.idFolder,
+        e.urlFolder,
+        { lat: e.coords.lat, long: e.coords.long },
+        e.dono
+      )
     };    
-    return outputSuccess('Objeto encontrado com sucesso', evento);
+    return outputSuccess('Objeto encontrado', eventoEncontrado);
 
   } catch(e) {
-    throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e.message}`};
+    throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e}`};
   }  
 }
 
-function todosValoresDaColunaParticipantesDTO(eventoId) {
+/** Criar Evento */
+function createEvento(d){
+  let uuid = gerarUuidParticionado();
+  let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
+  let pasta = criarPastaParaEvento(`${dt}_${uuid}`);
+  // let idPlanilha = criarFolhaNaPlanilhaParaNovoEvento(`${dt}_${uuid}`);
+  let idPlanilha = dublicarAbaModeloParaNovoEvento(`${dt}_${uuid}`);
+  try{
+    const eventoCriado = new Evento(
+      idPlanilha, 
+      formatDate(d.data), 
+      d.hora, 
+      d.local, 
+      d.titulo, 
+      d.descricao, 
+      d.status, 
+      d.bCoordenadasParaAutorizarRegistro, 
+      pasta.folderId, 
+      pasta.folderUrl, 
+      { lat: d.coords.lat, long: d.coords.long },
+      d.dono
+    )
+    return salvarNovoEventoNaPlanilha(eventoCriado);
+  } catch(err) {
+    console.error(err.message);
+    return outputError('erro ao criar evento', err.message)
+  }  
+}
+
+/** Editar Status do Evento  */
+function editStatusEvento(idEvento, statusNovo, letraColuna) {
+  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
+  coluna = aba.getRange(`${letraColuna}:${letraColuna}`);
+  var textFinder = coluna.createTextFinder(idEvento);
+  textFinder.matchEntireCell(true);
+  var resultados = textFinder.findAll();
+  let flag = false;
+  let evEdit = {};
+  resultados.forEach(function(celula) {
+    aba.getRange(celula.getRow(), 7).setValue(statusNovo);
+    let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
+    evEdit = JSON.parse(colEventoJson);
+
+    const eventoEditadoStatus = new Evento(
+      evEdit.id,
+      evEdit.data,
+      evEdit.hora,
+      evEdit.local,
+      evEdit.titulo,
+      evEdit.descricao,
+      statusNovo,
+      evEdit.bCoordenadasParaAutorizarRegistro,
+      evEdit.idFolder,
+      evEdit.urlFolder,
+      { lat: evEdit.coords.lat, long: evEdit.coords.long },
+      evEdit.dono
+    );
+
+    aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(eventoEditadoStatus));
+    flag = true;
+  });
+  if(flag) {
+    eventoEditadodeResposta = {
+      id: evEdit.id,
+      data: evEdit.data,
+      hora: evEdit.hora,
+      titulo: evEdit.titulo,
+      status: evEdit.statusNovo,
+      bCoordenadasParaAutorizarRegistro: evEdit.bCoordenadasParaAutorizarRegistro
+    }
+    return outputSuccess('edição executada com sucesso', eventoEditadodeResposta);
+  } else
+    return outputError('evento não encontrado', 'edição de evento não foi executada' );    
+}
+
+/** Encontrar Todos ParticipantesDTO */
+function encontrarTodosParticipantesColunaParticipantesDTO(eventoId) {
   const sh = spreadSheet.getSheetByName(eventoId);
   if(!sh || eventoId == 'EVENTOS')
     return outputError('evento não encontrado', 'erro ao buscar todos os participantes');
@@ -142,6 +219,7 @@ function todosValoresDaColunaParticipantesDTO(eventoId) {
   return outputSuccess({'eventoId': eventoId}, items);
 }
 
+/** Encontrar Participantes Por Matrícula */
 function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
   if (eventoId === 'EVENTOS')
     return outputError('evento id inválido', 'erro na pesquisa por matrícula')
@@ -160,15 +238,7 @@ function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
   return outputError(`Valor "${valorPesquisado}" não encontrado.`, 'Nenhum valor encontrado');
 }
 
-// GET E POST
-function renovarToken(r, deviceid) {
-  let rt = renewToken(r, deviceid);
-  if(!rt.success)
-    return outputError('erro ao atualizar', rt)
-  return outputSuccess('token atualizado', rt.content);
-}
-
-// POST
+/** Adicionar Participante no Evento */
 function addParticipanteNoEvento(dados) {
   if (dados.status === 'ABERTO') {
   const folder = DriveApp.getFolderById(dados.folderId);
@@ -206,34 +276,6 @@ function processImageBlob(base64Content) {
   return blob;
 }
 
-// POST
-function createEvento(d){
-  let uuid = gerarUuidParticionado();
-  let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
-  let pasta = criarPasta(`${dt}_${uuid}`);
-  // let idPlanilha = criarFolhaNaPlanilha(`${dt}_${uuid}`);
-  let idPlanilha = dublicarAbaModelo(`${dt}_${uuid}`);
-  try{
-    const evento = new Evento(
-      idPlanilha, 
-      formatDate(d.data), 
-      d.hora, 
-      d.local, 
-      d.titulo, 
-      d.descricao, 
-      d.status, 
-      d.bCoordenadasParaAutorizarRegistro, 
-      pasta.folderId, 
-      pasta.folderUrl, 
-      { lat: d.coords.lat, long: d.coords.long }
-    )
-    return salvaNaPlanilha(evento);
-  } catch(err) {
-    console.error(err.message);
-    return outputError('erro ao criar evento', err.message)
-  }  
-}
-
 const formatDate = (dateString) => {
   const [year, month, day] = dateString.split('-');
   return `${day}-${month}-${year}`;
@@ -246,7 +288,7 @@ function gerarUuidParticionado() {
   return uuidModificado;
 }
 
-function criarPasta(nomeDaPasta) {
+function criarPastaParaEvento(nomeDaPasta) {
   var nomeDoSubdiretorio = "ata-online";
   var nomeDaSubPasta = "ata-online_imagens";
   var pastas = DriveApp.getFoldersByName(nomeDoSubdiretorio);
@@ -269,7 +311,7 @@ function criarPasta(nomeDaPasta) {
   };
 }
 
-function criarFolhaNaPlanilha(nomeDaFolha) {  
+function criarFolhaNaPlanilhaParaNovoEvento(nomeDaFolha) {  
   var abasExistentes = spreadSheet.getSheets().map(function(sh) {
     return sh.getName();
   });  
@@ -286,7 +328,7 @@ function criarFolhaNaPlanilha(nomeDaFolha) {
   }
 }
 
-function dublicarAbaModelo(nomeDaFolha) {
+function dublicarAbaModeloParaNovoEvento(nomeDaFolha) {
   let abaModelo = spreadSheet.getSheetByName('ATA_MODELO');
   if (abaModelo) {
     let novaAba = abaModelo.copyTo(spreadSheet);
@@ -297,7 +339,7 @@ function dublicarAbaModelo(nomeDaFolha) {
   return nomeDaFolha;
 }
 
-function salvaNaPlanilha(e) {
+function salvarNovoEventoNaPlanilha(e) {
   try {
     const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
     sheetEventos.appendRow(
@@ -307,6 +349,14 @@ function salvaNaPlanilha(e) {
   } catch(e) {
     return outputError('erro ao salvar na planilha', e.message );
   }  
+}
+
+// GET E POST
+function renovarToken(r, deviceid) {
+  let rt = renewToken(r, deviceid);
+  if(!rt.success)
+    return outputError('erro ao atualizar', rt)
+  return outputSuccess('token atualizado', rt.content);
 }
 
 // POST - CHECK CREDENCIAIS
@@ -323,49 +373,6 @@ function logout(deviceId) {
     return outputError(data.message, 'Erro ao apagar sessão de usuário');
   return outputSuccess(data.message, data.result)
 };
-
-// GET - EDITAR STATUS DO EVENTO
-function editStatusEvento(idEvento, statusNovo, letraColuna) {
-  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
-  coluna = aba.getRange(`${letraColuna}:${letraColuna}`);
-  var textFinder = coluna.createTextFinder(idEvento);
-  textFinder.matchEntireCell(true);
-  var resultados = textFinder.findAll();
-  let flag = false;
-  let novoObj = {};
-  let obj = {};
-  resultados.forEach(function(celula) {
-    aba.getRange(celula.getRow(), 7).setValue(statusNovo);
-    let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
-    obj = JSON.parse(colEventoJson);
-    novoObj = {
-      id: obj.id,
-      data: obj.data,
-      hora: obj.hora,
-      local: obj.local,
-      titulo: obj.titulo,
-      descricao: obj.descricao,
-      status: statusNovo,
-      bCoordenadasParaAutorizarRegistro : obj.bCoordenadasParaAutorizarRegistro,
-      idFolder: obj.idFolder,
-      urlFolder: obj.urlFolder
-    }
-    aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(novoObj));
-    flag = true;
-  });
-  if(flag) {
-    objResponse = {
-      id: obj.id,
-      data: obj.data,
-      hora: obj.hora,
-      titulo: obj.titulo,
-      status: obj.statusNovo,
-      bCoordenadasParaAutorizarRegistro: obj.bCoordenadasParaAutorizarRegistro
-    }
-    return outputSuccess('edição executada com sucesso', objResponse);
-  } else
-    return outputError('evento não encontrado', 'edição de evento não foi executada' );    
-}
 
 function outputSuccess(message, content) {
   let output = ContentService.createTextOutput(), data = {};

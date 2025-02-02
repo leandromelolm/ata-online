@@ -1,17 +1,5 @@
 class Evento {
-  constructor(
-    id,
-    data,
-    hora,
-    local,
-    titulo,
-    descricao,
-    status,
-    bCoordenadasParaAutorizarRegistro,
-    idFolder,
-    urlFolder,
-    coords
-  ) {
+  constructor(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, idFolder, urlFolder, coords, dono) {
     this.setId(id);
     this.setData(data);
     this.setHora(hora);
@@ -23,6 +11,7 @@ class Evento {
     this.setIdFolder(idFolder);
     this.setUrlFolder(urlFolder);
     this.setCoords(coords);
+    this.setDono(dono);
   }
 
   setId(id) {
@@ -47,8 +36,8 @@ class Evento {
   }
 
   setLocal(local) {
-    if (typeof local !== 'string' || local.trim() === '' || local.length > 50) {
-      throw new Error('Local deve ser uma string não vazia.');
+    if (typeof local !== 'string' || local.trim() === '' || local.length > 150) {
+      throw new Error('Local deve ser uma string não vazia e precisa ter menos de 150 caracteres');
     }
     this.local = local;
   }
@@ -108,27 +97,10 @@ class Evento {
     this.coords = coords;
   }
 
-}
-
-// TESTE
-
-function _test_eventoclass() {
-  try {
-    const evento = new Evento(
-      '123abc',
-      '20-02-2025',
-      '14:30',
-      'Auditório Central',
-      'Reunião de Planejamento',
-      'Discussão sobre novas estratégias para o ano',
-      'ABERTO',
-      true,
-      'folder_001',
-      'https://example.com/folder',
-      { lat: '-23.5505', long: '-46.6333' }
-    );
-    console.log(evento);
-  } catch (error) {
-    console.error(error.message);
+  setDono(dono) {
+    if (typeof dono !== 'string' || dono.trim() === '') {
+      throw new Error('Dono deve ser uma string não vazia.');
+    }
+    this.dono = dono;
   }
 }
