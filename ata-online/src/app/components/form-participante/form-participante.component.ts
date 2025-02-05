@@ -7,9 +7,9 @@ import { Meeting } from '../../models/meeting';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
-  selector: 'app-form',
-  templateUrl: './form.component.html',
-  styleUrl: './form.component.scss',
+  selector: 'app-form-participante',
+  templateUrl: './form-participante.component.html',
+  styleUrl: './form-participante.component.scss',
   animations: [
 
     trigger('fadeInOut', [
@@ -34,7 +34,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 
   ]
 })
-export class FormComponent {
+export class FormParticipanteComponent {
   
   successMessage: string = '';
   sheetId: string = '';

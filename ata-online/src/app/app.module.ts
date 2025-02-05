@@ -12,7 +12,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { MatIconModule} from '@angular/material/icon';
 import { CameraComponent } from './components/camera/camera.component';
-import { FormComponent } from './components/form/form.component';
+import { FormParticipanteComponent } from './components/form-participante/form-participante.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
@@ -31,7 +31,7 @@ import {MatTableModule} from '@angular/material/table';
     HomeComponent,
     MenuComponent,
     CameraComponent,
-    FormComponent,
+    FormParticipanteComponent,
     QrcodeComponent,
     RegistrosComponent,
     CriarEventoComponent
