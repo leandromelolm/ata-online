@@ -1,5 +1,8 @@
 <div *ngIf="endereco">
      <div class="location">{{ endereco.state }} | {{ endereco.city }}</div>
      <div class="location">{{ endereco.postcode }} | {{ endereco.suburb}}</div>
-     <div class="location mb-2">{{ endereco.road }}, {{ endereco.house_number }} </div>
+     <div class="location mb-2">
+          {{ endereco.road }}
+          @if(endereco.house_number) { ,{{ endereco.house_number }} }
+     </div>
 </div>

@@ -23,26 +23,32 @@
 
         <div class="row">
             <div class="left__container col-md">
-                <div class="div__camera" *ngIf="isLocationActive && !successMessage">        
-                    <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
-                    
-                    <app-button textButton="Tirar Outra Foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
-                    
-                    <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
-                        <h4 class="mb-0">Pré-visualização</h4>
-                        <img  class="preview-image" [src]="imageUrl" alt="Pré-visualizar imagem">
-                    </div> 
-                </div>
-                
+
                 <div *ngIf="!isLocationActive" class="d-grid">
                     <h3 class="mt-4">Ative a localização e permita o acesso. Em seguida atualize a página para poder prosseguir com o registro</h3>
                     <button (click)="reloadPage()" class="mt-4 mb-4 btn btn-link">Atualizar Página</button>
                 </div>
-                
+
+                @if (flagCheckDistanciaEvento) {
+                    <div class="div__camera" *ngIf="isLocationActive && !successMessage">        
+                        <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
+                        
+                        <app-button textButton="Tirar Outra Foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+                        
+                        <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
+                            <h4 class="mb-0">Pré-visualização</h4>
+                            <img  class="preview-image" [src]="imageUrl" alt="Pré-visualizar imagem">
+                        </div> 
+                    </div>
+                } @else {
+                    <div class="div__info-reuniao_fechada">
+                        {{ distanciaNaoPermiteRegistro }}
+                    </div>
+                }
+
                 @if (!successMessage) {
                     <app-location (enviarEnderecoParaFormComponent)="receberValorDaLocalizacao($event)" class="mt-2 mb-2"></app-location>
                 }
-
             </div>
 
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">

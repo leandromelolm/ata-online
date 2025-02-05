@@ -67,17 +67,17 @@ Veja se seu navegador permite acessar a sua localização.`);
     }
   }
 
-  async getAddressWithCoordinates(lat: number, lon: number) {
-    const url = `https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lon}&zoom=18&format=jsonv2`;
+  async getAddressWithCoordinates(lati: number, long: number) {
+    const url = `https://nominatim.openstreetmap.org/reverse.php?lat=${lati}&lon=${long}&zoom=18&format=jsonv2`;
     const res = await fetch(url)
     const e = await res.json();
-    // console.log(e);
-    this.endereco = e.address;
-    this.enviarValorParaForm();
+    let {lat, lon, address} = e;
+    this.endereco = address;
+    this.enviarValorParaForm(lat, lon);
   }
 
-  enviarValorParaForm() {
-    this.enviarEnderecoParaFormComponent.emit(this.endereco);
+  enviarValorParaForm(lat: number, long: number) {
+    this.enviarEnderecoParaFormComponent.emit({ ...this.endereco, lat, long });
   }
 
 }

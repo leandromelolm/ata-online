@@ -62,6 +62,13 @@ export class FormParticipanteComponent {
   errorInputMatricula: boolean = false;
   btnColor: string = "btn__2";
   meeting: Meeting = new Meeting();
+  latEvento: number = 0;
+  lonEvento: number = 0;
+  bCoordenadasParaAutorizarRegistro: boolean = false;
+  distanciaNaoPermiteRegistro: string = '';
+  flagCheckDistanciaEvento: boolean = false;
+  distanciaLimite: number = 0.1; // 0.1 = 100 metros
+  minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
 
   constructor(
     private router: Router, 
@@ -107,8 +114,8 @@ export class FormParticipanteComponent {
   tempoDesdeUltimaRequisicaoGet() {
     let tInicial = sessionStorage.getItem('get-time') || "";
     let tFinal = new Date().getTime()
-    if (tFinal - parseInt(tInicial) >= 10 * 60 * 1000) {
-      console.log("Já se passaram 10 minutos desde a última requisição get.");
+    if (tFinal - parseInt(tInicial) >= this.minuto * 60 * 1000) {
+      console.log(`Já se passaram ${this.minuto} minutos desde a última requisição get.`);
       this.clearSessionStorage();
     }
   }
@@ -124,7 +131,9 @@ export class FormParticipanteComponent {
     const urlReuniao = urlParams.get('ata');
 
     if (reuniaoStatus === 'ABERTO' && urlReuniao === sheetPageId) {
-      return this.messageMeeting(JSON.parse(sessionStorage.getItem('reuniao') || ''));
+      const evento = JSON.parse(sessionStorage.getItem('reuniao') || '');
+      this.bCoordenadasParaAutorizarRegistro = evento.content.bCoordenadasParaAutorizarRegistro;
+      return this.messageMeeting(evento);
     }
 
     this.apiService.getMeeting(urlParams.get('ata'))
@@ -155,6 +164,10 @@ export class FormParticipanteComponent {
 
     if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
+      this.bCoordenadasParaAutorizarRegistro = response.content.bCoordenadasParaAutorizarRegistro;
+      this.latEvento = response.content.coords.lat;
+      this.lonEvento = response.content.coords.long;
+
       this.meeting.titulo = response.content.titulo;
       this.meeting.data = response.content.data;
       this.meeting.hora = response.content.hora;
@@ -246,7 +259,21 @@ export class FormParticipanteComponent {
   receberValorDaLocalizacao(e: any) {
     const endereco = {"state": e.state,  "city": e.city,  "postcode": e.postcode, "suburb": e.suburb, "road": e.road, "house_number": e.house_number};
     this.enderecoLocal = endereco;
+    if(this.bCoordenadasParaAutorizarRegistro){
+      const distancia = this.calcularDistancia(this.latEvento, this.lonEvento, e.lat, e.long);
+      if(distancia > this.distanciaLimite) {
+        this.distanciaNaoPermiteRegistro = `Você não está no local do evento.\nDistância do local em km: ${distancia.toFixed(3)}`;
+        this.successMessage= '';
+        this.flagCheckDistanciaEvento = false;
+        return
+      }
+    }
+    this.flagCheckDistanciaEvento = true;
     this.isSpinner = false;
+  }
+
+  calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    return this.localizacaoService.calcularDistancia(lat1, lon1, lat2, lon2);
   }
 
   alterarValor(valor: string) {
