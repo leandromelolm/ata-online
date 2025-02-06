@@ -51,6 +51,21 @@
                         @if(erroInputCodigo && codigo.length === 6){<div class="input__error">Código inválida.</div>}
                     </div>
 
+                    <div>
+                        <h3>Restringir presença pela localização:</h3>
+                        <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
+                            <mat-button-toggle [value]='false'>Não</mat-button-toggle>
+                            <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </div>
+
+                    @if(bCoordsAutorizarRegistro) {
+                        <div>
+                            @if(coordenadas){<div class="div__label" @fadeInOut @fadeInUp><label for="coordenadas">Coordenadas</label></div>}
+                            <input type="text" id="coordenadas" class="input-field" [(ngModel)]="coordenadas" placeholder="Insira as coordenadas - latitude, longitude">
+                        </div>
+                    }
+
                     <app-button 
                         class="btn-submit-form" 
                         (click)="submitForm()" 

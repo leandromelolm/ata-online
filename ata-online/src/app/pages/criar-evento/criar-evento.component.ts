@@ -72,10 +72,12 @@ export class CriarEventoComponent {
     { label: 'ENCERRADO', value: 'ENCERRADO' },
     { label: 'CANCELADO', value: 'CANCELADO' },
   ];
-  bCoordenadasParaAutorizarRegistro: boolean = false;
-  lat: string = '0';
-  long: string = '0';
   statusEvento: string = 'ABERTO';
+  coordenadas: string;
+  bCoordsAutorizarRegistro: boolean = false;
+  latitude: string = '0';
+  longitude: string = '0';
+  dono: string = 'sindatsb';
 
   constructor( 
     private cryptoService: CryptoService,
@@ -116,24 +118,37 @@ export class CriarEventoComponent {
     if(this.checkError())
       return;
 
+    if(this.bCoordsAutorizarRegistro && this.coordenadas) {
+      if (!this.validarCoordenadas(this.coordenadas.replace(/\s+/g, ""))) {
+        alert('Coordenadas inválidas. Por favor, insira no formato correto.');
+        return;
+      }
+      let coords = this.coordenadas.split(',');
+      this.latitude = coords[0].trim();
+      this.longitude = coords[1].trim();
+    } else {
+      this.latitude = '0';
+      this.longitude = '0';
+    }
+
     let data = {
       data: this.data,
       hora: this.hora,
       local: this.local.trim(),
       titulo: this.titulo.toUpperCase().trim(),
       descricao: this.descricao.trim(),
-      bCoordenadasParaAutorizarRegistro: this.bCoordenadasParaAutorizarRegistro,
+      bCoordenadasParaAutorizarRegistro: this.bCoordsAutorizarRegistro,
       status: this.statusEvento,
-      coords: {lat: this.lat, long: this.long},
-      action: 'createEvento'
+      coords: {lat: this.latitude, long: this.longitude},
+      action: 'createEvento',
+      dono: this.dono
     };
     
     this.btnSubmitForm = 'Aguarde';
     this.isSending = true;
-
     this.send(data);
-    // console.log(data);
-    
+
+    // console.log(data);    
   }
 
   async send(data : any) {
@@ -287,7 +302,7 @@ export class CriarEventoComponent {
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
-  };
+  }
   
   generateDeviceId = () => {
     let deviceId = localStorage.getItem('deviceId');
@@ -295,6 +310,11 @@ export class CriarEventoComponent {
       deviceId = `${this.generateUUID()}-${window.screen.width}-${window.screen.height}`;
       localStorage.setItem('deviceId', deviceId);
     }
+  }
+
+  validarCoordenadas(coordenadas: string): boolean {
+    const regex = /^-?\d{1,2}(\.\d{1,15})?,-?\d{1,3}(\.\d{1,15})?$/;
+    return regex.test(coordenadas);
   }
 
   sair() {

@@ -21,6 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 import {MatTableModule} from '@angular/material/table';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import {MatTableModule} from '@angular/material/table';
     NgxMaskDirective,
     NgxMaskPipe,
     MatProgressSpinnerModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonToggleModule
   ],
   providers: [
     provideAnimationsAsync(),
