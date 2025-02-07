@@ -43,7 +43,10 @@ ng generate component pages/login
 ng g m commom/auth --routing
 ng g c commom/auth/components/login
 ng g c commom/auth/components/cadastro
+ng g s commom/auth/service/authentication
 
+# criar modulo para importações do angular material
+ng g m shared/material
 
 # criar serviço
 ng g s services/NOME_DO_SERVICO

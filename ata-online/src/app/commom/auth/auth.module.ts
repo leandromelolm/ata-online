@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './components/login/login.component';
 import { CadastroComponent } from './components/cadastro/cadastro.component';
+import { MaterialModule } from '../../shared/material/material.module';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { CadastroComponent } from './components/cadastro/cadastro.component';
   ],
   imports: [
     CommonModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    MaterialModule
   ]
 })
 export class AuthModule { }

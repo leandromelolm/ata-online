@@ -1,0 +1,62 @@
+.example-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 20%;
+}
+
+.example-form mat-form-field {
+    width: 100%;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: transparent !important;
+}
+
+mat-form-field {
+    margin-bottom: 16px;
+}
+
+mat-label {
+    color: #3f51b5;
+    font-size: 1.1rem;
+}
+
+mat-hint {
+    font-size: 0.875rem;
+    color: #9e9e9e;
+}
+
+mat-input {
+    font-size: 1rem;
+    padding: 10px;
+    color: gray;
+}
+
+mat-form-field {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+mat-form-field.mat-focused .mat-form-field-underline {
+    background-color: #3f51b5;
+}
+
+mat-form-field.ng-invalid .mat-form-field-underline {
+    background-color: transparent;
+}
+
+mat-form-field.ng-invalid .mat-error {
+    display: block;
+}
+
+mat-form-field.mat-focused {
+    background-color: #9e9e9e;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
