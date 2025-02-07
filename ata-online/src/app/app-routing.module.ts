@@ -5,6 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
+import { AuthModule } from './commom/auth/auth.module';
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'qrcode', component: QrcodeComponent },
   { path: 'registros', component: RegistrosComponent },
   { path: 'criar-evento', component: CriarEventoComponent },
-  { path: 'criar-evento/edit', component: CriarEventoComponent }
+  { path: 'criar-evento/edit', component: CriarEventoComponent },
+  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule)}
 ];
 
 @NgModule({

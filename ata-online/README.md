@@ -39,6 +39,12 @@ ng generate component components/location
 ng generate component pages/login
 #`ng generate Directive|pipe|service|class|guard|interface|enum|module`.
 
+# criar sistema de autenticação
+ng g m commom/auth --routing
+ng g c commom/auth/components/login
+ng g c commom/auth/components/cadastro
+
+
 # criar serviço
 ng g s services/NOME_DO_SERVICO
 
