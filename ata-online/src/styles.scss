@@ -1,46 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
-@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@use "@angular/material" as mat;
 
-:root {
-    --primary-color: #2b5cb6;
-    --error-color: #ac2828;
-    --gray-color: #747474;
+$custom-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: mat.define-palette(mat.$blue-palette),
+      accent: mat.define-palette(mat.$orange-palette),
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+@include mat.all-component-themes($custom-theme);
+
+
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.c-primary{ color: var(--primary-color);}
-.c-error{ color: var(--error-color);}
-.c-gray{ color: var(--gray-color);}
+:root {
+  --primary-color: #2b5cb6;
+  --error-color: #ac2828;
+  --gray-color: #747474;
+}
 
-.hover:hover{ cursor: pointer;}
+.c-primary {
+  color: var(--primary-color);
+}
+.c-error {
+  color: var(--error-color);
+}
+.c-gray {
+  color: var(--gray-color);
+}
+
+.hover:hover {
+  cursor: pointer;
+}
 
 .page__layout {
-    display: flex;
-    height: 100vh;
-    flex-direction: row;
+  display: flex;
+  height: 100vh;
+  flex-direction: row;
 }
 
 .app__menu {
-    width: 280px;
-    position: fixed;
-    height: 100vh;
-    background-color: var(--primary-color);
-    box-shadow: 0px 0px 10px 4px #00000030;
-    z-index: 10; /* Garante que o menu fique acima do conteúdo */
-    @media (max-width: 769px){
-        width: 0px;
-    }
+  width: 280px;
+  position: fixed;
+  height: 100vh;
+  background-color: var(--primary-color);
+  box-shadow: 0px 0px 10px 4px #00000030;
+  z-index: 10; /* Garante que o menu fique acima do conteúdo */
+  @media (max-width: 769px) {
+    width: 0px;
+  }
 }
 
 .page__content {
-    margin-left: 280px;
-    flex-grow: 1; /* Faz o conteúdo ocupar o espaço restante */
-    padding: 20px;
-    overflow-y: auto;
+  margin-left: 280px;
+  flex-grow: 1; /* Faz o conteúdo ocupar o espaço restante */
+  padding: 20px;
+  overflow-y: auto;
 
-    @media (max-width: 769px){
-        margin-left: 0px;
-        margin-top: 20px;
-    }
+  @media (max-width: 769px) {
+    margin-left: 0px;
+    margin-top: 20px;
+  }
 }
