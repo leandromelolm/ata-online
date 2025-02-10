@@ -1,14 +1,41 @@
-<form class="example-form">
-    <mat-form-field class="example-full-width">
-        <mat-label>Email</mat-label>
-        <input type="email" matInput placeholder="email@email.com">
-        <mat-hint>Errors appear instantly!</mat-hint>     
-        <mat-error>Please enter a valid email address</mat-error>      
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <mat-label>Password</mat-label>
-        <input type="password" matInput>
-        <mat-hint>Errors appear instantly!</mat-hint>     
-        <mat-error>Please enter a valid password</mat-error>      
-    </mat-form-field>
-</form>
+<div class="login-container">
+    <h1> Entrar no AtaOnline</h1>
+
+    <form class="login-form" [formGroup]="loginForm">
+        <mat-form-field class="login-full-width">
+            <mat-label>Usuário</mat-label>
+            <input type="text" matInput placeholder="nome de usuário" formControlName="username">
+            <mat-hint>Campo Nome de Usuário!</mat-hint>
+            <mat-error *ngIf="loginForm.controls['username'].hasError('required')">
+                Nome de usuário é obrigatório
+            </mat-error>
+            <mat-error *ngIf="loginForm.controls['username'].hasError('minLength')">
+                e-mail inválido
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="login-full-width">
+            <mat-label>Senha</mat-label>
+            <input type="password" matInput formControlName="password">
+            <mat-hint>Campo senha!</mat-hint>
+            <mat-error *ngIf="loginForm.controls['password'].hasError('required')" >
+                Senha é obrigatório
+            </mat-error>            
+            <mat-error *ngIf="loginForm.controls['password'].hasError('minLength')">
+                A senha tem que ter pelo menos 6 digitos.
+            </mat-error>
+        </mat-form-field>
+
+        <button class="btn btn-primary btn__entrar" mat-raised-button (click)="login()">Entrar</button>
+        @if (errorAuth) {
+            <div class="alert alert-danger">
+                {{messageLogin}}
+            </div>
+        } 
+        @if (successAuth) {
+            <div class="alert alert-success">
+                {{messageLogin}}
+            </div>
+        } 
+    </form>
+
+</div>
