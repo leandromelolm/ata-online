@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Login } from '../../models/login';
 import { AuthenticationService } from '../../service/authentication.service';
 import { Router } from '@angular/router';
@@ -19,6 +19,8 @@ export class LoginComponent {
   successAuth: boolean;
   messageLogin: string;
   successMessage: string;
+  isLoginButtonDisabled: boolean = true;
+  isLoadingButton: boolean = false;
 
   private _snackBar = inject(MatSnackBar);
 
@@ -30,9 +32,18 @@ export class LoginComponent {
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      username: ['sindatsb', Validators.compose([Validators.required, Validators.minLength(6)])],
-      password: ['241208', Validators.compose([Validators.required, Validators.minLength(6)])]
+      username: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
+      password: ['',Validators.compose([
+        Validators.required,
+        Validators.minLength(6),
+        this.specialCharacterValidator,
+      ])]
     });
+
+    this.loginForm.valueChanges.subscribe(() => {
+      this.isLoginButtonDisabled = !this.loginForm.valid;
+    });
+
     this.generateDeviceId();
   }
 
@@ -40,6 +51,8 @@ export class LoginComponent {
     this.handleLoginError(true, '');
     this.authLogin = Object.assign('',this.authLogin, this.loginForm.value);
     this.authLogin.username = this.authLogin.username.toLowerCase();
+    this.isLoginButtonDisabled = true;
+    this.isLoadingButton = true;
     
     this.authenticationService.login({
       username: this.authLogin.username,
@@ -66,6 +79,8 @@ export class LoginComponent {
       },
       complete: () => {
         console.log('Login request completed');
+        this.isLoginButtonDisabled = false;
+        this.isLoadingButton = false;
       }
     });
 
@@ -110,4 +125,12 @@ export class LoginComponent {
     }
   }
 
+  specialCharacterValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const specialChars = /[!?,#$%\&*]/;
+    if (control.value && specialChars.test(control.value)) {
+      return null;
+    } else {
+      return { specialCharacter: true }; 
+    }
+  }
 }
