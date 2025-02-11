@@ -80,19 +80,22 @@ firebase hosting:channel:deploy preview_beta
 
 ### Outros comandos úteis
 
+## NODE
+
 # listar versões node
 nvm ls
 nvm ls-remote
-
 # instalar versão compatível com Angular 17
 nvm install v18.20.5
-
 # usar uma versão node
 nvm use v18.20.5
-
+# tornar versão node padrão
+nvm alias default 18.20.5
 # matar projeto executado na porta 4200
 sudo kill -9 `sudo lsof -t -i:4200`
 fuser -k 4200/tcp
+
+## GITHUB CODESPACES
 
 ## usar o Github Codespaces pela primeira vez
 # 1- entrar no diretorio do projeto
