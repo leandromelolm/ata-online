@@ -6,6 +6,7 @@ import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 import { AuthModule } from './commom/auth/auth.module';
+import { authGuard } from './commom/auth.guard';
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -13,9 +14,9 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'qrcode', component: QrcodeComponent },
   { path: 'registros', component: RegistrosComponent },
-  { path: 'criar-evento', component: CriarEventoComponent },
-  { path: 'criar-evento/edit', component: CriarEventoComponent },
-  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule)}
+  { path: 'criar-evento', component: CriarEventoComponent, canActivate: [authGuard] },
+  { path: 'criar-evento/edit', component: CriarEventoComponent, canActivate: [authGuard] },
+  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canActivate: [authGuard] }
 ];
 
 @NgModule({
