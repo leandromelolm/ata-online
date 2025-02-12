@@ -2,6 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Login } from '../models/login';
 import { HttpBaseService } from '../../../shared/base/http-base.service';
+import { JwtService } from '../jwt.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ export class AuthenticationService extends HttpBaseService {
   private subjectLogin: BehaviorSubject<any> = new BehaviorSubject(false);
 
 
-  constructor(protected override readonly injector: Injector) {
+  constructor(
+    private jwtService: JwtService,
+    protected override readonly injector: Injector
+  ) {
     super(injector)
   }
 
@@ -21,27 +25,25 @@ export class AuthenticationService extends HttpBaseService {
       map((resposta) => {
         console.log(resposta);
         if(resposta.success){
-          localStorage.setItem('accessToken', resposta.content.accesstoken);
-          localStorage.setItem('refreshToken', resposta.content.refreshtoken);
+          localStorage.setItem('access_token', resposta.content.accesstoken);
+          localStorage.setItem('refresh_token', resposta.content.refreshtoken);
           this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
           this.subjectLogin.next(true);
         }
         return resposta;
       }),
     )
-
   }
 
   logout() {
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('accessToken');
+    this.jwtService.removeToken()
     localStorage.removeItem('deviceId');
     this.subjectUsuario.next(null);
     this.subjectLogin.next(false);
   }
 
   usuarioEstaLogado(): Observable<any> {
-    const rToken = localStorage.getItem('refreshToken');
+    const rToken = localStorage.getItem('refresh_token');
     if (rToken) {
       this.subjectLogin.next(true);
     }

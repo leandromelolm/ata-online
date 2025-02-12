@@ -48,6 +48,8 @@ ng g s commom/auth/service/authentication
 # criar guard
 ng g guard commom/auth
 $ (X) CanActivate
+ng g guard commom/authCanMatch
+$ (X) CanMatch
 
 # criar modulo para importações do angular material
 ng g m shared/material

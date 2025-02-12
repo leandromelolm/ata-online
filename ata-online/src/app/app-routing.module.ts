@@ -7,6 +7,7 @@ import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 import { AuthModule } from './commom/auth/auth.module';
 import { authGuard } from './commom/auth.guard';
+import { authCanMatchGuard } from './commom/auth-can-match.guard';
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -16,7 +17,7 @@ const routes: Routes = [
   { path: 'registros', component: RegistrosComponent },
   { path: 'criar-evento', component: CriarEventoComponent, canActivate: [authGuard] },
   { path: 'criar-evento/edit', component: CriarEventoComponent, canActivate: [authGuard] },
-  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canActivate: [authGuard] }
+  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule) }
 ];
 
 @NgModule({

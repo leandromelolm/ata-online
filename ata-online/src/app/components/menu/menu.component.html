@@ -32,18 +32,24 @@
         <li (click)="getSessionUrlParameter('/registros')">
           <mat-icon>lists</mat-icon>Registros
         </li>
-        <li (click)="getSessionUrlParameter('/criar-evento')">
-          <mat-icon>post_add</mat-icon>Cadastrar Evento
-        </li>
-        <li (click)="getSessionUrlParameter('/criar-evento/edit')">
-          <mat-icon>edit_note</mat-icon>Editar Status Evento
-        </li>
+        @if (isAuthenticated) {
+          <li (click)="getSessionUrlParameter('/criar-evento')">
+            <mat-icon>post_add</mat-icon>Cadastrar Evento
+          </li>
+          <li (click)="getSessionUrlParameter('/criar-evento/edit')">
+            <mat-icon>edit_note</mat-icon>Editar Status Evento
+          </li>
+        } @else {
+          <li (click)="getSessionUrlParameter('/auth/login')">
+            <mat-icon>login</mat-icon>Entrar
+          </li>
+        }
         <a href="https://github.com/leandromelolm/ata-online" target="_blank">
           <li>
             <mat-icon>code</mat-icon>Projeto no Github
           </li>
         </a>      
-        <li routerLink="/index" class="logout">
+        <li (click)="logout()" class="logout">
           <mat-icon>logout</mat-icon>Sair
         </li>
       </ul>

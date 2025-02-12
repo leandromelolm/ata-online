@@ -5,21 +5,16 @@ import { map } from 'rxjs';
 
 export const authGuard: CanActivateFn = (route, state) => {
 
-  // console.log(route, state)
-
   const authenticationService = inject(AuthenticationService);
   const router = inject(Router)
 
   return authenticationService.usuarioEstaLogado()
     .pipe(
-      map((res) => {
-        if(!res){            
+      map((isAuthenticated) => {
+        if(!isAuthenticated){            
           router.navigate(['/auth/login']);
           return false;
         }  else {
-          if(state.url === '/auth/login'){
-            router.navigate(['/criar-evento']);
-          }
           return true;
         }
       })
