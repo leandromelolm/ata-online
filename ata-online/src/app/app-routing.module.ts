@@ -6,8 +6,8 @@ import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 import { AuthModule } from './commom/auth/auth.module';
-import { authGuard } from './commom/auth.guard';
-import { authCanMatchGuard } from './commom/auth-can-match.guard';
+import { canActivateAuthGuard } from './commom/can-activate-auth.guard';
+import { canMatchAuthGuard } from './commom/can-match-auth.guard';
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -15,9 +15,9 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'qrcode', component: QrcodeComponent },
   { path: 'registros', component: RegistrosComponent },
-  { path: 'criar-evento', component: CriarEventoComponent, canActivate: [authGuard] },
-  { path: 'criar-evento/edit', component: CriarEventoComponent, canActivate: [authGuard] },
-  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule) }
+  { path: 'criar-evento', component: CriarEventoComponent, canActivate: [canActivateAuthGuard] },
+  { path: 'criar-evento/edit', component: CriarEventoComponent, canActivate: [canActivateAuthGuard] },
+  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] }
 ];
 
 @NgModule({

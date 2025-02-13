@@ -3,7 +3,7 @@ import { AuthenticationService } from './auth/service/authentication.service';
 import { inject } from '@angular/core';
 import { map } from 'rxjs';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const canActivateAuthGuard: CanActivateFn = (route, state) => {
 
   const authenticationService = inject(AuthenticationService);
   const router = inject(Router)
@@ -11,11 +11,11 @@ export const authGuard: CanActivateFn = (route, state) => {
   return authenticationService.usuarioEstaLogado()
     .pipe(
       map((isAuthenticated) => {
-        if(!isAuthenticated){            
+        if(!isAuthenticated) {
           router.navigate(['/auth/login']);
           return false;
         }  else {
-          return true;
+          return true; // Permite rota
         }
       })
     )
