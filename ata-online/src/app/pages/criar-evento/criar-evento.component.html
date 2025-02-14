@@ -43,7 +43,7 @@
                     </div>
 
                     <div>
-                        <h3>Restringir presença pela localização:</h3>
+                        <h5>Restringir presença pela localização:</h5>
                         <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
                             <mat-button-toggle [value]='false'>Não</mat-button-toggle>
                             <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
@@ -93,12 +93,13 @@
                     <app-button class="btn-submit-form" (click)="downloadQRCode()" [textButton]="btnDownloadQRCode"></app-button>
                 }
 
-                <button (click)="sair()" class="btn btn-link mt-2">Sair</button>
+                <!-- <button (click)="sair()" class="btn btn-link mt-2">Sair</button> -->
             </div>
         }
 
         @if(isUrlEdit) {
             <div class="form__container">
+                <h3 class="h3__formulario">Editar Evento</h3>
                 <input type="text" class="input-field" [(ngModel)]="user" placeholder="user">
                 <input type="password" class="input-field" [(ngModel)]="password" placeholder="password">
                 <input type="text" class="input-field" [(ngModel)]="eventoid" placeholder="evento id">
