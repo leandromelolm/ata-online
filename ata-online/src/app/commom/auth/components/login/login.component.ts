@@ -133,4 +133,8 @@ export class LoginComponent {
       return { specialCharacter: true }; 
     }
   }
+
+  sair() {
+    this.router.navigate(['/']);
+  }
 }
