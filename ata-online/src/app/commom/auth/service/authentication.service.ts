@@ -23,7 +23,7 @@ export class AuthenticationService extends HttpBaseService {
   login(login: Login): Observable<any> {
     return this.httpPost('', login).pipe(
       map((resposta) => {
-        console.log(resposta);
+        // console.log(resposta);
         if(resposta.success){
           localStorage.setItem('access_token', resposta.content.accesstoken);
           localStorage.setItem('refresh_token', resposta.content.refreshtoken);
@@ -44,9 +44,12 @@ export class AuthenticationService extends HttpBaseService {
 
   usuarioEstaLogado(): Observable<any> {
     const rToken = localStorage.getItem('refresh_token');
-    if (rToken) {
-      this.subjectLogin.next(true);
-    }
+    if (rToken) {      
+      if (!this.jwtService.isTokenExpired(rToken)) {
+        // se token não estiver expirado
+        this.subjectLogin.next(true);
+      }
+    }    
     return this.subjectLogin.asObservable();
   }
 
