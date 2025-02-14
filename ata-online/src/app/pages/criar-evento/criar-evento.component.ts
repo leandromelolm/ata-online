@@ -201,28 +201,14 @@ export class CriarEventoComponent {
       isError = true;
     }
 
-    if (this.validarCodigoProvisorio(this.codigo)) {
-      isError = true;
-    }
-
     if(isError)
       return true;
     else
       return false
   }
 
-  validarCodigoProvisorio(codigo: string): boolean {
-    if (codigo === '241208') {  
-      this.erroInputCodigo = false;
-      return false;
-    } else {
-      this.erroInputCodigo = true;
-      return true;
-    }    
-  }
-
   validarCampos() {
-    if (this.titulo && this.hora && this.data && this.local && this.descricao && this.codigo.length === 6 && !this.erroInputCodigo)
+    if (this.titulo && this.hora && this.data && this.local && this.descricao)
       return 'btn__primary';
     else
       return 'btn__2';

@@ -43,15 +43,6 @@
                     </div>
 
                     <div>
-                        @if(codigo){<div class="div__label" @fadeInOut @fadeInUp><label for="codigo">Código</label></div>}
-                        <input class="input-field" [(ngModel)]="codigo" maxlength="6" type="password" placeholder="Código"
-                        (input)="validarCodigoProvisorio(codigo)">
-                        <p *ngIf="codigo">{{ codigo.length || 0 }}/6 caracteres</p>
-                        <div class="input__error" *ngIf="!codigo && erroInputCodigo">Campo obrigatório.</div>
-                        @if(erroInputCodigo && codigo.length === 6){<div class="input__error">Código inválida.</div>}
-                    </div>
-
-                    <div>
                         <h3>Restringir presença pela localização:</h3>
                         <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
                             <mat-button-toggle [value]='false'>Não</mat-button-toggle>
