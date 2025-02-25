@@ -36,7 +36,7 @@ npm install ngx-mask --save
 # comando para criar componente
 ng generate component components/button
 ng generate component components/location
-ng generate component pages/login
+ng generate component pages/index
 #`ng generate Directive|pipe|service|class|guard|interface|enum|module`.
 
 # criar sistema de autenticação

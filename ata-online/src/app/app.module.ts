@@ -23,6 +23,8 @@ import { FormParticipanteComponent } from './components/form-participante/form-p
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
+import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { CriarEventoComponent } from './pages/criar-evento/criar-evento.componen
     FormParticipanteComponent,
     QrcodeComponent,
     RegistrosComponent,
-    CriarEventoComponent
+    CriarEventoComponent,
+    TermsOfUseComponent,
+    PrivacyPolicyComponent
   ],
   imports: [
     BrowserModule,
