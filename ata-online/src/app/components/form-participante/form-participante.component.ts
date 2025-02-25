@@ -60,6 +60,7 @@ export class FormParticipanteComponent {
   reuniao: string = '';
   errorInputUserName: boolean = false;
   errorInputMatricula: boolean = false;
+  errorCheckBox: boolean = false;
   btnColor: string = "btn__2";
   meeting: Meeting = new Meeting();
   latEvento: number = 0;
@@ -69,6 +70,7 @@ export class FormParticipanteComponent {
   flagCheckDistanciaEvento: boolean = false;
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
   minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
+  readonly checked = false;
 
   constructor(
     private router: Router, 
@@ -201,21 +203,7 @@ export class FormParticipanteComponent {
   messageRandom() {
     this.infoReuniao = 'Leia o QRCode feito para o evento';
     this.isSpinner = false;
-  }
-
-  validarForm(): boolean {
-    if (!this.cpf && !this.matricula || !this.userName)
-      return true;
-    else
-      return false;
-  }
-
-  validarCampos(): string {
-    if (!this.cpf && this.matricula.length < 6 || !this.userName)
-      return 'btn__2';
-    else
-      return 'btn__primary';
-  }
+  }  
 
   onUserNameChange(): void {
     this.userName = this.userName.toUpperCase();
@@ -343,6 +331,11 @@ export class FormParticipanteComponent {
       nError = 1;
     }
 
+    if(!this.checked){
+      this.errorCheckBox = true;
+      nError = 1;
+    }
+
     if (!this.selectedFile) {
       this.errorMessage = 'Nenhum arquivo selecionado.';
       this.successMessage= '';
@@ -353,6 +346,24 @@ export class FormParticipanteComponent {
       return true;
     else
       return false
+  }
+
+  validarForm(): boolean {
+    if (!this.cpf && !this.matricula || !this.userName)
+      return true;
+    else
+      return false;
+  }
+
+  validarCampos(): string {
+    if (!this.cpf && this.matricula.length < 6 || !this.userName || !this.checked)
+      return 'btn__2';
+    else
+      return 'btn__primary';
+  }
+
+  updateCheckBox(check: boolean) {
+    this.errorCheckBox = !check;
   }
 
   obterIniciais(nomeCompleto: any) {

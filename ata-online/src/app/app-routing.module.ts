@@ -8,6 +8,8 @@ import { CriarEventoComponent } from './pages/criar-evento/criar-evento.componen
 import { AuthModule } from './commom/auth/auth.module';
 import { canActivateAuthGuard } from './commom/can-activate-auth.guard';
 import { canMatchAuthGuard } from './commom/can-match-auth.guard';
+import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
+import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   { path: '', component: IndexComponent },
@@ -17,7 +19,9 @@ const routes: Routes = [
   { path: 'registros', component: RegistrosComponent },
   { path: 'criar-evento', component: CriarEventoComponent, canActivate: [canActivateAuthGuard] },
   { path: 'criar-evento/edit', component: CriarEventoComponent, canActivate: [canActivateAuthGuard] },
-  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] }
+  { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] },
+  { path: 'termos-de-uso', component: TermsOfUseComponent },
+  { path: 'politica-de-privacidade', component: PrivacyPolicyComponent },
 ];
 
 @NgModule({
