@@ -61,7 +61,7 @@ export class FormParticipanteComponent {
   errorInputUserName: boolean = false;
   errorInputMatricula: boolean = false;
   errorCheckBox: boolean = false;
-  btnColor: string = "btn__2";
+  btnColor: string = "btn__grey";
   meeting: Meeting = new Meeting();
   latEvento: number = 0;
   lonEvento: number = 0;
@@ -357,7 +357,7 @@ export class FormParticipanteComponent {
 
   validarCampos(): string {
     if (!this.cpf && this.matricula.length < 6 || !this.userName || !this.checked)
-      return 'btn__2';
+      return 'btn__grey';
     else
       return 'btn__primary';
   }

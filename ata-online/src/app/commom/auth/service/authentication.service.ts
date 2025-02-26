@@ -52,9 +52,16 @@ export class AuthenticationService extends HttpBaseService {
     }    
     return this.subjectLogin.asObservable();
   }
+  
+  tokenExpirou(token: string): boolean {
+    if (token) {
+      return this.jwtService.isTokenExpired(token);
+    }
+    return true
+  }
 
   obterUsuario() {
-    this.subjectUsuario.asObservable();
+    return this.subjectUsuario.asObservable();
   }
 
   private obterUsuariodoToken(token: string) {
@@ -62,7 +69,7 @@ export class AuthenticationService extends HttpBaseService {
     const data = atob(payloadData);
     const {name, userId} = JSON.parse(data);
     console.log(name, userId);
-    return name;
+    return {username: name, userId: userId, token: token};
   }
 
 }

@@ -20,6 +20,7 @@ export class MenuComponent {
   ngOnInit() {
     // this.getUrlParameterToRegistrosPage();
     this.checkAuthUser();
+    this.checkToken();
   }
 
   getSessionUrlParameter(rota: string): void {
@@ -34,6 +35,17 @@ export class MenuComponent {
   logout() {
     this.authenticationService.logout();
     this.router.navigate(['index'])
+  }
+
+  checkToken(): void {
+     this.authenticationService.obterUsuario().subscribe(user => {
+      console.log("ckeckToken", user)
+    });
+    const token = localStorage.getItem('access_token');
+    if (token){
+      let res = this.authenticationService.tokenExpirou(token);
+      console.log('token expirou?',res);      
+    }
   }
 
   checkAuthUser() { 
