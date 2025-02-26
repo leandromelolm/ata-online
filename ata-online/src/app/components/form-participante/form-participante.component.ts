@@ -490,11 +490,11 @@ export class FormParticipanteComponent {
   }
 
   sair() {
-    if (sessionStorage.getItem('url-param-meeting')){
+    if (sessionStorage.getItem('url-param-meeting')) {
       if (confirm('Ao sair as informações sobre o evento serão apagadas. Será necessário ler novamente o QRCode do evento para um novo registro'))
-        window.location.href = '/'
+        this.router.navigate(['/']);
     } else
-      window.location.href = '/'
+    this.router.navigate(['/']);
   }
 
 }
