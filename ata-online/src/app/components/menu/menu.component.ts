@@ -43,8 +43,15 @@ export class MenuComponent {
         take(1))
         .subscribe(userLogged => {
       console.log("ckeckToken", userLogged)
-      let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
-      console.log('token expirou?', isTokenExpirado);
+      if(userLogged){
+        let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
+        console.log('token expirou?', isTokenExpirado);
+        const tempoRestanteToken = this.authenticationService.tempoRestanteDoToken(userLogged.token)
+        if(isTokenExpirado || tempoRestanteToken < 120000){
+          console.log('access_token expirado ou proximo da expiração. fazer uma nova requisição para atualizá-lo');
+          // IMPLEMENTAR ATUALIZACAO DE TOKEN       
+        }
+      }
     });
   }
 

@@ -14,6 +14,9 @@ export class AuthenticationService extends HttpBaseService {
   private subjectLogin: BehaviorSubject<any> = new BehaviorSubject(false);
   usuarioLogado$ = this.subjectUsuario.asObservable();
 
+  private countdown: BehaviorSubject<number> = new BehaviorSubject(0);
+  private tokenExpiration: number;
+
   constructor(
     private jwtService: JwtService,
     protected override readonly injector: Injector
@@ -29,6 +32,7 @@ export class AuthenticationService extends HttpBaseService {
         if(resposta.success){
           sessionStorage.setItem('access_token', resposta.content.accesstoken);
           localStorage.setItem('refresh_token', resposta.content.refreshtoken);
+          this.tempoRestanteDoToken(resposta.content.accesstoken)
           this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
           this.subjectLogin.next(true);
         }
@@ -77,6 +81,38 @@ export class AuthenticationService extends HttpBaseService {
     const data = atob(payloadData);
     const {name, userId} = JSON.parse(data);
     return {username: name, userId: userId, token: token};
+  }
+
+  private decodeToken(token: string) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp;
+    } catch (error) {
+      console.error('Erro ao decodificar token', error);
+      return null;
+    }
+  }
+
+  tempoRestanteDoToken(token: string): number {
+    const expirationTime = this.decodeToken(token);
+    if (!expirationTime) return 0
+    else {
+      this.tokenExpiration = expirationTime * 1000; // Convertendo para milissegundos
+      const currentTime = new Date().getTime();
+      const remainingTime = this.tokenExpiration - currentTime;
+      console.log(remainingTime);      
+      // const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
+      // const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
+      // const formattedTime = this.formatTime(minutes, seconds);
+      // console.log(formattedTime);
+      return remainingTime;
+    }
+  }
+
+  private formatTime(minutes: number, seconds: number): string {
+    const minutesStr = minutes.toString().padStart(2, '0');
+    const secondsStr = seconds.toString().padStart(2, '0');
+    return `${minutesStr}:${secondsStr}`;
   }
 
 }
