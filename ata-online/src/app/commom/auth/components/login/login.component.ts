@@ -61,7 +61,7 @@ export class LoginComponent {
       deviceid: localStorage.getItem('deviceId') || ''
     }).pipe(
       catchError((error) => {
-      this.openSnackBar('Ocorreu um erro no Login!');
+      // this.openSnackBar('Ocorreu um erro no Login!');
       return error;
       })
     ).subscribe({
@@ -70,17 +70,16 @@ export class LoginComponent {
           this.handleLoginSuccess(res.message)
         } else {
           this.handleLoginError(res.success, res.message);
-          this.openSnackBar('Erro no Login! Usuário ou senha inválidos!');
+          // this.openSnackBar('Erro no Login! Usuário ou senha inválidos!');
         }
       },
       error: (error) => {
         console.error(error);
-        this.openSnackBar('Erro no Login!');
+        // this.openSnackBar('Erro no Login!');
       },
       complete: () => {
         console.log('Login request completed');
-        this.isLoginButtonDisabled = false;
-        this.isLoadingButton = false;
+        
       }
     });
 
@@ -94,11 +93,15 @@ export class LoginComponent {
   handleLoginError(success: boolean, message: string){
     this.errorAuth = !success
     this.messageLogin = message;
+    this.isLoginButtonDisabled = false;
+    this.isLoadingButton = false;
   }
 
   handleLoginSuccess(message: string){
     this.successAuth = true;
     this.messageLogin = message;
+    this.isLoginButtonDisabled = true;
+    this.isLoadingButton = true;
 
     setTimeout(() => {
       this.router.navigate(['criar-evento']);

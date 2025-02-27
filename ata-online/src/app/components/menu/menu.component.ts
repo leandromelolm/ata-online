@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../commom/auth/service/authentication.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-menu',
@@ -38,14 +39,13 @@ export class MenuComponent {
   }
 
   checkToken(): void {
-     this.authenticationService.obterUsuario().subscribe(user => {
-      console.log("ckeckToken", user)
+     this.authenticationService.usuarioLogado$.pipe(
+        take(1))
+        .subscribe(userLogged => {
+      console.log("ckeckToken", userLogged)
+      let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
+      console.log('token expirou?', isTokenExpirado);
     });
-    const token = localStorage.getItem('access_token');
-    if (token){
-      let res = this.authenticationService.tokenExpirou(token);
-      console.log('token expirou?',res);      
-    }
   }
 
   checkAuthUser() { 

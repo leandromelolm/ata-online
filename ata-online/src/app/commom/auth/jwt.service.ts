@@ -17,7 +17,7 @@ export class JwtService {
 
   removeToken(): void {
     localStorage.removeItem('refresh_token');
-    localStorage.removeItem('access_token');
+    sessionStorage.removeItem('access_token');
   }
 
   decodeToken(token: string): any {

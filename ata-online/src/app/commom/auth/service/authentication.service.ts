@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, take } from 'rxjs';
 import { Login } from '../models/login';
 import { HttpBaseService } from '../../../shared/base/http-base.service';
 import { JwtService } from '../jwt.service';
@@ -9,9 +9,10 @@ import { JwtService } from '../jwt.service';
 })
 export class AuthenticationService extends HttpBaseService {
 
-  private subjectUsuario: BehaviorSubject<any> = new BehaviorSubject(null);
+  private accessToken = this.carregarAccessTokenDoStorage();
+  private subjectUsuario: BehaviorSubject<any> = new BehaviorSubject(this.obterUsuariodoToken(this.accessToken));
   private subjectLogin: BehaviorSubject<any> = new BehaviorSubject(false);
-
+  usuarioLogado$ = this.subjectUsuario.asObservable();
 
   constructor(
     private jwtService: JwtService,
@@ -22,10 +23,11 @@ export class AuthenticationService extends HttpBaseService {
 
   login(login: Login): Observable<any> {
     return this.httpPost('', login).pipe(
+      take(1),
       map((resposta) => {
         // console.log(resposta);
         if(resposta.success){
-          localStorage.setItem('access_token', resposta.content.accesstoken);
+          sessionStorage.setItem('access_token', resposta.content.accesstoken);
           localStorage.setItem('refresh_token', resposta.content.refreshtoken);
           this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
           this.subjectLogin.next(true);
@@ -40,6 +42,10 @@ export class AuthenticationService extends HttpBaseService {
     localStorage.removeItem('deviceId');
     this.subjectUsuario.next(null);
     this.subjectLogin.next(false);
+  }
+
+  private carregarAccessTokenDoStorage(): any {
+    return sessionStorage.getItem('access_token');
   }
 
   usuarioEstaLogado(): Observable<any> {
@@ -65,10 +71,11 @@ export class AuthenticationService extends HttpBaseService {
   }
 
   private obterUsuariodoToken(token: string) {
+    if(!token)
+      return null;
     const payloadData = token.split('.')[1];
     const data = atob(payloadData);
     const {name, userId} = JSON.parse(data);
-    console.log(name, userId);
     return {username: name, userId: userId, token: token};
   }
 
