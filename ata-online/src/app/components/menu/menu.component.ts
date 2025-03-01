@@ -47,9 +47,9 @@ export class MenuComponent {
         let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
         console.log('token expirou?', isTokenExpirado);
         const tempoRestanteToken = this.authenticationService.tempoRestanteDoToken(userLogged.token)
-        if(isTokenExpirado || tempoRestanteToken < 120000){
+        if(isTokenExpirado || tempoRestanteToken < 120000){ // 120000 mili = 2 minutos
           console.log('access_token expirado ou proximo da expiração. fazer uma nova requisição para atualizá-lo');
-          // IMPLEMENTAR ATUALIZACAO DE TOKEN       
+          this.authenticationService.refreshToken();
         }
       }
     });

@@ -32,7 +32,7 @@ export class ApiService {
   }
 
   getAllParticipantes(eventoId: string): Observable<Response<string[]>> {
-    return this.httpClient.get<Response<string[]>>(`${this.apiUrl}?participante=all&eventoid=${eventoId}`)
+    return this.httpClient.get<Response<string[]>>(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`)
     .pipe(
       catchError(this.handleError)
     );    
@@ -54,7 +54,7 @@ export class ApiService {
   }
 
   async fetchGetAllParticipantes(eventoId: string) {
-    const res = await fetch(`${this.apiUrl}?participante=all&eventoid=${eventoId}`,{
+    const res = await fetch(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`,{
       redirect: "follow",
       method: 'GET',
       headers: {

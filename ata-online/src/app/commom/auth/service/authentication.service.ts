@@ -14,7 +14,6 @@ export class AuthenticationService extends HttpBaseService {
   private subjectLogin: BehaviorSubject<any> = new BehaviorSubject(false);
   usuarioLogado$ = this.subjectUsuario.asObservable();
 
-  private countdown: BehaviorSubject<number> = new BehaviorSubject(0);
   private tokenExpiration: number;
 
   constructor(
@@ -41,11 +40,37 @@ export class AuthenticationService extends HttpBaseService {
     )
   }
 
-  logout() {
+  logout(): void {  
+    const deviceId = localStorage.getItem('deviceId');
+    this.httpGet(`?deviceid=${deviceId}&action=logout`).pipe(
+      map((resposta) => {
+        console.log(resposta);
+      })
+    ).subscribe();
     this.jwtService.removeToken()
     localStorage.removeItem('deviceId');
     this.subjectUsuario.next(null);
     this.subjectLogin.next(false);
+  }
+
+  refreshToken(): void {
+    const rToken = localStorage.getItem('refresh_token');
+    const deviceId = localStorage.getItem('deviceId');
+    
+    if (rToken) {
+      console.log('refreshToken', rToken, deviceId);
+      this.httpGet(`?rtok=${rToken}&deviceid=${deviceId}&action=refreshToken`).pipe(
+        map((resposta) => {
+          if(resposta.success){
+            sessionStorage.setItem('access_token', resposta.content.accesstoken);
+            localStorage.setItem('refresh_token', resposta.content.refreshtoken);
+            this.tempoRestanteDoToken(resposta.content.accesstoken)
+            this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
+            this.subjectLogin.next(true);
+          }
+        })
+      ).subscribe()
+    }
   }
 
   private carregarAccessTokenDoStorage(): any {
