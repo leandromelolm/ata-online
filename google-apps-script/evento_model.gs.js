@@ -104,3 +104,15 @@ class Evento {
     this.dono = dono;
   }
 }
+
+class EventoDTO {
+    constructor(id, data, hora, local, titulo, descricao, status) {
+        this.id = id;
+        this.data = data;
+        this.hora = hora;
+        this.local = local;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.status = status
+    }
+}

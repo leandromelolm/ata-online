@@ -8,30 +8,28 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const { 
-      ata, 
-      participante, 
-      eventoid, 
-      matricula, 
-      action, 
-      novostatus, 
-      user, 
-      pw, 
-      rtok, 
-      deviceid, 
-      logoutdeviceid
+    const {ata, participante, eventoid, matricula, action, novostatus,
+      user, deviceid, todoseventos, atok, rtok
     } = parameter;
 
     if (e.pathInfo == 'index')
-      return HtmlService.createHtmlOutputFromFile("index").setTitle("Formulário de Envio");
+      return HtmlService.createHtmlOutputFromFile("index")
+      .setTitle('AtaOnline | Doc');
 
-    if (rtok)
-      return renovarToken(rtok, deviceid);
-      // ?rtok={REFRESH_TOKEN}&deviceid={DEVICE_ID}
+    if (todoseventos)
+      if(!validarToken(atok))
+        return outputError('token expirado ou inválido')
+      else
+        return listarEventosDoUsuario(user)
+      // ?todoseventos=true&user={USERNAME}&atok=${ACCESS_TOKEN}
     
-    if (logoutdeviceid)
-      return logout(logoutdeviceid)
-      // ?logoutdeviceid={DEVICE_ID}
+    if (action === 'refreshToken')
+      return renovarToken(rtok, deviceid);
+      // ?rtok={REFRESH_TOKEN}&deviceid={DEVICE_ID}&action=refreshToken
+    
+    if (action === 'logout')
+      return logoutDesativaSessao(deviceid)
+      // ?logoutdeviceid={DEVICE_ID}&action=logout
 
     if (ata)
       return findByEvento(ata); 
@@ -45,9 +43,9 @@ const doGet = (e) => {
       return encontrarParticipantePorMatricula(matricula, eventoid); 
       // ?participante=matricula&matricula={MATRICULA}&eventoid={ID_EVENTO}
 
-    if(action === 'editarstatusevento' && eventoid && novostatus && authUser(user, pw))
+    if (action === 'editarstatusevento' && eventoid && novostatus && validarToken(atok))
       return editStatusEvento(eventoid, novostatus, 'A');
-      // ?user={USER}&pw={PW}&action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}
+       // ?action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}&atok={ACCESS_TOKEN}
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
@@ -72,7 +70,10 @@ const doPost = (e) => {
       return addParticipanteNoEvento(data);
 
     if (data.action === 'createEvento')
-      return createEvento(data);
+      if(!validarToken(atok))
+        return outputError('token expirado ou inválido')
+      else
+        return createEvento(data);
 
     if (data.action === 'authCredentials')
       return login(data.username, data.password, data.deviceid);
@@ -108,18 +109,8 @@ function findByEvento(txtBuscado) {
       let e = JSON.parse(colunaJ);
 
       eventoEncontrado = new Evento(
-        e.id,
-        e.data,
-        e.hora,
-        e.local,
-        e.titulo,
-        e.descricao,
-        e.status,
-        e.bCoordenadasParaAutorizarRegistro,
-        e.idFolder,
-        e.urlFolder,
-        { lat: e.coords.lat, long: e.coords.long },
-        e.dono
+        e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.bCoordenadasParaAutorizarRegistro,
+        e.idFolder, 'http***',{ lat: e.coords.lat, long: e.coords.long }, e.dono
       )
     };    
     return outputSuccess('Objeto encontrado', eventoEncontrado);
@@ -203,6 +194,29 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
   } else
     return outputError('evento não encontrado', 'edição de evento não foi executada' );    
 }
+
+/** Listar todos os Eventos do usuário  */
+function listarEventosDoUsuario(textToFind, column = 'K', sheet = env().SHEETNAME_EVENTOS) {
+  const sh = folhaDaPlanilha(sheet);
+  coluna = sh.getRange(`${column}:${column}`);
+  const textFinder = coluna.createTextFinder(textToFind);
+  textFinder.matchEntireCell(true);
+  const result = textFinder.findAll();
+  if (result.length === 0)
+    return { success: false, result: 'Nenhum objeto encontrado' };
+  const eventos = [];
+  result.forEach((celula) => {
+    const evento = sh.getRange(celula.getRow(), 10).getValues().flat() // 10 = coluna J
+    let { id, titulo, local, data, hora, descricao, status } = JSON.parse(evento[0]);
+    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status);
+    eventos.push(eventoDTO);
+  });
+  return outputSuccess(`${textToFind}`, { 'size': result.length, 'itens': eventos });
+}
+
+function folhaDaPlanilha(sheetName) {
+  return SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(sheetName);
+};
 
 /** Encontrar Todos ParticipantesDTO */
 function encontrarTodosParticipantesColunaParticipantesDTO(eventoId) {
@@ -343,7 +357,7 @@ function salvarNovoEventoNaPlanilha(e) {
   try {
     const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
     sheetEventos.appendRow(
-      [e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.idPasta, e.urlPasta, JSON.stringify(e)]
+      [e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.idFolder, e.urlFolder, JSON.stringify(e), e.dono]
     );
     return outputSuccess('evento criado com sucesso!', {"id": e.id});
   } catch(e) {
@@ -367,12 +381,25 @@ function login(username, password, deviceid) {
   return outputSuccess('Sucesso na autenticação', data.content);
 }
 
-function logout(deviceId) {
+function logoutApagaSessao(deviceId) {
   let data = deleteUserSession(undefined, deviceId);
   if (!data.success)
     return outputError(data.message, 'Erro ao apagar sessão de usuário');
   return outputSuccess(data.message, data.result)
 };
+
+function logoutDesativaSessao(deviceId) {
+  const data = updateSessionStatus(deviceId);
+  if (!data.success)
+    return outputError(data.message, 'Erro ao desativar sessão de usuário');
+  return outputSuccess(data.message, `sessão do dispositivo ${deviceId} desativado`)
+}
+
+function validarToken(accessToken) {
+  const resultado = validateToken(accessToken, env().KEY_ACCESS_TOKEN)
+  if (resultado.auth) return true;
+  return false
+}
 
 function outputSuccess(message, content) {
   let output = ContentService.createTextOutput(), data = {};
@@ -385,7 +412,7 @@ function outputSuccess(message, content) {
   return output;
 }
 
-function outputError(message, error) {
+function outputError(message, error = 'erro') {
   let output = ContentService.createTextOutput();
   let res = {
     "success": false,

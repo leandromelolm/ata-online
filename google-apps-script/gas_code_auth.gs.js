@@ -1,246 +1,463 @@
-/**
- * Verificar credenciais
- * **/
-function checkAuthCredentials(user, password, deviceId) {
-  const usr = findTextInColumn(sheetSession(env().SHEETNAME_USER), 'C', user, false);
-  if (!usr.success)
-    return {success: false, message: 'erro na autenticação'};
-  if(usr.result[3] !== sha256(password))
-    return {success: false, message: 'erro na autenticação'};
-  let atoken = generateAccessToken(usr.result[1], usr.result[2]);
-  let rtoken = generateRefreshToken(deviceId)
-  createUserSession(new Date(), usr.result[1], usr.result[2], rtoken, deviceId, 'ativo' );
-  return {
-    success: true, 
-    message: 'autenticação realizada com sucesso', 
-    content: {accesstoken: atoken, refreshtoken: rtoken}
-  };  
-};
+const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
 
-/**
- * Renovar token
+/** 
+ * GET
  * **/
-function renewToken(refreshToken, _deviceid) {
-  const msgErr = 'Não é possivel renovar o token';
-  let tok = validateToken(refreshToken, env().KEY_REFRESH_TOKEN);
-  if (!tok.auth)
-    return {success: false, message: msgErr, error: tok.message};
-  sheet = sheetSession(env().SHEETNAME_REFRESH);
-  const data = findTextInColumn(sheet, 'D', refreshToken , false) // 'D' = coluna do refreshToken
-  if(!data.success)
-    return {success: false, message: msgErr, error: data.result};
-  const [criado, id, userName, rToken, deviceId, status] = data.result;
-  if( _deviceid !== deviceId)
-    return {success: false, message: msgErr, error: 'dispositivo não encontrado'};
-  if (status !== 'ativo')
-    return {success: false, message: msgErr, error: 'refreshToken não está ativo'};  
-  let payload = refreshToken.split('.')[1];
-  const blob = Utilities.newBlob(Utilities.base64Decode(payload)).getDataAsString();
-  const dataPayload = JSON.parse(blob);
-  const horasRestantes = horasParaExpiracao(dataPayload.exp);
-  if (horasRestantes < 248) {
-    let atoken = generateAccessToken(id, userName);
-    let newRefreshtoken = generateRefreshToken(deviceId);
-    updateUserSessioRefreshToken(deviceId, newRefreshtoken, data.row);
-    return {success: true, content: {accesstoken: atoken, refreshtoken: newRefreshtoken}};
-  } else {
-    return {success: false, message: `Faltam ${horasRestantes} horas para o refresh_token expirar.`};
+const doGet = (e) => {
+//  const lock = LockService.getScriptLock();
+//  lock.tryLock(10000);
+  try {
+    const { parameter } = e;
+    const {ata, eventoid, matricula, action, 
+      novostatus, user, deviceid, atok, rtok
+    } = parameter;
+
+    if (e.pathInfo == 'index')
+      return HtmlService.createHtmlOutputFromFile("index")
+      .setTitle('AtaOnline | Doc');
+
+    if (action === 'userEventList')
+      if(!validarToken(atok))
+        return outputError('token expirado ou inválido')
+      else
+        return listarEventosDoUsuario(user)
+      // ?action=userEventList&user={USERNAME}&atok=${ACCESS_TOKEN}
+    
+    if (action === 'refreshToken')
+      return renovarToken(rtok, deviceid);
+      // ?rtok={REFRESH_TOKEN}&deviceid={DEVICE_ID}&action=refreshToken
+    
+    if (action === 'logout')
+      return logoutDesativaSessao(deviceid)
+      // ?logoutdeviceid={DEVICE_ID}&action=logout
+
+    if (ata)
+      return findByEvento(ata); 
+      // ?ata={ID_EVENTO}
+
+    if (action === 'todosParticipantes' && eventoid)
+      return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
+      // ?eventoid={ID_EVENTO}&action=todosParticipantes
+
+    if (action === 'participantePorMatricula' && matricula && eventoid)
+      return encontrarParticipantePorMatricula(matricula, eventoid); 
+      // ?matricula={MATRICULA}&eventoid={ID_EVENTO}&action=participantePorMatricula
+
+    if (action === 'editarstatusevento' && eventoid && novostatus && validarToken(atok))
+      return editStatusEvento(eventoid, novostatus, 'A');
+       // ?eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}&atok={ACCESS_TOKEN}&action=editarstatusevento
+
+    throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
+  } catch (error) {
+    return outputError('erro na função doGet', error);
   }
-};
+//   finally {
+//    lock.releaseLock();
+//  }
+}
 
-function diasEmMili(dias) {
-  const milissegundosPorDia = 24 * 60 * 60 * 1000; // Um dia em milissegundos
-  return dias * milissegundosPorDia;
-};
+/** 
+ * POST
+ * **/
+const doPost = (e) => {
+//  const lock = LockService.getScriptLock();
+//  if (!lock.tryLock(10000))
+//   return outputError('Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
+  try {
+    let data = JSON.parse(e.postData.contents);
 
-function horasParaExpiracao(expTimestamp) {
-  const agora = Date.now();
-  const expTimeMs = expTimestamp * 1000;
-  const diferencaMs = expTimeMs - agora;
-  const horas = diferencaMs / (60 * 60 * 1000);
-  return horas > 0 ? Math.floor(horas) : 0;
-};
+    if (data.action === 'addParticipante')
+      return addParticipanteNoEvento(data);
 
-function sheetSession(sheetName) {
+    if (data.action === 'createEvento')
+      if(!validarToken(atok))
+        return outputError('token expirado ou inválido')
+      else
+        return createEvento(data);
+
+    if (data.action === 'authCredentials')
+      return login(data.username, data.password, data.deviceid);
+    
+    if (data.action === 'refreshToken')
+      return renovarToken(data.rtok, data.deviceid);
+
+  throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
+  } catch (error) {
+    return outputError('erro na requisicao post' , error.message);
+  } 
+//  finally {
+//    lock.releaseLock();
+//  }
+}
+
+/** Encontrar Evento */
+function findByEvento(txtBuscado) {
+  try { 
+    let guiaEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
+    let colunaParaPesquisar = "A";
+    let textFinder = guiaEventos.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
+    let resultados = textFinder.findAll();
+
+    if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
+      return outputError(`Nenhum resultado encontrado. Pesquisa: ${txtBuscado}`, "Object Not Found");
+    }
+
+    for (let i = 0; i < resultados.length; i++) {
+      let resultado = resultados[i];
+      let linha = resultado.getRow();      
+      let colunaJ = guiaEventos.getRange("J" + linha).getValue();
+      let e = JSON.parse(colunaJ);
+
+      eventoEncontrado = new Evento(
+        e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.bCoordenadasParaAutorizarRegistro,
+        e.idFolder, 'http***',{ lat: e.coords.lat, long: e.coords.long }, e.dono
+      )
+    };    
+    return outputSuccess('Objeto encontrado', eventoEncontrado);
+
+  } catch(e) {
+    throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e}`};
+  }  
+}
+
+/** Criar Evento */
+function createEvento(d){
+  let uuid = gerarUuidParticionado();
+  let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
+  let pasta = criarPastaParaEvento(`${dt}_${uuid}`);
+  // let idPlanilha = criarFolhaNaPlanilhaParaNovoEvento(`${dt}_${uuid}`);
+  let idPlanilha = dublicarAbaModeloParaNovoEvento(`${dt}_${uuid}`);
+  try{
+    const eventoCriado = new Evento(
+      idPlanilha, 
+      formatDate(d.data), 
+      d.hora, 
+      d.local, 
+      d.titulo, 
+      d.descricao, 
+      d.status, 
+      d.bCoordenadasParaAutorizarRegistro, 
+      pasta.folderId, 
+      pasta.folderUrl, 
+      { lat: d.coords.lat, long: d.coords.long },
+      d.dono
+    )
+    return salvarNovoEventoNaPlanilha(eventoCriado);
+  } catch(err) {
+    console.error(err.message);
+    return outputError('erro ao criar evento', err.message)
+  }  
+}
+
+/** Editar Status do Evento  */
+function editStatusEvento(idEvento, statusNovo, letraColuna) {
+  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
+  coluna = aba.getRange(`${letraColuna}:${letraColuna}`);
+  var textFinder = coluna.createTextFinder(idEvento);
+  textFinder.matchEntireCell(true);
+  var resultados = textFinder.findAll();
+  let flag = false;
+  let evEdit = {};
+  resultados.forEach(function(celula) {
+    aba.getRange(celula.getRow(), 7).setValue(statusNovo);
+    let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
+    evEdit = JSON.parse(colEventoJson);
+
+    const eventoEditadoStatus = new Evento(
+      evEdit.id,
+      evEdit.data,
+      evEdit.hora,
+      evEdit.local,
+      evEdit.titulo,
+      evEdit.descricao,
+      statusNovo,
+      evEdit.bCoordenadasParaAutorizarRegistro,
+      evEdit.idFolder,
+      evEdit.urlFolder,
+      { lat: evEdit.coords.lat, long: evEdit.coords.long },
+      evEdit.dono
+    );
+
+    aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(eventoEditadoStatus));
+    flag = true;
+  });
+  if(flag) {
+    eventoEditadodeResposta = {
+      id: evEdit.id,
+      data: evEdit.data,
+      hora: evEdit.hora,
+      titulo: evEdit.titulo,
+      status: evEdit.statusNovo,
+      bCoordenadasParaAutorizarRegistro: evEdit.bCoordenadasParaAutorizarRegistro
+    }
+    return outputSuccess('edição executada com sucesso', eventoEditadodeResposta);
+  } else
+    return outputError('evento não encontrado', 'edição de evento não foi executada' );    
+}
+
+/** Listar todos os Eventos do usuário  */
+function listarEventosDoUsuario(textToFind, column = 'K', sheet = env().SHEETNAME_EVENTOS) {
+  const sh = folhaDaPlanilha(sheet);
+  coluna = sh.getRange(`${column}:${column}`);
+  const textFinder = coluna.createTextFinder(textToFind);
+  textFinder.matchEntireCell(true);
+  const result = textFinder.findAll();
+  if (result.length === 0)
+    return { success: false, result: 'Nenhum objeto encontrado' };
+  const eventos = [];
+  result.forEach((celula) => {
+    const evento = sh.getRange(celula.getRow(), 10).getValues().flat() // 10 = coluna J
+    let { id, titulo, local, data, hora, descricao, status } = JSON.parse(evento[0]);
+    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status);
+    eventos.push(eventoDTO);
+  });
+  return outputSuccess(`${textToFind}`, { 'size': result.length, 'itens': eventos });
+}
+
+function folhaDaPlanilha(sheetName) {
   return SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(sheetName);
 };
 
-function createUserSession(timeStamp, userId, userName, refreshToken, deviceId, status) {
-  let sheet = sheetSession(env().SHEETNAME_REFRESH);
-  sheet.appendRow([timeStamp, userId, userName, refreshToken, deviceId, status]);
-  return {success: true, message: 'sessão criada com sucesso'};
-};
+/** Encontrar Todos ParticipantesDTO */
+function encontrarTodosParticipantesColunaParticipantesDTO(eventoId) {
+  const sh = spreadSheet.getSheetByName(eventoId);
+  if(!sh || eventoId == 'EVENTOS')
+    return outputError('evento não encontrado', 'erro ao buscar todos os participantes');
+  const values = sh.getRange(2, 10, sh.getLastRow()-1, 1).getValues(); // coluna 10 - ParticipantesDTO
+  const items = values.flat();
+  // let data = [];
+  // items.forEach(i => {
+  //   let d = JSON.parse(i);
+  //   data.push(d);
+  // })
+  return outputSuccess({'eventoId': eventoId}, items);
+}
 
-function deleteUserSession(column = 'E', deviceId) {
-  let sheet = sheetSession(env().SHEETNAME_REFRESH);
-  let objRow = findTextInColumn(sheet, column, deviceId); // coluna 'E' = dispositivoId
-  if(!objRow.success)
-    return {success: false, message: 'objeto não encontrado'};
-  sheet.deleteRow(objRow.result);
-  return {success: true, result: `objeto deletado com sucesso`}
-};
-
-function updateUserSessioRefreshToken(deviceId, newRefresh, row) {
-  let sheet = sheetSession(env().SHEETNAME_REFRESH);
-  sheet.getRange(row, 4).setValue(newRefresh);
-  sheet.getRange(row, 7).setValue(new Date());
-  return {success: true, message: `Objeto alterado: ${deviceId}`};
-};
-
-function findTextInColumn(sheet, column, textToFind, isGetRowPosition = true) {
-  coluna = sheet.getRange(`${column}:${column}`);
-  var textFinder = coluna.createTextFinder(textToFind);
-  textFinder.matchEntireCell(true); // texto exato
-  var resultadoUnico = textFinder.findNext(); //findNext para primeiro resultado encontrado
-  if(resultadoUnico)
-    if (isGetRowPosition)
-      return {success: true, result: resultadoUnico.getRow()};
-    else
-      return {
-        success: true, 
-        row: resultadoUnico.getRow(),
-        result: sheet.getRange(resultadoUnico.getRow(), 1, 1, sheet.getLastColumn()).getValues().flat()
-      }; 
-  else
-    return {success: false, result: 'Nenhum objeto encontrado'};
-};
-
-/**
- * Gerar access_token
- * **/
-const generateAccessToken = (id, userName) => {
-  const accessToken = createToken({
-    expiresInMinutes: 15,
-    privateKeyJwt: env().KEY_ACCESS_TOKEN,
-    data: {
-      userId: id,
-      name: userName,
-    },
-  });
-  return accessToken;
-};
-
-/**
- * Gerar refresh_token
- * **/
-const generateRefreshToken = (deviceId) => {
-  const refreshToken = createToken({
-    expiresInHours: 168, // 168 horas = 7 dias
-    privateKeyJwt: env().KEY_REFRESH_TOKEN,
-    data: {
-      deviceId: deviceId,
-    },
-  });
-  return refreshToken;
-};
-
-const createToken = ({ 
-  expiresInHours = 0, 
-  expiresInMinutes = 0, 
-  privateKeyJwt ='', 
-  data = {}
-  }) => {
-  // Sign token using HMAC with SHA-256 algorithm
-  const header = {
-    alg: 'HS256',
-    typ: 'JWT',
-  };
-
-  const now = Date.now();
-  const expires = new Date(now);
-  
-  if (expiresInHours > 0) {
-    expires.setHours(expires.getHours() + expiresInHours);
-  }
-  if (expiresInMinutes > 0) {
-    expires.setMinutes(expires.getMinutes() + expiresInMinutes);
-  }
-
-  const payload = {
-    exp: Math.round(expires.getTime() / 1000),
-    iat: Math.round(now / 1000),
-  };
-
-  Object.keys(data).forEach(function (key) {
-    payload[key] = data[key];
-  });
-
-  const base64Encode = (text, json = true) => {
-    const data = json ? JSON.stringify(text) : text;
-    return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
-  };
-
-  const toSign = `${base64Encode(header)}.${base64Encode(payload)}`;
-  const signatureBytes = Utilities.computeHmacSha256Signature(toSign, privateKeyJwt);
-  const signature = base64Encode(signatureBytes, false);
-
-  return `${toSign}.${signature}`;
-};
-
-/**
- * Validar token
- * **/
-const validateToken = (strJwt, privatKeyJwt) => {
-  try {
-    let [header, payload, signature] = strJwt.split('.');
-    let signatureBytes = Utilities.computeHmacSha256Signature(`${header}.${payload}`, privatKeyJwt);
-    let validSignature = Utilities.base64EncodeWebSafe(signatureBytes);
-    if (signature !== validSignature.replace(/=+$/, ''))
-      return { auth: false, message: 'Invalid signature' }
-    const blob = Utilities.newBlob(Utilities.base64Decode(payload)).getDataAsString();
-    const { exp, ...data } = JSON.parse(blob);
-    if (new Date(exp * 1000) < new Date())
-      return { auth: false,  message: 'The token has expired' }
-    return { auth: true, message: 'Valid signature' }    
-  } catch(e) {
-    return res = {
-      auth: false,
-      error: e,
-      message: 'Erro na validação do token'
+/** Encontrar Participantes Por Matrícula */
+function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
+  if (eventoId === 'EVENTOS')
+    return outputError('evento id inválido', 'erro na pesquisa por matrícula')
+  const coluna = 4 // coluna que estão as matrículas
+  const planilha = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(eventoId);
+  if(!planilha)
+    return outputError('evento não encontrado', 'erro ao buscar participante');
+  const dados = planilha.getDataRange().getValues();
+  const indiceColuna = coluna - 1; // Índice da coluna ajustado para 0 (ex: Coluna 1 = índice 0)
+  for (let i = 0; i < dados.length; i++) {
+    if (dados[i][indiceColuna] == valorPesquisado) {
+      const idParticipante = dados[i][1]
+      return outputSuccess(`Valor "${valorPesquisado}" encontrado!` ,idParticipante);
     }
   }
-};
-
-function encrypt(value, key) {
-  return CryptoJS.AES.encrypt(value, key).toString();
+  return outputError(`Valor "${valorPesquisado}" não encontrado.`, 'Nenhum valor encontrado');
 }
 
-function decrypt(value, key) {
-  return CryptoJS.AES.decrypt(value, key).toString(CryptoJS.enc.Utf8)
+/** Adicionar Participante no Evento */
+function addParticipanteNoEvento(dados) {
+  if (dados.status === 'ABERTO') {
+  const folder = DriveApp.getFolderById(dados.folderId);
+  const imageBlob = processImageBlob(dados.base64File);
+  const id = Utilities.getUuid();
+  const file = folder.createFile(imageBlob.setName(`${id}_image.png`));
+  const timeStamp = new Date();
+  const _sheet = spreadSheet.getSheetByName(dados.sheetPageId); // alterar atributo para sheetNameId
+  const participanteDTO = {
+      id: id,
+      startLetter: dados.startLetter,
+      hiddenMat: dados.hiddenMat
+   }
+  _sheet.appendRow([
+    timeStamp, 
+    id, 
+    dados.userName, 
+    dados.matricula, 
+    dados.cpf, 
+    dados.distrito, 
+    dados.unidade, 
+    dados.enderecoLocal, 
+    file.getDownloadUrl(),
+    JSON.stringify(participanteDTO)   
+  ]);
+  return outputSuccess('Arquivo enviado com sucesso!', {"sheetId": id, 'momento': timeStamp});
+  } else {
+    return outputError('Evento não está com status Aberto', '');
+  }
 }
 
-function sha256(value){
-  let str = value + env().PRIVATE_KEY_HASH; 
-  const signature = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, str);
-  let hexString = signature
-      .map(function(byte) {
-          var v = (byte < 0) ? 256 + byte : byte;
-          return ("0" + v.toString(16)).slice(-2);
-      })
-      .join("");
-  return hexString;
+function processImageBlob(base64Content) {
+  const decodedContent = Utilities.base64Decode(base64Content); 
+  const blob = Utilities.newBlob(decodedContent, 'image/png', 'uploaded_image.png');
+  return blob;
 }
 
-function authUser(user, password) {
-  const data = localizarUsuario(user);
-  if (!data.success)
-    return false;
-  let pw = decrypt(password, env().ENV_CRYPTO_KEY_SECRET);
-  if(data.content[3] !== sha256(pw))
-    return false;
-  return true;
+const formatDate = (dateString) => {
+  const [year, month, day] = dateString.split('-');
+  return `${day}-${month}-${year}`;
 }
 
-function localizarUsuario(user) {
-  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(env().SHEETNAME_USER);
-  coluna = aba.getRange("C:C");
-  const textFinder = coluna.createTextFinder(user);
-  textFinder.matchEntireCell(true);
-  const resultado = textFinder.findNext();
-  if(!resultado)
-    return {success: false, message: 'usuário não encontrado'};
+function gerarUuidParticionado() {
+  var uuid = Utilities.getUuid();
+  let parte = uuid.split('-');
+  let uuidModificado = `${parte[0]}-${parte[1]}-${parte[4]}`
+  return uuidModificado;
+}
+
+function criarPastaParaEvento(nomeDaPasta) {
+  var nomeDoSubdiretorio = "ata-online";
+  var nomeDaSubPasta = "ata-online_imagens";
+  var pastas = DriveApp.getFoldersByName(nomeDoSubdiretorio);
+  if (!pastas.hasNext()) {
+    throw new Error(`A pasta '${nomeDoSubdiretorio}' não foi encontrada.`);
+  }
+  var pastaPai = pastas.next();
+  
+  var subPastas = pastaPai.getFoldersByName(nomeDaSubPasta);
+  var pastaImagens;
+  if (subPastas.hasNext()) {
+    pastaImagens = subPastas.next();
+  } else {
+    pastaImagens = pastaPai.createFolder(nomeDaSubPasta);
+  }
+  var novaPasta = pastaImagens.createFolder(nomeDaPasta);
   return {
-    success: true,
-    content: aba.getRange(resultado.getRow(), 1, 1, aba.getLastColumn()).getValues().flat()
+    "folderId": novaPasta.getId(),
+    "folderUrl": novaPasta.getUrl()
   };
 }
+
+function criarFolhaNaPlanilhaParaNovoEvento(nomeDaFolha) {  
+  var abasExistentes = spreadSheet.getSheets().map(function(sh) {
+    return sh.getName();
+  });  
+  if (abasExistentes.includes(nomeDaFolha)) {
+    Logger.log("Uma folha com o nome '" + nomeDaAba + "' já existe.");
+    return;
+  }
+  var novaAba = spreadSheet.insertSheet(nomeDaFolha);  
+  if (novaAba) {
+    Logger.log("A folha '" + nomeDaFolha + "' foi criada com sucesso!");
+    return nomeDaFolha;
+  } else {
+    throw  error = {'status': 'error', 'details': `Não foi possível criar a folha na planilha.`};
+  }
+}
+
+function dublicarAbaModeloParaNovoEvento(nomeDaFolha) {
+  let abaModelo = spreadSheet.getSheetByName('ATA_MODELO');
+  if (abaModelo) {
+    let novaAba = abaModelo.copyTo(spreadSheet);
+    novaAba.setName(nomeDaFolha);
+  } else {
+    throw  error = {"status": 'error', "details": `Não foi possível duplicar a aba`};
+  }
+  return nomeDaFolha;
+}
+
+function salvarNovoEventoNaPlanilha(e) {
+  try {
+    const sheetEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
+    sheetEventos.appendRow(
+      [e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.idFolder, e.urlFolder, JSON.stringify(e), e.dono]
+    );
+    return outputSuccess('evento criado com sucesso!', {"id": e.id});
+  } catch(e) {
+    return outputError('erro ao salvar na planilha', e.message );
+  }  
+}
+
+// GET E POST
+function renovarToken(r, deviceid) {
+  let rt = renewToken(r, deviceid);
+  if(!rt.success)
+    return outputError('erro ao atualizar', rt)
+  return outputSuccess('token atualizado', rt.content);
+}
+
+// POST - CHECK CREDENCIAIS
+function login(username, password, deviceid) {
+  let data = checkAuthCredentials(username, password, deviceid);
+  if(!data.success)
+    return outputError('Erro na autenticação', data.content);
+  return outputSuccess('Sucesso na autenticação', data.content);
+}
+
+function logoutApagaSessao(deviceId) {
+  let data = deleteUserSession(undefined, deviceId);
+  if (!data.success)
+    return outputError(data.message, 'Erro ao apagar sessão de usuário');
+  return outputSuccess(data.message, data.result)
+};
+
+function logoutDesativaSessao(deviceId) {
+  const data = updateSessionStatus(deviceId);
+  if (!data.success)
+    return outputError(data.message, 'Erro ao desativar sessão de usuário');
+  return outputSuccess(data.message, `sessão do dispositivo ${deviceId} desativado`)
+}
+
+function validarToken(accessToken) {
+  const resultado = validateToken(accessToken, env().KEY_ACCESS_TOKEN)
+  if (resultado.auth) return true;
+  return false
+}
+
+function outputSuccess(message, content) {
+  let output = ContentService.createTextOutput(), data = {};
+  data = {
+    "success": true,
+    "message": message,
+    "content": content
+  };  
+  output.setContent(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+  return output;
+}
+
+function outputError(message, error = 'erro') {
+  let output = ContentService.createTextOutput();
+  let res = {
+    "success": false,
+    "message": message,
+    "error": error
+  };
+  output.setContent(JSON.stringify(res)).setMimeType(ContentService.MimeType.JSON);
+  return output;
+}
+
+function env_example() {
+  const ENV_SPREADSHEET_ID = '';
+  const ENV_FOLDER_ID = '';
+  const SHEETNAME_EVENTOS = '';
+  const PRIVATE_KEY_HASH = '';
+  const SHEETNAME_USER = '';
+  const ENV_CRYPTO_KEY_SECRET = '';
+  const KEY_ACCESS_TOKEN = '';
+  const KEY_REFRESH_TOKEN = '';
+  const SHEETNAME_REFRESH ='';
+  return {
+    ENV_SPREADSHEET_ID, 
+    ENV_FOLDER_ID, 
+    SHEETNAME_EVENTOS, 
+    PRIVATE_KEY_HASH, 
+    SHEETNAME_USER, 
+    ENV_CRYPTO_KEY_SECRET,
+    KEY_ACCESS_TOKEN,
+    KEY_REFRESH_TOKEN,
+    SHEETNAME_REFRESH
+  };
+}
+
+/**
+ *  Projeto Google Apps Script
+ * 
+ * criar o projeto do tipo: web app
+ * permissão de acesso: qualquer pessoa
+ * 
+ * ENV_FOLDER_ID = id da pasta que será salva no google drive
+ * ENV_SPREADSHEET_ID: id da panilha google
+ * 
+ * renomear função env_example() para env()
+ * 
+ * projeto usa CryptoJS v3.1.2 na função decrypt()
+ * 
+ * */
+ 
