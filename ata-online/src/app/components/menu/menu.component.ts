@@ -35,7 +35,7 @@ export class MenuComponent {
 
   logout() {
     this.authenticationService.logout();
-    this.router.navigate(['index'])
+    this.router.navigate(['index']);
   }
 
   checkToken(): void {
@@ -43,10 +43,15 @@ export class MenuComponent {
         take(1))
         .subscribe(userLogged => {
       console.log("ckeckToken", userLogged)
+      if(!userLogged){
+        console.log('navegador fechado e aberto novamente. executar refreshToken');
+        this.authenticationService.refreshToken();
+        return
+      }
       if(userLogged){
         let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
         console.log('token expirou?', isTokenExpirado);
-        const tempoRestanteToken = this.authenticationService.tempoRestanteDoToken(userLogged.token)
+        const tempoRestanteToken = this.authenticationService.tempoRestanteDoToken(userLogged.token);
         if(isTokenExpirado || tempoRestanteToken < 120000){ // 120000 mili = 2 minutos
           console.log('access_token expirado ou proximo da expiração. fazer uma nova requisição para atualizá-lo');
           this.authenticationService.refreshToken();
