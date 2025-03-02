@@ -5,6 +5,7 @@ import { CryptoService } from '../../services/crypto.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { map, take } from 'rxjs';
 
 @Component({
   selector: 'app-criar-evento',
@@ -138,14 +139,24 @@ export class CriarEventoComponent {
       status: this.statusEvento,
       coords: {lat: this.latitude, long: this.longitude},
       action: 'createEvento',
-      dono: this.dono
+      dono: this.dono,
+      atok: sessionStorage.getItem('access_token')
     };
     
     this.btnSubmitForm = 'Aguarde';
     this.isSending = true;
-    this.send(data);
-
+    // this.send(data);
+    this.salvarEvento(data);
     // console.log(data);    
+  }
+
+  salvarEvento(data: any): void {
+    this.apiService.saveEvento(data).pipe(
+      take(1),
+      map((r) =>{
+        console.log(r);        
+      })
+    ).subscribe()
   }
 
   async send(data : any) {

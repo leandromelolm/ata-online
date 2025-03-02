@@ -1,24 +1,43 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, take, throwError } from 'rxjs';
 import { Meeting } from '../models/meeting';
 import { Response } from '../models/response';
 import { environment } from '../../environments/environment';
+import { HttpBaseService } from '../shared/base/http-base.service';
+import { AuthenticationService } from '../commom/auth/service/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class ApiService extends HttpBaseService{
 
-  private scriptId = environment.scriptId;
-  private apiUrl = `https://script.google.com/macros/s/${this.scriptId}/exec`;
+  private scriptIdApi = environment.scriptId;
+  private apiUrl = `https://script.google.com/macros/s/${this.scriptIdApi}/exec`;
 
-  constructor() { }
+  private readonly httpClientApi = inject(HttpClient);
+  private readonly authenticationService = inject(AuthenticationService);
 
-  private readonly httpClient = inject(HttpClient);
+  getEventos(): Observable<any> {
+    const accessToken = sessionStorage.getItem('access_token') || "";
+    const username = this.authenticationService.obterApenasUsuarioComToken(accessToken)?.username;
+    console.log(username)
+    return this.httpGet(`?action=userEventList&user=${username}&atok=${accessToken}`);
+  }
+
+  saveEvento(newEvento: any): Observable<any> {
+    return this.httpPost('', newEvento).pipe(
+      take(1),
+      map((resposta) => {
+        console.log(resposta);
+        
+        return resposta
+      })
+    )
+  }
 
   getMeeting(idReuniao: string | null): Observable<{content: Meeting}> {
-    return this.httpClient.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
+    return this.httpClientApi.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
     .pipe(
       catchError(this.handleError)
     );
@@ -28,18 +47,18 @@ export class ApiService {
     const headers = new HttpHeaders({
       'Content-Type': 'text/plain'
     });
-    return this.httpClient.post(this.apiUrl, JSON.stringify(participante), { headers });
+    return this.httpClientApi.post(this.apiUrl, JSON.stringify(participante), { headers });
   }
 
   getAllParticipantes(eventoId: string): Observable<Response<string[]>> {
-    return this.httpClient.get<Response<string[]>>(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`)
+    return this.httpClientApi.get<Response<string[]>>(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`)
     .pipe(
       catchError(this.handleError)
     );    
   }
 
   getAlteraStatusEvento(params: HttpParams): Observable<any>{
-    return this.httpClient.get<any>(`${this.apiUrl}`, { params });
+    return this.httpClientApi.get<any>(`${this.apiUrl}`, { params });
   }
 
   private handleError(error: any): Observable<never> {

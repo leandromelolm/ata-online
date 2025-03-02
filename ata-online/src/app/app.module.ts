@@ -26,6 +26,7 @@ import { RegistrosComponent } from './pages/registros/registros.component';
 import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { EventoListaComponent } from './components/evento-lista/evento-lista.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.co
     RegistrosComponent,
     CriarEventoComponent,
     TermsOfUseComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    EventoListaComponent
   ],
   imports: [
     BrowserModule,

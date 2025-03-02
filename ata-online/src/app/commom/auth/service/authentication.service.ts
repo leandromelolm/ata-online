@@ -108,6 +108,15 @@ export class AuthenticationService extends HttpBaseService {
     return {username: name, userId: userId, token: token};
   }
 
+  obterApenasUsuarioComToken(token: string) {
+    if(!token)
+      return null;
+    const payloadData = token.split('.')[1];
+    const data = atob(payloadData);
+    const {name, userId} = JSON.parse(data);
+    return {username: name};
+  }
+
   private decodeToken(token: string) {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
