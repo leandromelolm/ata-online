@@ -42,7 +42,6 @@ export class MenuComponent {
      this.authenticationService.usuarioLogado$.pipe(
         take(1))
         .subscribe(userLogged => {
-      console.log("ckeckToken", userLogged)
       if(!userLogged){
         console.log('navegador fechado e aberto novamente. executar refreshToken');
         this.authenticationService.refreshToken();

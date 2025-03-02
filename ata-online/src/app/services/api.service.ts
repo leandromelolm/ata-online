@@ -28,10 +28,9 @@ export class ApiService extends HttpBaseService{
   saveEvento(newEvento: any): Observable<any> {
     return this.httpPost('', newEvento).pipe(
       take(1),
-      map((resposta) => {
-        console.log(resposta);
-        
-        return resposta
+      map((res) => {
+        // console.log(res);
+        return res
       })
     )
   }

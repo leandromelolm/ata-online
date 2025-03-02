@@ -78,7 +78,7 @@ export class CriarEventoComponent {
   bCoordsAutorizarRegistro: boolean = false;
   latitude: string = '0';
   longitude: string = '0';
-  dono: string = 'sindatsb';
+  dono: string = 'sindatsb'; // alterar para pegar do token
 
   constructor( 
     private cryptoService: CryptoService,
@@ -145,45 +145,39 @@ export class CriarEventoComponent {
     
     this.btnSubmitForm = 'Aguarde';
     this.isSending = true;
-    // this.send(data);
     this.salvarEvento(data);
+    // this.send(data);
     // console.log(data);    
   }
 
   salvarEvento(data: any): void {
     this.apiService.saveEvento(data).pipe(
-      take(1),
-      map((r) =>{
-        console.log(r);        
-      })
-    ).subscribe()
-  }
-
-  async send(data : any) {
-    try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxJhOJh2hJVqiYLH59RXpROQBayFYTFSmx5qhkalHn3VqplFC8DuOUM0Elwy_HuOmzT/exec', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-      
-      const res = await response.json();
-      console.log(res);
-      if (res.success){
-        this.message = res.message;
-        this.idEvento = res.content.id
-        this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
-        this.limparCampos();
-        this.isFormEvento = false;
-      } else {
-        this.message = `Falha ao salvar. mensagem de erro: ${res.error}`;
+      take(1)
+    ).subscribe({
+      next: (res) => {
+        console.log('next',res);
+        if (res.success) {
+          this.message = res.message;
+          this.idEvento = res.content.id
+          this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
+          this.limparCampos();
+          this.isFormEvento = false;
+        } else {
+          this.message = `Falha ao salvar. mensagem de erro: ${res.error}`;
+        }
+      },
+      error: (error) => {
+        console.log(error);
+        this.message = `Erro: ${error}`;
+      },
+      complete: ()=> {
+        console.log("resquisição completa");
+        this.isSending = false;
+        this.btnSubmitForm = 'Cadastrar Evento';
       }
-    } catch (error) {
-      this.message = `Erro: ${error}`;
-    }
-    this.isSending = false;
-    this.btnSubmitForm = 'Cadastrar Evento';
+    })
   }
-
+ 
   checkError(): boolean {
     let isError = false;
 
@@ -297,6 +291,32 @@ export class CriarEventoComponent {
 
   sair() {
     window.location.href = '/'
+  }
+
+
+  async send(data : any) {
+    try {
+      const response = await fetch(`https://script.google.com/macros/s/{SCRIPT_ID}/exec`, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+      
+      const res = await response.json();
+      console.log(res);
+      if (res.success){
+        this.message = res.message;
+        this.idEvento = res.content.id
+        this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
+        this.limparCampos();
+        this.isFormEvento = false;
+      } else {
+        this.message = `Falha ao salvar. mensagem de erro: ${res.error}`;
+      }
+    } catch (error) {
+      this.message = `Erro: ${error}`;
+    }
+    this.isSending = false;
+    this.btnSubmitForm = 'Cadastrar Evento';
   }
 
 }
