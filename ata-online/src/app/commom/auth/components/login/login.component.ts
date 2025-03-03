@@ -58,7 +58,7 @@ export class LoginComponent {
       username: this.authLogin.username,
       password: this.authLogin.password,
       action: 'authCredentials',
-      deviceid: localStorage.getItem('deviceId') || ''
+      deviceid: localStorage.getItem('device_id') || ''
     }).pipe(
       catchError((error) => {
       // this.openSnackBar('Ocorreu um erro no Login!');
@@ -121,10 +121,10 @@ export class LoginComponent {
   }
   
   generateDeviceId = () => {
-    let deviceId = localStorage.getItem('deviceId');
+    let deviceId = localStorage.getItem('device_id');
     if (!deviceId) {
       deviceId = `${this.generateUUID()}-${window.screen.width}-${window.screen.height}`;
-      localStorage.setItem('deviceId', deviceId);
+      localStorage.setItem('device_id', deviceId);
     }
   }
 

@@ -3,6 +3,7 @@ import { BehaviorSubject, map, Observable, take } from 'rxjs';
 import { Login } from '../models/login';
 import { HttpBaseService } from '../../../shared/base/http-base.service';
 import { JwtService } from '../jwt.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,8 @@ export class AuthenticationService extends HttpBaseService {
 
   constructor(
     private jwtService: JwtService,
-    protected override readonly injector: Injector
+    protected override readonly injector: Injector,
+    private router: Router,
   ) {
     super(injector)
   }
@@ -41,26 +43,28 @@ export class AuthenticationService extends HttpBaseService {
   }
 
   logout(): void {  
-    const deviceId = localStorage.getItem('deviceId');
+    const deviceId = localStorage.getItem('device_id');
     this.httpGet(`?deviceid=${deviceId}&action=logout`).pipe(
       map((resposta) => {
         console.log(resposta);
       })
     ).subscribe();
     this.jwtService.removeToken()
-    localStorage.removeItem('deviceId');
+    localStorage.removeItem('device_id');
     this.subjectUsuario.next(null);
     this.subjectLogin.next(false);
   }
 
   refreshToken(): void {
     const rToken = localStorage.getItem('refresh_token');
-    const deviceId = localStorage.getItem('deviceId');
+    const deviceId = localStorage.getItem('device_id');
     
     if (rToken) {
-      console.log('refreshToken', rToken, deviceId);
+      // console.log('refreshToken', rToken, deviceId);
       this.httpGet(`?rtok=${rToken}&deviceid=${deviceId}&action=refreshToken`).pipe(
         map((resposta) => {
+          if(!resposta.success)
+            this.deslocarUsuarioParaPaginaDeLogin();
           if(resposta.success){
             sessionStorage.setItem('access_token', resposta.content.accesstoken);
             localStorage.setItem('refresh_token', resposta.content.refreshtoken);
@@ -71,6 +75,11 @@ export class AuthenticationService extends HttpBaseService {
         })
       ).subscribe()
     }
+  }
+
+  deslocarUsuarioParaPaginaDeLogin(): void {
+    this.logout()
+    this.router.navigate(['login']);
   }
 
   private carregarAccessTokenDoStorage(): any {
