@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, take, throwError } from 'rxjs';
-import { Meeting } from '../models/meeting';
+import { Evento } from '../models/evento';
 import { Response } from '../models/response';
 import { environment } from '../../environments/environment';
 import { HttpBaseService } from '../shared/base/http-base.service';
@@ -35,7 +35,7 @@ export class ApiService extends HttpBaseService{
     )
   }
 
-  getMeeting(idReuniao: string | null): Observable<{content: Meeting}> {
+  getMeeting(idReuniao: string | null): Observable<{content: Evento}> {
     return this.httpClientApi.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
     .pipe(
       catchError(this.handleError)

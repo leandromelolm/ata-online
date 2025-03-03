@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
-import { Meeting } from '../../models/meeting';
+import { Evento } from '../../models/evento';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -62,7 +62,7 @@ export class FormParticipanteComponent {
   errorInputMatricula: boolean = false;
   errorCheckBox: boolean = false;
   btnColor: string = "btn__grey";
-  meeting: Meeting = new Meeting();
+  meeting: Evento = new Evento();
   latEvento: number = 0;
   lonEvento: number = 0;
   bCoordenadasParaAutorizarRegistro: boolean = false;

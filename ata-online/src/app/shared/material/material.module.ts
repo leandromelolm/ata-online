@@ -2,9 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule} from '@angular/material/card'
 import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule 
-  
-} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [],
@@ -16,7 +14,7 @@ import { MatInputModule
   exports: [
     MatCardModule,
     MatSelectModule,
-    MatInputModule
+    MatInputModule  
   ]
 })
 export class MaterialModule { }

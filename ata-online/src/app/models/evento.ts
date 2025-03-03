@@ -1,4 +1,4 @@
-export class Meeting {
+export class Evento {
     id: string;
     data: string;
     hora: string;

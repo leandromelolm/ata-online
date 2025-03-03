@@ -27,6 +27,7 @@ import { CriarEventoComponent } from './pages/criar-evento/criar-evento.componen
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { EventoListaComponent } from './components/evento-lista/evento-lista.component';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { EventoListaComponent } from './components/evento-lista/evento-lista.com
     MatProgressSpinnerModule,
     MatTableModule,
     MatButtonToggleModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatCardModule
   ],
   providers: [
     provideAnimationsAsync(),

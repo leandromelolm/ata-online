@@ -1,3 +1,35 @@
-<ul>
-    <li *ngFor="let evento of eventos">{{ evento.id }}</li>
-</ul>
+<button (click)="getListaEvento()">atualizar</button>
+
+@for (evento of eventos; track $index) {
+    <mat-card appearance="outlined">
+        <mat-card-header>
+            <mat-card-title>{{ evento.titulo }}</mat-card-title>
+            <mat-card-subtitle>{{ evento.id }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p>
+              {{evento.status}} - {{evento.data}} | {{evento.hora}}
+            </p>
+          </mat-card-content>
+        <mat-card-actions align="end">
+            <button mat-button>detalhes</button>
+        </mat-card-actions>
+    </mat-card>
+} @empty {
+    <p>Nenhum item encontrado!</p>
+}
+
+<!-- 
+<div *ngFor="let evento of eventos">
+    
+    <mat-card appearance="outlined">
+        <mat-card-header>
+            <mat-card-title>{{ evento.titulo }}</mat-card-title>
+            <mat-card-subtitle>{{ evento.id }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-actions align="end">
+            <button mat-button>detalhes</button>
+        </mat-card-actions>
+    </mat-card>
+</div> -->
+
