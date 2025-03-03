@@ -8,20 +8,20 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const {ata, participante, eventoid, matricula, action, novostatus,
-      user, deviceid, todoseventos, atok, rtok
+    const {ata, eventoid, matricula, action, 
+      novostatus, user, deviceid, atok, rtok
     } = parameter;
 
     if (e.pathInfo == 'index')
       return HtmlService.createHtmlOutputFromFile("index")
       .setTitle('AtaOnline | Doc');
 
-    if (todoseventos)
+    if (action === 'userEventList')
       if(!validarToken(atok))
         return outputError('token expirado ou inválido')
       else
         return listarEventosDoUsuario(user)
-      // ?todoseventos=true&user={USERNAME}&atok=${ACCESS_TOKEN}
+      // ?action=userEventList&user={USERNAME}&atok=${ACCESS_TOKEN}
     
     if (action === 'refreshToken')
       return renovarToken(rtok, deviceid);
@@ -35,17 +35,17 @@ const doGet = (e) => {
       return findByEvento(ata); 
       // ?ata={ID_EVENTO}
 
-    if (participante === 'all' && eventoid)
+    if (action === 'todosParticipantes' && eventoid)
       return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
-      // ?participante=all&eventoid={ID_EVENTO}
+      // ?eventoid={ID_EVENTO}&action=todosParticipantes
 
-    if (participante === 'matricula' && matricula && eventoid)
+    if (action === 'participantePorMatricula' && matricula && eventoid)
       return encontrarParticipantePorMatricula(matricula, eventoid); 
-      // ?participante=matricula&matricula={MATRICULA}&eventoid={ID_EVENTO}
+      // ?matricula={MATRICULA}&eventoid={ID_EVENTO}&action=participantePorMatricula
 
     if (action === 'editarstatusevento' && eventoid && novostatus && validarToken(atok))
       return editStatusEvento(eventoid, novostatus, 'A');
-       // ?action=editarstatusevento&eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}&atok={ACCESS_TOKEN}
+       // ?eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}&atok={ACCESS_TOKEN}&action=editarstatusevento
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
@@ -70,7 +70,7 @@ const doPost = (e) => {
       return addParticipanteNoEvento(data);
 
     if (data.action === 'createEvento')
-      if(!validarToken(atok))
+      if(!validarToken(data.atok))
         return outputError('token expirado ou inválido')
       else
         return createEvento(data);
@@ -366,8 +366,8 @@ function salvarNovoEventoNaPlanilha(e) {
 }
 
 // GET E POST
-function renovarToken(r, deviceid) {
-  let rt = renewToken(r, deviceid);
+function renovarToken(refreshToken, deviceId) {
+  let rt = renewToken(refreshToken, deviceId);
   if(!rt.success)
     return outputError('erro ao atualizar', rt)
   return outputSuccess('token atualizado', rt.content);
