@@ -20,19 +20,20 @@ function checkAuthCredentials(user, password, deviceId) {
 /**
  * Renovar token
  * **/
-function renewToken(refreshToken, _deviceid) {
+function renewToken(refreshToken, _deviceId) {
   const msgErr = 'Não é possivel renovar o token';
   let tok = validateToken(refreshToken, env().KEY_REFRESH_TOKEN);
   if (!tok.auth)
     return {success: false, message: msgErr, error: tok.message};
   sheet = sheetSession(env().SHEETNAME_REFRESH);
-  const data = findTextInColumn(sheet, 'D', refreshToken , false) // 'D' = coluna do refreshToken
+  // const data = findTextInColumn(sheet, 'D', refreshToken , false) // 'D' = coluna do refreshToken
+  const data = findTextInColumn(sheet, 'E', _deviceId, false) // 'E' = coluna do deviceId
   if (!data.success)
-    return {success: false, message: msgErr, error: data.result};
+    return {success: false, message: 'erro ao encontrar device_id', error: data.result};
   const [criado, id, userName, rToken, deviceId, status] = data.result;
-  if ( _deviceid !== deviceId)
+  if (_deviceId !== deviceId)
     return {success: false, message: msgErr, error: 'dispositivo não encontrado'};
-  if (_deviceid === deviceId && refreshToken !== rToken) {
+  if (_deviceId === deviceId && refreshToken !== rToken) {
     updateSessionStatus(_deviceId);
     return {success: false, message: 'outro dispositivo está usando o refresh_token', error: 'refresh_token violado'};
   }
