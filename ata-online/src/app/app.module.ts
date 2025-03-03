@@ -23,7 +23,7 @@ import { CameraComponent } from './components/camera/camera.component';
 import { FormParticipanteComponent } from './components/form-participante/form-participante.component';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
-import { CriarEventoComponent } from './pages/criar-evento/criar-evento.component';
+import { EventoGerenciarComponent } from './pages/evento-gerenciar/evento-gerenciar.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { EventoListaComponent } from './components/evento-lista/evento-lista.component';
@@ -41,7 +41,7 @@ import {MatCardModule} from '@angular/material/card';
     FormParticipanteComponent,
     QrcodeComponent,
     RegistrosComponent,
-    CriarEventoComponent,
+    EventoGerenciarComponent,
     TermsOfUseComponent,
     PrivacyPolicyComponent,
     EventoListaComponent

@@ -8,9 +8,9 @@ import { ApiService } from '../../services/api.service';
 import { map, take } from 'rxjs';
 
 @Component({
-  selector: 'app-criar-evento',
-  templateUrl: './criar-evento.component.html',
-  styleUrl: './criar-evento.component.scss',
+  selector: 'app-evento-gerenciar',
+  templateUrl: './evento-gerenciar.component.html',
+  styleUrl: './evento-gerenciar.component.scss',
   animations: [
 
     trigger('fadeInOut', [
@@ -35,7 +35,7 @@ import { map, take } from 'rxjs';
 
   ]
 })
-export class CriarEventoComponent {
+export class EventoGerenciarComponent {
 
   data: Date;
   hora: String;
