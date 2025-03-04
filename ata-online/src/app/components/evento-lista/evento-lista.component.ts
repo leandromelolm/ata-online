@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { map } from 'rxjs';
 
@@ -11,6 +11,7 @@ import { map } from 'rxjs';
 export class EventoListaComponent {
 
   eventos: any[] = [];
+  @Output() valueChanged = new EventEmitter<string>();
 
   constructor(private apiService: ApiService) {}
 
@@ -33,5 +34,9 @@ export class EventoListaComponent {
         this.eventos = data.content.itens;
         sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
     });
+  }
+
+  alterarStatusEvento(eventoId: string): void {
+    this.valueChanged.emit(eventoId);     
   }
 }

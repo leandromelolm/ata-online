@@ -60,8 +60,6 @@ export class EventoGerenciarComponent {
   erroInputCodigo: boolean = false;
   
   btnEditarStatus: string = 'Editar Status';
-  user: string;
-  password: string;
   eventoid: string;
   isUrlEdit: boolean = false;
   responseMsgEditStatus: string = '';
@@ -255,13 +253,10 @@ export class EventoGerenciarComponent {
 
   editStatus() {
     this.responseMsgEditStatus = '';
-    let pw = this.cryptoService.encrypt(this.password);
     const params = new HttpParams()
     .set('action', 'editarstatusevento')
     .set('eventoid', this.eventoid.trim().toLowerCase())
     .set('novostatus', this.selectedStatus)
-    .set('user', this.user.trim().toLowerCase())
-    .set('pw', pw.trim())
     // .set('teste', 'teste');  
     this.apiService.getAlteraStatusEvento(params).subscribe({
       next:(response) => {
@@ -291,6 +286,10 @@ export class EventoGerenciarComponent {
 
   sair() {
     window.location.href = '/'
+  }
+
+  onValueChanged(value: string) {
+    this.eventoid = value; // Atualiza o valor recebido
   }
 
 

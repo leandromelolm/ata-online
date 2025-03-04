@@ -100,8 +100,6 @@
         @if(isUrlEdit) {
             <div class="form__container">
                 <h3 class="h3__formulario">Editar Evento</h3>
-                <input type="text" class="input-field" [(ngModel)]="user" placeholder="user">
-                <input type="password" class="input-field" [(ngModel)]="password" placeholder="password">
                 <input type="text" class="input-field" [(ngModel)]="eventoid" placeholder="evento id">
                 <select id="status" class="input-field" [(ngModel)]="selectedStatus">
                     <option *ngFor="let status of statusList" [value]="status.value">
@@ -114,7 +112,7 @@
             <div>{{responseMsgEditStatus}}</div>
             
             <div class="form__container">
-                <app-evento-lista></app-evento-lista>
+                <app-evento-lista (valueChanged)="onValueChanged($event)"></app-evento-lista>
             </div>
         }
 
