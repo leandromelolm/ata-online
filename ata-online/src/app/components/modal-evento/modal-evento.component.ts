@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
+import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from '../../services/api.service';
 
@@ -23,6 +23,8 @@ export class ModalEventoComponent {
     { label: 'ENCERRADO', value: 'ENCERRADO' },
     { label: 'CANCELADO', value: 'CANCELADO' },
   ];
+
+  @Output() valueChanged = new EventEmitter<string>();
 
   constructor(
     public dialogRef: MatDialogRef<ModalEventoComponent>,
@@ -48,15 +50,16 @@ export class ModalEventoComponent {
 
       this.apiService.getAlteraStatusEvento(params).subscribe({
         next:(response) => {
-          console.log(response);          
-          this.mensagem = response.message;
-          this.status = this.selectedStatus;
-          // this.sucessoEditarStatus(response);
+          console.log(response);
+          if(response.success) {
+            this.mensagem = response.message;
+            this.status = this.selectedStatus;
+            this.valueChanged.emit();
+          }
         },
         error: (error) => {
           console.log(error);
           this.mensagem = error;
-          // this.erroEditarStatusEvento(error);
         },
         complete: () => {
           this.btnEditarStatus = 'Alterar Status';
@@ -68,7 +71,6 @@ export class ModalEventoComponent {
   closeModal() { this.dialogRef.close(); }
 
   fecharModal(): void {
-    console.log('fecharElemento');
     this.closeModal();
   }
 

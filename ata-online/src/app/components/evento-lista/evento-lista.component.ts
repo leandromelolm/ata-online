@@ -40,11 +40,15 @@ export class EventoListaComponent {
   }
 
   openModalEvento(evento: any): void {
-    this.dialog.open(ModalEventoComponent, {
+    const dialogRef = this.dialog.open(ModalEventoComponent, {
       backdropClass: 'custom-backdrop',
       panelClass: 'custom-modal',
       data: evento
     })
-  }
 
+    dialogRef.componentInstance.valueChanged.subscribe(() => {
+      this.getListaEvento();
+    });
+  }
+  
 }
