@@ -78,5 +78,20 @@ body {
 
   @media (min-width: 576px) {
     overflow-y: visible;
-  }
+  }  
+}
+
+.mat-mdc-dialog-surface {
+  z-index: 10;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70% !important;
+  max-width: 90vw; /* Evita que ultrapasse a tela */
+  height: auto !important;
+  border-radius: 20px !important;
 }

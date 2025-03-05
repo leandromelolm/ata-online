@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { map } from 'rxjs';
-
+import { MatDialog } from '@angular/material/dialog';
+import { ModalEventoComponent } from '../modal-evento/modal-evento.component';
 
 @Component({
   selector: 'app-evento-lista',
@@ -11,9 +12,11 @@ import { map } from 'rxjs';
 export class EventoListaComponent {
 
   eventos: any[] = [];
-  @Output() valueChanged = new EventEmitter<string>();
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     const lista = sessionStorage.getItem('evento-lista');
@@ -36,7 +39,12 @@ export class EventoListaComponent {
     });
   }
 
-  alterarStatusEvento(eventoId: string): void {
-    this.valueChanged.emit(eventoId);     
+  openModalEvento(evento: any): void {
+    this.dialog.open(ModalEventoComponent, {
+      backdropClass: 'custom-backdrop',
+      panelClass: 'custom-modal',
+      data: evento
+    })
   }
+
 }

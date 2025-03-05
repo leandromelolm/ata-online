@@ -11,6 +11,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,6 +30,8 @@ import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { EventoListaComponent } from './components/evento-lista/evento-lista.component';
 import { MatCardModule } from '@angular/material/card';
+import { ModalEventoComponent } from './components/modal-evento/modal-evento.component';
+import { ClickOutsideDirective } from './directives/click-outside.directive';
 
 @NgModule({
   declarations: [
@@ -44,7 +48,9 @@ import { MatCardModule } from '@angular/material/card';
     EventoGerenciarComponent,
     TermsOfUseComponent,
     PrivacyPolicyComponent,
-    EventoListaComponent
+    EventoListaComponent,
+    ModalEventoComponent,
+    ClickOutsideDirective
   ],
   imports: [
     BrowserModule,
@@ -59,7 +65,9 @@ import { MatCardModule } from '@angular/material/card';
     MatTableModule,
     MatButtonToggleModule,
     MatCheckboxModule,
-    MatCardModule
+    MatCardModule,
+    MatDialogModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     provideAnimationsAsync(),
