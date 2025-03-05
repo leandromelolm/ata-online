@@ -1,4 +1,6 @@
-<button (click)="getListaEvento()">atualizar</button>
+<button (click)="getListaEvento()" class="btn btn-link">
+    <mat-icon>refresh</mat-icon>
+</button>
 
 @for (evento of eventos; track $index) {
     <mat-card appearance="outlined">
@@ -12,8 +14,9 @@
             </p>
           </mat-card-content>
         <mat-card-actions align="end">
-            <button mat-button (click)="openModalEvento(evento)">Editar</button>
-
+            <button mat-button (click)="openModalEvento(evento)" class="btn btn-link" alt="editar">
+                <mat-icon>settings</mat-icon>
+            </button>
         </mat-card-actions>
     </mat-card>
 } @empty {

@@ -1,5 +1,7 @@
 <div class="container-fluid p-3" appClickOutside (cliqueFora)="fecharModal()">
-    <button class="float-end hover" (click)="closeModal()">fechar</button>
+    <button class="float-end hover btn btn-link" (click)="closeModal()">
+        <mat-icon>close</mat-icon>
+    </button>
 
     <h1 class="titulo">Detalhes do Evento</h1>
     <h2 class="subtitulo">ID: {{userData.id}}</h2>

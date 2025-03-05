@@ -44,6 +44,7 @@ export class ModalEventoComponent {
       
       this.btnEditarStatus = 'Aguarde...';
       this.isLoading = true;
+      this.mensagem = '';
 
       this.apiService.getAlteraStatusEvento(params).subscribe({
         next:(response) => {
