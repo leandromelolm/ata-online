@@ -34,7 +34,9 @@ export class AuthenticationService extends HttpBaseService {
           sessionStorage.setItem('access_token', resposta.content.accesstoken);
           localStorage.setItem('refresh_token', resposta.content.refreshtoken);
           this.tempoRestanteDoToken(resposta.content.accesstoken)
-          this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
+          const userLogged = this.obterUsuariodoToken(resposta.content.accesstoken);
+          sessionStorage.setItem('username', userLogged?.username);
+          this.subjectUsuario.next(userLogged?.username);
           this.subjectLogin.next(true);
         }
         return resposta;

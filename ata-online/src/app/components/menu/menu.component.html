@@ -19,16 +19,17 @@
           <div data-bs-theme="dark">
             <button type="button" class="btn-close btn-sm d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
           </div>
-        </li>       
+        </li>
+        <li>
+          <mat-icon>home</mat-icon>{{isAuthenticated ? 'Olá, ' + username : 'Olá, visitante'}}
+        </li>
         <!-- <li routerLink="/home"> -->
         <li (click)="getSessionUrlParameter('/home')">
           <mat-icon>description</mat-icon>Ata
         </li>
-        <!-- <li routerLink="/qrcode"> -->
           <li (click)="getSessionUrlParameter('/qrcode')">
           <mat-icon>qr_code</mat-icon>QRCode
         </li>
-        <!-- <li routerLink="/registros"> -->
         <li (click)="getSessionUrlParameter('/registros')">
           <mat-icon>lists</mat-icon>Registros
         </li>

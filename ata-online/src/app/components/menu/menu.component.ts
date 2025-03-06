@@ -10,6 +10,8 @@ import { take } from 'rxjs';
 })
 export class MenuComponent {
 
+  username: string = '';
+
   rotaParaRegistros: string = '';
   isAuthenticated: boolean = false;
 
@@ -22,6 +24,7 @@ export class MenuComponent {
     // this.getUrlParameterToRegistrosPage();
     this.checkAuthUser();
     this.checkToken();
+    this.username = sessionStorage.getItem('username') || '';
   }
 
   getSessionUrlParameter(rota: string): void {
@@ -50,6 +53,7 @@ export class MenuComponent {
       if(userLogged){
         let isTokenExpirado = this.authenticationService.tokenExpirou(userLogged.token);
         console.log('token expirou?', isTokenExpirado);
+        this.username = sessionStorage.getItem('username') || '';
         const tempoRestanteToken = this.authenticationService.tempoRestanteDoToken(userLogged.token);
         if(isTokenExpirado || tempoRestanteToken < 120000){ // 120000 mili = 2 minutos
           console.log('access_token expirado ou proximo da expiração. fazer uma nova requisição para atualizá-lo');
