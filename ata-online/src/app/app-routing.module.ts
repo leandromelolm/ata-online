@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'qrcode', component: QrcodeComponent },
   { path: 'registros', component: RegistrosComponent },
   { path: 'criar-evento', component: EventoGerenciarComponent, canActivate: [canActivateAuthGuard] },
-  { path: 'criar-evento/edit', component: EventoGerenciarComponent, canActivate: [canActivateAuthGuard] },
+  { path: 'meus-eventos', component: EventoGerenciarComponent, canActivate: [canActivateAuthGuard] },
   { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] },
   { path: 'termos-de-uso', component: TermsOfUseComponent },
   { path: 'politica-de-privacidade', component: PrivacyPolicyComponent },

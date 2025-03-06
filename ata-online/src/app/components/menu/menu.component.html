@@ -33,11 +33,8 @@
           <mat-icon>lists</mat-icon>Registros
         </li>
         @if (isAuthenticated) {
-          <li (click)="getSessionUrlParameter('/criar-evento')">
-            <mat-icon>post_add</mat-icon>Cadastrar Evento
-          </li>
-          <li (click)="getSessionUrlParameter('/criar-evento/edit')">
-            <mat-icon>edit_note</mat-icon>Editar Status Evento
+          <li (click)="getSessionUrlParameter('/meus-eventos')">
+            <mat-icon>edit_note</mat-icon>Meus Eventos
           </li>
         } @else {
           <li (click)="getSessionUrlParameter('/auth/login')">
