@@ -90,8 +90,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 70% !important;
-  max-width: 90vw; /* Evita que ultrapasse a tela */
+  width: 92% !important;
   height: auto !important;
   border-radius: 20px !important;
+}
+
+.mdc-dialog__container {
+  max-width: 800px !important;
 }
