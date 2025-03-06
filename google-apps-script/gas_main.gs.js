@@ -207,8 +207,8 @@ function listarEventosDoUsuario(textToFind, column = 'K', sheet = env().SHEETNAM
   const eventos = [];
   result.forEach((celula) => {
     const evento = sh.getRange(celula.getRow(), 10).getValues().flat() // 10 = coluna J
-    let { id, titulo, local, data, hora, descricao, status } = JSON.parse(evento[0]);
-    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status);
+    let { id, titulo, local, data, hora, descricao, status, bCoordenadasParaAutorizarRegistro, coords } = JSON.parse(evento[0]);
+    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, coords);
     eventos.push(eventoDTO);
   });
   return outputSuccess(`${textToFind}`, { 'size': result.length, 'itens': eventos });

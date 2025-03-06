@@ -106,7 +106,7 @@ class Evento {
 }
 
 class EventoDTO {
-    constructor(id, data, hora, local, titulo, descricao, status) {
+    constructor(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, coords) {
         this.id = id;
         this.data = data;
         this.hora = hora;
@@ -114,5 +114,7 @@ class EventoDTO {
         this.titulo = titulo;
         this.descricao = descricao;
         this.status = status
+        this.bCoordenadasParaAutorizarRegistro = bCoordenadasParaAutorizarRegistro
+        this.coords = coords
     }
 }
