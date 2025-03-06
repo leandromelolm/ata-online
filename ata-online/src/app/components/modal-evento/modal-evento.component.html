@@ -31,6 +31,14 @@
             <h4 class="titulo-informacao">Local</h4>
             <p class="informacao">{{userData.local}}</p>
         </div>
+        <div class="col-6">
+            <h4 class="titulo-informacao">Restringe presença pelo local</h4>
+            <p class="informacao">{{userData.bCoordenadasParaAutorizarRegistro ? 'SIM': 'NÃO'}}</p>
+        </div>        
+        <div class="col-6">
+            <h4 class="titulo-informacao">Coordenadas do Evento</h4>
+            <p class="informacao">{{userData.coords.lat}}, {{userData.coords.long}}</p>
+        </div>
     </div>
     <div class="form__container">
         <select id="status" class="input-field" [(ngModel)]="selectedStatus">
