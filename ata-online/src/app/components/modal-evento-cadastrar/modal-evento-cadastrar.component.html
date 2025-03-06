@@ -3,7 +3,7 @@
     <button class="float-end hover btn btn-link" (click)="closeModal()">
         <mat-icon>close</mat-icon>
     </button>
-    <h3>Cadastrar Evento</h3>
+    <h1 class="titulo">Cadastrar Evento</h1>
 </div>
 <div class="container-fluid" appClickOutside (cliqueFora)="closeModal()">
     <div class="form__container">
@@ -43,7 +43,7 @@
         </div>
         
         <div>
-            <h5>Restringir presença pela localização:</h5>
+            <h4 class="titulo-toggle-group">Restringir presença pela localização:</h4>
             <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
                 <mat-button-toggle [value]='false'>Não</mat-button-toggle>
                 <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
