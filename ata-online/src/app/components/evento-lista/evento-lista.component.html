@@ -1,6 +1,13 @@
-<button (click)="getListaEvento()" class="btn btn-link">
-    <mat-icon>refresh</mat-icon>
-</button>
+<div class="row justify-content-between">
+    <div class="col-8">
+        <app-button [textButton]="btnCriarEvento" (click)="openModalEventoCadastrar()"></app-button>
+    </div>
+    <div class="col-4">
+        <button (click)="getListaEvento()" class="btn btn-link">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+</div>
 
 @for (evento of eventos; track $index) {
     <mat-card appearance="outlined">

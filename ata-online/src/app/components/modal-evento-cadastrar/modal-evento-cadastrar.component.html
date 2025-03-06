@@ -1,0 +1,99 @@
+
+<div class="container-fluid div__titulo">
+    <button class="float-end hover btn btn-link" (click)="closeModal()">
+        <mat-icon>close</mat-icon>
+    </button>
+    <h3>Cadastrar Evento</h3>
+</div>
+<div class="container-fluid" appClickOutside (cliqueFora)="closeModal()">
+    <div class="form__container">
+        @if(isFormEvento) {
+            <div>
+                @if(titulo){<div class="div__label" @fadeInOut @fadeInUp><label for="titulo">Título</label></div>}
+                <input type="text" matInput #input class="input-field" [(ngModel)]="titulo" maxlength="50" placeholder="Título"
+                (blur)="onBlurField('titulo')">
+                <div class="input__error" *ngIf="!titulo && errorInputTitulo">Campo obrigatório.</div>
+                <p *ngIf="titulo">{{ titulo.length || 0 }}/50 caracteres</p>
+            </div>
+            <div>
+                @if(data){<div class="div__label" @fadeInOut @fadeInUp><label for="data">Data</label></div>}
+                <input class="input-field" type="date" [(ngModel)]="data"
+                (blur)="onBlurField('data')">
+                <div class="input__error" *ngIf="!data && errorInputData">Campo obrigatório.</div>
+            </div>
+            <div>
+                @if(hora){<div class="div__label" @fadeInOut @fadeInUp><label for="hora">Hora</label></div>}
+                <input class="input-field" type="time"  [(ngModel)]="hora" placeholder="Hora 00:00"
+                (blur)="onBlurField('hora')">
+                <div class="input__error" *ngIf="!hora && errorInputHora">Campo obrigatório.</div>
+            </div>
+            <div>
+                @if(local){<div class="div__label" @fadeInOut @fadeInUp><label for="local">Local</label></div>}
+                <input class="input-field" [(ngModel)]="local" maxlength="80" placeholder="Local"
+                (blur)="onBlurField('local')">
+                <div class="input__error" *ngIf="!local && errorInputLocal">Campo obrigatório.</div>
+                <p *ngIf="local">{{ local.length || 0 }}/80 caracteres</p>
+            </div>
+            <div>
+                @if(descricao){<div class="div__label" @fadeInOut @fadeInUp><label for="descricao">Descrição</label></div>}
+            <input class="input-field" [(ngModel)]="descricao" maxlength="50" placeholder="Descrição"
+            (blur)="onBlurField('descricao')">
+            <div class="input__error" *ngIf="!descricao && errorInputDescricao">Campo obrigatório.</div>
+            <p *ngIf="descricao">{{ descricao.length || 0 }}/50 caracteres</p>
+        </div>
+        
+        <div>
+            <h5>Restringir presença pela localização:</h5>
+            <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
+                <mat-button-toggle [value]='false'>Não</mat-button-toggle>
+                <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        
+        @if(bCoordsAutorizarRegistro) {
+            <div>
+                @if(coordenadas){<div class="div__label" @fadeInOut @fadeInUp><label for="coordenadas">Coordenadas</label></div>}
+                <input type="text" id="coordenadas" class="input-field" [(ngModel)]="coordenadas" placeholder="Insira as coordenadas - latitude, longitude">
+            </div>
+        }
+        
+        <app-button 
+        class="btn-submit-form" 
+        (click)="submitForm()" 
+        [textButton]="btnSubmitForm" 
+        [disabled]="isSending" 
+        [btnColor]="validarCampos()">
+    </app-button>
+}
+
+<div>
+    <div>{{ message }}</div>
+    <div>{{ idEvento }}</div>
+</div>
+
+<div class="qr-container">
+    <div>
+        <input class="input-field" type="text" 
+        [(ngModel)]="qrText"  
+        [ngClass]="{'input-url': qrText.length > 0}" 
+        placeholder="URL"/>
+    </div>
+    
+    <app-button class="btn-submit-form" (click)="generateQRCode()" [textButton]="btnQRCode" [disabled]="isSending"></app-button>
+    
+    @if (qrCodeImage) {
+        <div>
+            <h3>QR Code Gerado:</h3>
+            <img [src]="qrCodeImage" alt="QR Code" />
+        </div>
+    }
+</div>
+
+@if (qrCodeImage) {
+    <app-button class="btn-submit-form" (click)="downloadQRCode()" [textButton]="btnDownloadQRCode"></app-button>
+}
+
+<!-- <button (click)="sair()" class="btn btn-link mt-2">Sair</button> -->
+</div>
+
+</div>

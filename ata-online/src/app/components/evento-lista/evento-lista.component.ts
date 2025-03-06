@@ -3,6 +3,7 @@ import { ApiService } from '../../services/api.service';
 import { map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEventoComponent } from '../modal-evento/modal-evento.component';
+import { ModalEventoCadastrarComponent } from '../modal-evento-cadastrar/modal-evento-cadastrar.component';
 
 @Component({
   selector: 'app-evento-lista',
@@ -12,6 +13,7 @@ import { ModalEventoComponent } from '../modal-evento/modal-evento.component';
 export class EventoListaComponent {
 
   eventos: any[] = [];
+  btnCadastrarEvento: string = 'Cadastrar Evento';
 
   constructor(
     private apiService: ApiService,
@@ -34,7 +36,7 @@ export class EventoListaComponent {
       //   return r
       // })
       ).subscribe((data) => {
-        this.eventos = data.content.itens;
+        this.eventos = data.content.itens.reverse();
         sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
     });
   }
@@ -45,7 +47,14 @@ export class EventoListaComponent {
       panelClass: 'custom-modal',
       data: evento
     })
+    dialogRef.componentInstance.valueChanged.subscribe(() => {
+      this.getListaEvento();
+    });
+  }
 
+  openModalEventoCadastrar(): void{
+    const dialogRef = this.dialog.open(ModalEventoCadastrarComponent, {
+    })
     dialogRef.componentInstance.valueChanged.subscribe(() => {
       this.getListaEvento();
     });

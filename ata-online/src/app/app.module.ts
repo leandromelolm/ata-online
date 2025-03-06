@@ -32,6 +32,7 @@ import { EventoListaComponent } from './components/evento-lista/evento-lista.com
 import { MatCardModule } from '@angular/material/card';
 import { ModalEventoComponent } from './components/modal-evento/modal-evento.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { ModalEventoCadastrarComponent } from './components/modal-evento-cadastrar/modal-evento-cadastrar.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
     PrivacyPolicyComponent,
     EventoListaComponent,
     ModalEventoComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    ModalEventoCadastrarComponent
   ],
   imports: [
     BrowserModule,
