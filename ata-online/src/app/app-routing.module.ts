@@ -22,6 +22,7 @@ const routes: Routes = [
   { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] },
   { path: 'termos-de-uso', component: TermsOfUseComponent },
   { path: 'politica-de-privacidade', component: PrivacyPolicyComponent },
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

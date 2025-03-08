@@ -33,6 +33,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ModalEventoComponent } from './components/modal-evento/modal-evento.component';
 import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { ModalEventoCadastrarComponent } from './components/modal-evento-cadastrar/modal-evento-cadastrar.component';
+import { LoadingComponent } from './shared/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { ModalEventoCadastrarComponent } from './components/modal-evento-cadastr
     EventoListaComponent,
     ModalEventoComponent,
     ClickOutsideDirective,
-    ModalEventoCadastrarComponent
+    ModalEventoCadastrarComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

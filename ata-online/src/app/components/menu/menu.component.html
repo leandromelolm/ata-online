@@ -20,7 +20,7 @@
             <button type="button" class="btn-close btn-sm d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
           </div>
         </li>
-        <li>
+        <li (click)="getSessionUrlParameter('/home')">
           <mat-icon>home</mat-icon>{{isAuthenticated ? 'Olá, ' + username : 'Olá, visitante'}}
         </li>
         <!-- <li routerLink="/home"> -->
@@ -54,3 +54,5 @@
   </nav>
   </div>
 </div>
+
+<app-loading [show]="isLoading" message="Carregando dados..."></app-loading>

@@ -28,7 +28,10 @@
     </mat-card>
 } @empty {
     <p>Nenhum item encontrado!</p>
+    <p>Tente atualizar a página.</p>
 }
+
+<app-loading [show]="isLoading" message="Carregando dados..."></app-loading>
 
 <!-- 
 <div *ngFor="let evento of eventos">

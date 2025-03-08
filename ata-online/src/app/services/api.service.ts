@@ -20,7 +20,7 @@ export class ApiService extends HttpBaseService{
 
   getEventos(): Observable<any> {
     const accessToken = sessionStorage.getItem('access_token') || "";
-    const username = this.authenticationService.obterApenasUsuarioComToken(accessToken)?.username;
+    const username = this.authenticationService.getUserNameWithToken(accessToken)?.username;
     sessionStorage.setItem('username', username);
     return this.httpGet(`?action=userEventList&user=${username}&atok=${accessToken}`);
   }

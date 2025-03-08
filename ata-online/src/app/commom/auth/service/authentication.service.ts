@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, take } from 'rxjs';
 import { Login } from '../models/login';
 import { HttpBaseService } from '../../../shared/base/http-base.service';
 import { JwtService } from '../jwt.service';
@@ -10,12 +10,16 @@ import { Router } from '@angular/router';
 })
 export class AuthenticationService extends HttpBaseService {
 
+  private tokenExpiration: number;
   private accessToken = this.carregarAccessTokenDoStorage();
-  private subjectUsuario: BehaviorSubject<any> = new BehaviorSubject(this.obterUsuariodoToken(this.accessToken));
+
   private subjectLogin: BehaviorSubject<any> = new BehaviorSubject(false);
+
+  private subjectUsuario: BehaviorSubject<any> = new BehaviorSubject(this.obterUsuarioDoToken(this.accessToken));
   usuarioLogado$ = this.subjectUsuario.asObservable();
 
-  private tokenExpiration: number;
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  public loading$ = this.loadingSubject.asObservable();
 
   constructor(
     private jwtService: JwtService,
@@ -23,6 +27,10 @@ export class AuthenticationService extends HttpBaseService {
     private router: Router,
   ) {
     super(injector)
+  }
+
+  setLoadingState(isLoading: boolean) {
+    this.loadingSubject.next(isLoading);
   }
 
   login(login: Login): Observable<any> {
@@ -34,9 +42,9 @@ export class AuthenticationService extends HttpBaseService {
           sessionStorage.setItem('access_token', resposta.content.accesstoken);
           localStorage.setItem('refresh_token', resposta.content.refreshtoken);
           this.tempoRestanteDoToken(resposta.content.accesstoken)
-          const userLogged = this.obterUsuariodoToken(resposta.content.accesstoken);
+          const userLogged = this.obterUsuarioDoToken(resposta.content.accesstoken);
           sessionStorage.setItem('username', userLogged?.username);
-          this.subjectUsuario.next(userLogged?.username);
+          this.subjectUsuario.next(this.obterUsuarioDoToken(resposta.content.accesstoken));
           this.subjectLogin.next(true);
         }
         return resposta;
@@ -47,6 +55,7 @@ export class AuthenticationService extends HttpBaseService {
   logout(): void {  
     const deviceId = localStorage.getItem('device_id');
     this.httpGet(`?deviceid=${deviceId}&action=logout`).pipe(
+      take(1),
       map((resposta) => {
         console.log(resposta);
       })
@@ -57,29 +66,46 @@ export class AuthenticationService extends HttpBaseService {
     this.subjectLogin.next(false);
   }
 
-  refreshToken(): void {
+  refreshToken(): Observable<boolean> {
     const rToken = localStorage.getItem('refresh_token');
     const deviceId = localStorage.getItem('device_id');
-    
-    if (rToken) {
-      // console.log('refreshToken', rToken, deviceId);
-      this.httpGet(`?rtok=${rToken}&deviceid=${deviceId}&action=refreshToken`).pipe(
-        map((resposta) => {
-          if(!resposta.success)
-            this.deslocarUsuarioParaPaginaDeLogin();
-          if(resposta.success){
-            sessionStorage.setItem('access_token', resposta.content.accesstoken);
-            localStorage.setItem('refresh_token', resposta.content.refreshtoken);
-            this.tempoRestanteDoToken(resposta.content.accesstoken)
-            this.subjectUsuario.next(this.obterUsuariodoToken(resposta.content.accesstoken));
-            this.subjectLogin.next(true);
-          }
-        })
-      ).subscribe()
+  
+    if (!rToken || !deviceId) {
+      console.warn('Sem refresh_token ou device_id, redirecionando para login...');
+      this.redirecionarUsuarioParaPaginaDeLogin();
+      return of(false);
     }
-  }
 
-  deslocarUsuarioParaPaginaDeLogin(): void {
+    this.setLoadingState(true);
+  
+    console.log('Tentando renovar o token...');
+    return this.httpGet(`?rtok=${rToken}&deviceid=${deviceId}&action=refreshToken`).pipe(
+      map((resposta) => {
+        this.setLoadingState(false);
+        if (!resposta.success) {
+          console.error('Falha ao renovar token, redirecionando...');
+          this.redirecionarUsuarioParaPaginaDeLogin();
+          return false;
+        }
+  
+        console.log('Token renovado com sucesso!');
+        sessionStorage.setItem('access_token', resposta.content.accesstoken);
+        localStorage.setItem('refresh_token', resposta.content.refreshtoken);
+        const userLogged = this.obterUsuarioDoToken(resposta.content.accesstoken);
+        sessionStorage.setItem('username', userLogged?.username);
+        this.tempoRestanteDoToken(resposta.content.accesstoken);
+        this.subjectUsuario.next(this.obterUsuarioDoToken(resposta.content.accesstoken));
+        return true;
+      }),
+      catchError((err) => {
+        console.error('Erro ao chamar refreshToken:', err);
+        this.redirecionarUsuarioParaPaginaDeLogin();
+        return of(false);
+      })
+    );
+  }
+  
+  redirecionarUsuarioParaPaginaDeLogin(): void {
     this.logout()
     this.router.navigate(['login']);
   }
@@ -110,7 +136,18 @@ export class AuthenticationService extends HttpBaseService {
     return this.subjectUsuario.asObservable();
   }
 
-  private obterUsuariodoToken(token: string) {
+  obterUsuarioLogadoDaSessao(): { username: string; token: string } | null {
+    const token = sessionStorage.getItem('access_token');
+    const username = sessionStorage.getItem('username');
+
+    if (token && username) {
+      return { username, token };
+    }
+
+    return null; // Retorna null se o usuário não estiver logado
+  }
+
+  private obterUsuarioDoToken(token: string) {
     if(!token)
       return null;
     const payloadData = token.split('.')[1];
@@ -119,7 +156,7 @@ export class AuthenticationService extends HttpBaseService {
     return {username: name, userId: userId, token: token};
   }
 
-  obterApenasUsuarioComToken(token: string) {
+  getUserNameWithToken(token: string) {
     if(!token)
       return null;
     const payloadData = token.split('.')[1];
@@ -145,7 +182,7 @@ export class AuthenticationService extends HttpBaseService {
       this.tokenExpiration = expirationTime * 1000; // Convertendo para milissegundos
       const currentTime = new Date().getTime();
       const remainingTime = this.tokenExpiration - currentTime;
-      console.log(remainingTime);      
+      // console.log(remainingTime);
       // const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
       // const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
       // const formattedTime = this.formatTime(minutes, seconds);

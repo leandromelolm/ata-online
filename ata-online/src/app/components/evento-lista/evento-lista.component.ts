@@ -14,6 +14,7 @@ export class EventoListaComponent {
 
   eventos: any[] = [];
   btnCadastrarEvento: string = 'Cadastrar Evento';
+  isLoading: boolean = false;
 
   constructor(
     private apiService: ApiService,
@@ -29,15 +30,25 @@ export class EventoListaComponent {
   }
 
   getListaEvento(): void {
+    this.isLoading = true;
     this.apiService.getEventos()
-    .pipe(
-      // map((r) => {
-      //   console.log(r);
-      //   return r
-      // })
-      ).subscribe((data) => {
-        this.eventos = data.content.itens.reverse();
-        sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
+    .pipe( //map((r) => { console.log(r); return r;})
+    )
+    .subscribe({
+      next: (data: any) => {
+        if(data.success){
+          console.log('eventos', data);
+          this.eventos = data.content.itens.reverse();
+          sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error('error', error);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
     });
   }
 
