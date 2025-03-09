@@ -76,7 +76,6 @@ export class ModalEventoCadastrarComponent {
   bCoordsAutorizarRegistro: boolean = false;
   latitude: string = '0';
   longitude: string = '0';
-  dono: string = 'sindatsb'; // alterar para pegar do token
 
   @Output() valueChanged = new EventEmitter<string>();
 
@@ -136,7 +135,7 @@ export class ModalEventoCadastrarComponent {
       status: this.statusEvento,
       coords: {lat: this.latitude, long: this.longitude},
       action: 'createEvento',
-      dono: this.dono,
+      dono: sessionStorage.getItem('username'),
       atok: sessionStorage.getItem('access_token')
     };
     
