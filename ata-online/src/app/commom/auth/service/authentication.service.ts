@@ -81,13 +81,13 @@ export class AuthenticationService extends HttpBaseService {
     console.log('Tentando renovar o token...');
     return this.httpGet(`?rtok=${rToken}&deviceid=${deviceId}&action=refreshToken`).pipe(
       map((resposta) => {
-        this.setLoadingState(false);
+        
         if (!resposta.success) {
           console.error('Falha ao renovar token, redirecionando...');
           this.redirecionarUsuarioParaPaginaDeLogin();
           return false;
         }
-  
+        
         console.log('Token renovado com sucesso!');
         sessionStorage.setItem('access_token', resposta.content.accesstoken);
         localStorage.setItem('refresh_token', resposta.content.refreshtoken);
@@ -95,6 +95,8 @@ export class AuthenticationService extends HttpBaseService {
         sessionStorage.setItem('username', userLogged?.username);
         this.tempoRestanteDoToken(resposta.content.accesstoken);
         this.subjectUsuario.next(this.obterUsuarioDoToken(resposta.content.accesstoken));
+        
+        this.setLoadingState(false);
         return true;
       }),
       catchError((err) => {

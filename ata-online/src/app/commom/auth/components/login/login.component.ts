@@ -104,7 +104,7 @@ export class LoginComponent {
     this.isLoadingButton = true;
 
     setTimeout(() => {
-      this.router.navigate(['criar-evento']);
+      this.router.navigate(['meus-eventos']);
     }, 2000);
   }
 

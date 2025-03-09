@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../commom/auth/service/authentication.service';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +15,8 @@ export class MenuComponent {
   rotaParaRegistros: string = '';
   isAuthenticated: boolean = false;
   isLoading: boolean = false;
+  messageLoading: string = 'Carregando usuário...';
+  private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -23,20 +25,12 @@ export class MenuComponent {
 
   ngOnInit() {
     this.checkAuthUser();
-    this.username = sessionStorage.getItem('username') || '';
+    this.messageOfLoading();
+  }
 
-    this.authenticationService.loading$.pipe(take(1)).subscribe((loading) => {
-      console.log('loading');
-      this.isLoading = loading;
-    });
-
-    if(!this.username){
-      this.authenticationService.obterUsuario().pipe(take(1)).subscribe((user) =>{
-        if(user){
-          this.username = user.username;
-        }
-      })
-    }
+  ngOnDestroy() {
+    this.destroy$.next(); // Emite um valor para encerrar assinaturas
+    this.destroy$.complete(); // Completa o Subject para evitar vazamentos de memória
   }
 
   getSessionUrlParameter(rota: string): void {
@@ -62,4 +56,39 @@ export class MenuComponent {
       }
     );
   }
+
+  messageOfLoading(): void {
+    this.authenticationService.loading$.pipe(
+      takeUntil(this.destroy$))
+      .subscribe((loading) => {
+        console.log('loading', loading);
+        this.isLoading = loading;
+        if(!loading || !this.username) {          
+          this.username = sessionStorage.getItem('username') || '';
+        }
+      }
+    )
+  }
+
+  // não chamada
+  atualizarNomeDeUsuarioNoMenu(): void {
+    if(!this.username) {
+      setTimeout(() =>{  
+        this.authenticationService.obterUsuario().pipe(take(1)).subscribe((user) =>{             
+          if(user) {     
+            this.username = user.username;
+          }
+        })
+      }, 5000)
+    }
+  }
+
+  // não chamada
+  loading(): void {
+    this.authenticationService.loading$.pipe(take(1)).subscribe((loading) => {
+      console.log('loading', loading);
+      this.isLoading = loading;
+    });
+  }
+
 }

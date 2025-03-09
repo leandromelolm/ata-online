@@ -3,7 +3,7 @@
         <app-button [textButton]="btnCadastrarEvento" (click)="openModalEventoCadastrar()"></app-button>
     </div>
     <div class="col-4">
-        <button (click)="getListaEvento()" class="btn btn-link">
+        <button (click)="getListaEvento()" class="btn btn-link" alt="recarregar">
             <mat-icon>refresh</mat-icon>
         </button>
     </div>
@@ -28,7 +28,7 @@
     </mat-card>
 } @empty {
     <p>Nenhum item encontrado!</p>
-    <p>Tente atualizar a página.</p>
+    <p>Se você tem eventos e não apareceram <a (click)="getListaEvento()">Clique Aqui</a> para se feita uma nova busca </p>
 }
 
 <app-loading [show]="isLoading" message="Carregando dados..."></app-loading>
