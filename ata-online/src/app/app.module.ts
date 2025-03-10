@@ -13,10 +13,10 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from './shared/shared.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ButtonComponent } from './components/button/button.component';
 import { LocationComponent } from './components/location/location.component';
 import { IndexComponent } from './pages/index/index.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -38,7 +38,6 @@ import { LoadingComponent } from './shared/loading/loading.component';
 @NgModule({
   declarations: [
     AppComponent,
-    ButtonComponent,
     LocationComponent,
     IndexComponent,
     HomeComponent,
@@ -72,6 +71,7 @@ import { LoadingComponent } from './shared/loading/loading.component';
     MatCardModule,
     MatDialogModule,
     BrowserAnimationsModule,
+    SharedModule
   ],
   providers: [
     provideAnimationsAsync(),

@@ -32,6 +32,9 @@
             @if(!isLoadingButton) {Entrar}
             @else {<mat-spinner [diameter]="30"></mat-spinner>}
         </button>
+
+        <app-button textButton="Acessar" size="100" (click)="login()"></app-button>
+
         @if(errorAuth) {
             <div class="alert alert-danger">
                 {{messageLogin}}

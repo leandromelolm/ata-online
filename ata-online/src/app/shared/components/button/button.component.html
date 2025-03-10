@@ -6,5 +6,12 @@
         'btn__secondary': btnColor === 'btn__grey',
     }"    
     [disabled]="disabled">
-    {{textButton}}
+
+    <mat-spinner *ngIf="loading" [diameter]="30"></mat-spinner>
+    
+    <ng-container *ngIf="!loading">
+        <i *ngIf="icon" [ngClass]="icon"></i>
+        {{ textButton }}
+    </ng-container>
+    
 </button>
