@@ -1,10 +1,11 @@
 <div class="login-container">
-    <h1> Entrar no AtaOnline</h1>
+    <h1 class="titulo"> AtaOnline</h1>
+    <h1 class="subtitulo">Entrar</h1>    
 
     <form class="login-form" [formGroup]="loginForm">
         <mat-form-field class="login-full-width">
             <mat-label>Usuário</mat-label>
-            <input type="text" matInput placeholder="nome de usuário" formControlName="username">
+            <input class="input__form" type="text" matInput placeholder="nome de usuário" formControlName="username">
             <mat-hint>Campo usuário</mat-hint>
             @if(loginForm.controls['username'].hasError('required')) {
                 <mat-error>Nome de usuário é obrigatório</mat-error>
@@ -15,7 +16,7 @@
         </mat-form-field>
         <mat-form-field class="login-full-width">
             <mat-label>Senha</mat-label>
-            <input type="password" matInput formControlName="password" minLength="6">
+            <input class="input__form" type="password" matInput formControlName="password" minLength="6">
             <mat-hint>Campo senha</mat-hint>
             @if(loginForm.controls['password'].hasError('required')) {
                 <mat-error>Senha é obrigatório</mat-error>
@@ -27,13 +28,11 @@
                 <mat-error>A senha deve conter um desses caracteres: !, ?, #, $, %, &, *</mat-error>
             }
         </mat-form-field>
-
-        <button class="btn btn-primary btn__entrar" mat-raised-button (click)="login()" [disabled]="isLoginButtonDisabled">
-            @if(!isLoadingButton) {Entrar}
-            @else {<mat-spinner [diameter]="30"></mat-spinner>}
-        </button>
-
-        <app-button textButton="Acessar" size="100" (click)="login()"></app-button>
+        
+        <app-button textButton="Acessar" [loading]="loading" [disabled]="disabled" size="100" (click)="login()"></app-button>
+        <!-- <button class="btn btn-primary btn__entrar" mat-raised-button (click)="login()" [disabled]="isLoginButtonDisabled">
+            @if(!isLoadingButton) {Entrar} @else {<mat-spinner [diameter]="30"></mat-spinner>}
+        </button> -->
 
         @if(errorAuth) {
             <div class="alert alert-danger">

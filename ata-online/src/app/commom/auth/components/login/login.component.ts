@@ -21,6 +21,8 @@ export class LoginComponent {
   successMessage: string;
   isLoginButtonDisabled: boolean = true;
   isLoadingButton: boolean = false;
+  loading: boolean = false;
+  disabled: boolean = true;
 
   private _snackBar = inject(MatSnackBar);
 
@@ -42,6 +44,7 @@ export class LoginComponent {
 
     this.loginForm.valueChanges.subscribe(() => {
       this.isLoginButtonDisabled = !this.loginForm.valid;
+      this.disabled = !this.loginForm.valid;
     });
 
     this.generateDeviceId();
@@ -53,6 +56,7 @@ export class LoginComponent {
     this.authLogin.username = this.authLogin.username.toLowerCase();
     this.isLoginButtonDisabled = true;
     this.isLoadingButton = true;
+    this.loading = true;
     
     this.authenticationService.login({
       username: this.authLogin.username,
@@ -95,6 +99,7 @@ export class LoginComponent {
     this.messageLogin = message;
     this.isLoginButtonDisabled = false;
     this.isLoadingButton = false;
+    this.loading = false;
   }
 
   handleLoginSuccess(message: string){

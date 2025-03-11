@@ -4,13 +4,13 @@
     height: 100vh;
     text-align: center;
     margin: 0;
-    padding: 10%;
+    padding: 25% 10%;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     max-width: 400px;
     margin: 0 auto;
     margin-top: 20px;
@@ -22,17 +22,12 @@
 
 .login-full-width {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 mat-hint {
     font-size: 0.875rem;
     color: #9e9e9e;
-}
-
-mat-input {
-    font-size: 1rem;
-    padding: 10px;
-    color: gray;
 }
 
 .btn__entrar {
@@ -42,4 +37,27 @@ mat-input {
     display: inline-flex;
     align-items: center; 
     justify-content: center; 
+}
+
+.titulo{
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 7px;
+    color: var(--primay-color);
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+.subtitulo{
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--gray-color);
+    margin: 0px 0px 30px 0px;
+    padding: 0;
+    text-align: center;
+}
+
+app-button {
+    margin: 20px 0px;
 }
