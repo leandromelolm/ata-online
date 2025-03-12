@@ -19,8 +19,6 @@ export class LoginComponent {
   successAuth: boolean;
   messageLogin: string;
   successMessage: string;
-  isLoginButtonDisabled: boolean = true;
-  isLoadingButton: boolean = false;
   loading: boolean = false;
   disabled: boolean = true;
 
@@ -43,7 +41,6 @@ export class LoginComponent {
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.isLoginButtonDisabled = !this.loginForm.valid;
       this.disabled = !this.loginForm.valid;
     });
 
@@ -54,9 +51,9 @@ export class LoginComponent {
     this.handleLoginError(true, '');
     this.authLogin = Object.assign('',this.authLogin, this.loginForm.value);
     this.authLogin.username = this.authLogin.username.toLowerCase();
-    this.isLoginButtonDisabled = true;
-    this.isLoadingButton = true;
+    if(this.disabled) return;
     this.loading = true;
+    this.disabled = true
     
     this.authenticationService.login({
       username: this.authLogin.username,
@@ -97,17 +94,12 @@ export class LoginComponent {
   handleLoginError(success: boolean, message: string){
     this.errorAuth = !success
     this.messageLogin = message;
-    this.isLoginButtonDisabled = false;
-    this.isLoadingButton = false;
     this.loading = false;
   }
 
   handleLoginSuccess(message: string){
     this.successAuth = true;
     this.messageLogin = message;
-    this.isLoginButtonDisabled = true;
-    this.isLoadingButton = true;
-
     setTimeout(() => {
       this.router.navigate(['meus-eventos']);
     }, 2000);

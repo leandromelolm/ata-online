@@ -4,11 +4,11 @@
     [ngStyle]="{ height: btnHeight + 'px'}"
     [disabled]="disabled">
 
-    <mat-spinner *ngIf="loading" [diameter]="24" [color]="colorSpinner"></mat-spinner>
-    
     <ng-container *ngIf="!loading">
         <i *ngIf="icon" [ngClass]="icon"></i>
         {{ textButton }}
     </ng-container>
+    
+    <mat-spinner *ngIf="loading" [diameter]="24" [color]="colorSpinner"></mat-spinner>
     
 </button>
