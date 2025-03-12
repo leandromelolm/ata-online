@@ -8,10 +8,13 @@ import { Component, Input } from '@angular/core';
 export class ButtonComponent {
 
   @Input() textButton: string;
-  @Input() size: string = 'auto';
+  @Input() size: string = 'auto'
+  @Input() display: string = ''
+  @Input() btnHeight: string = 'auto'
   @Input() disabled: boolean = false;
   @Input() btnColor: string = 'btn__primary';
   @Input() icon: string = '';
   @Input() loading: boolean = false;
+  @Input() colorSpinner: string = 'accent'; // primary, accent, warn
 
 }

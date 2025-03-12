@@ -1,13 +1,10 @@
 <button 
     class="btn__"
-    [ngClass]="{
-        'w-100': size === '100', 
-        'btn__primary': btnColor === 'btn__primary',
-        'btn__secondary': btnColor === 'btn__grey',
-    }"    
+    [ngClass]="['btn', btnColor, display, size]"
+    [ngStyle]="{ height: btnHeight + 'px'}"
     [disabled]="disabled">
 
-    <mat-spinner *ngIf="loading" [diameter]="24"></mat-spinner>
+    <mat-spinner *ngIf="loading" [diameter]="24" [color]="colorSpinner"></mat-spinner>
     
     <ng-container *ngIf="!loading">
         <i *ngIf="icon" [ngClass]="icon"></i>
