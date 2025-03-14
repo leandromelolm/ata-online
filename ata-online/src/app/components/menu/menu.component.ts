@@ -41,6 +41,9 @@ export class MenuComponent {
   }
 
   logout() {
+    if(!this.username){
+       window.location.href = '/index'
+    }
     this.authenticationService.logout();
     this.router.navigate(['index']);
   }
