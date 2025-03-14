@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { map } from 'rxjs';
+import { map, Subject, take, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEventoComponent } from '../modal-evento/modal-evento.component';
 import { ModalEventoCadastrarComponent } from '../modal-evento-cadastrar/modal-evento-cadastrar.component';
+import { AuthenticationService } from '../../commom/auth/service/authentication.service';
 
 @Component({
   selector: 'app-evento-lista',
@@ -15,18 +16,33 @@ export class EventoListaComponent {
   eventos: any[] = [];
   btnCadastrarEvento: string = 'Cadastrar Evento';
   isLoading: boolean = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private apiService: ApiService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private authService: AuthenticationService
   ) {}
 
   ngOnInit() {
     const lista = sessionStorage.getItem('evento-lista');
     if (lista)
       this.eventos = JSON.parse(lista)
-    else
-      this.getListaEvento();
+    else {
+      this.authService.usuarioLogado$.pipe(
+      takeUntil(this.destroy$)).subscribe(
+        logged =>{
+          if(logged) {
+            this.getListaEvento();
+          }
+        }
+      )
+    }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(); // Emite um valor para encerrar assinaturas
+    this.destroy$.complete(); // Completa o Subject para evitar vazamentos de memória
   }
 
   getListaEvento(): void {
