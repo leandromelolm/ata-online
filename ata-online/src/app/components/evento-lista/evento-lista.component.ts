@@ -57,6 +57,8 @@ export class EventoListaComponent {
           this.eventos = data.content.itens.reverse();
           sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
           this.isLoading = false;
+        } else {
+          this.authService.logout();
         }
       },
       error: (error) => {

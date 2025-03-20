@@ -15,7 +15,7 @@ export const canMatchAuthGuard: CanActivateFn = (route, state) => {
   return authenticationService.usuarioEstaLogado().pipe(
     map((isAuthenticated) => {  
       if(isAuthenticated) {
-        router.navigate(['/criar-evento']);
+        router.navigate(['/meus-eventos']);
         return false;
       } else {
         return true;

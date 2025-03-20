@@ -25,7 +25,7 @@ import { CameraComponent } from './components/camera/camera.component';
 import { FormParticipanteComponent } from './components/form-participante/form-participante.component';
 import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 import { RegistrosComponent } from './pages/registros/registros.component';
-import { EventoGerenciarComponent } from './pages/evento-gerenciar/evento-gerenciar.component';
+import { MeusEventosComponent } from './pages/meus-eventos/meus-eventos.component';
 import { TermsOfUseComponent } from './pages/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { EventoListaComponent } from './components/evento-lista/evento-lista.component';
@@ -46,7 +46,7 @@ import { LoadingComponent } from './shared/loading/loading.component';
     FormParticipanteComponent,
     QrcodeComponent,
     RegistrosComponent,
-    EventoGerenciarComponent,
+    MeusEventosComponent,
     TermsOfUseComponent,
     PrivacyPolicyComponent,
     EventoListaComponent,
@@ -71,7 +71,7 @@ import { LoadingComponent } from './shared/loading/loading.component';
     MatCardModule,
     MatDialogModule,
     BrowserAnimationsModule,
-    SharedModule
+    SharedModule,
   ],
   providers: [
     provideAnimationsAsync(),
