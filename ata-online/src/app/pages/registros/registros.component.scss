@@ -1,3 +1,26 @@
+.container{
+  text-align: center;
+  height: 100vh;
+}
+
+.subtitulo{
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--gray-color);
+  margin: 0px 0px 30px 0px;
+  padding: 0;
+  text-align: center;
+}
+
+.div__message_erro{
+  color: red;
+  font-weight: 500;
+  font-size: medium;
+  display: grid;
+  place-items: center;
+  margin: 30px 0px;
+}
+
 h3  {
     margin: 50px 0px 0px 0px;
     text-align: center;
@@ -5,6 +28,7 @@ h3  {
 
 table {
     width: 100%;
+
 }
   
 th.header {
