@@ -73,7 +73,7 @@ export class AuthenticationService extends HttpBaseService {
   
     if (!rToken || !deviceId) {
       console.warn('Sem refresh_token ou device_id, redirecionando para login...');
-      this.redirecionarUsuarioParaPaginaDeLogin();
+      this.logout();
       return of(false);
     }
 
@@ -85,7 +85,7 @@ export class AuthenticationService extends HttpBaseService {
         
         if (!resposta.success) {
           console.error('Falha ao renovar token, redirecionando...');
-          this.redirecionarUsuarioParaPaginaDeLogin();
+          this.logout();
           return false;
         }
         
@@ -102,15 +102,10 @@ export class AuthenticationService extends HttpBaseService {
       }),
       catchError((err) => {
         console.error('Erro ao chamar refreshToken:', err);
-        this.redirecionarUsuarioParaPaginaDeLogin();
+        this.logout();
         return of(false);
       })
     );
-  }
-  
-  redirecionarUsuarioParaPaginaDeLogin(): void {
-    this.logout()
-    this.router.navigate(['login']);
   }
 
   private carregarAccessTokenDoStorage(): any {
