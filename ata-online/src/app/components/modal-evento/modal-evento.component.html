@@ -13,7 +13,7 @@
         </div>
         <div class="col-6">
             <h4 class="titulo-informacao">Status</h4>
-            <p class="informacao">{{status}}</p>
+            <span class="badge rounded-pill text-bg-{{badgeColor}} align-middle">{{status}}</span>
         </div>       
         <div class="col-6">
             <h4 class="titulo-informacao">Data</h4>
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="form__container">
-        <select id="status" class="input-field" [(ngModel)]="selectedStatus">
+        <select id="status" class="input-field" [(ngModel)]="selectedStatus" (change)="onStatusChange($event)">
             <option *ngFor="let status of statusList" [value]="status.value">
               {{ status.label }}
             </option>

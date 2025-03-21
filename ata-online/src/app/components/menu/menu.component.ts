@@ -63,15 +63,24 @@ export class MenuComponent {
   messageOfLoading(): void {
     this.authenticationService.loading$.pipe(
       takeUntil(this.destroy$))
-      .subscribe((loading) => {
-        console.log('loading', loading);
-        this.isLoading = loading;
-        if(!loading || !this.username) {          
-          this.username = sessionStorage.getItem('username') || '';
+      .subscribe({
+        next: (loading) => {
+          console.log('loading', loading);
+          this.isLoading = loading;
+          if(!loading || !this.username) {          
+            this.username = sessionStorage.getItem('username') || '';
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+        complete: () => {
+          console.log('requisição completa');          
         }
-      }
+      }     
     )
-  }
+  } 
+
 
   // não chamada
   atualizarNomeDeUsuarioNoMenu(): void {

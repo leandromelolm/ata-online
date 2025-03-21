@@ -16,6 +16,7 @@ export class ModalEventoComponent {
   btnEditarStatus: string = 'Alterar Status';
   isLoading: boolean = false;
   mensagem: string = '';
+  badgeColor: string = 'success';
   statusList = [
     { label: 'ABERTO', value: 'ABERTO' },
     { label: 'FECHADO', value: 'FECHADO' },
@@ -35,6 +36,7 @@ export class ModalEventoComponent {
     console.log(this.userData);
     this.selectedStatus = this.userData.status;
     this.status = this.userData.status;
+    this.changedBadgedColor(this.userData.status);
   }
 
   editStatus() {
@@ -54,6 +56,7 @@ export class ModalEventoComponent {
           if(response.success) {
             this.mensagem = response.message;
             this.status = this.selectedStatus;
+            this.changedBadgedColor(this.status);
             this.valueChanged.emit();
           }
         },
@@ -68,10 +71,28 @@ export class ModalEventoComponent {
       })
     }
 
-  closeModal() { this.dialogRef.close(); }
+  closeModal(): void { 
+    this.dialogRef.close(); 
+  }
 
   fecharModal(): void {
     this.closeModal();
   }
+
+  changedBadgedColor(status: String): void {
+    switch (status) {
+      case 'ABERTO': this.badgeColor = 'success'; break;
+      case 'FECHADO': this.badgeColor = 'danger'; break;
+      case 'PAUSADO': this.badgeColor = 'Warning'; break;
+      case 'ENCERRADO': this.badgeColor = 'secondary'; break;
+      case 'CANCELADO': this.badgeColor = 'secondary'; break;
+    }
+  }
+
+  onStatusChange(event: Event) {
+    // const selectedValue = (event.target as HTMLSelectElement).value;
+    // console.log('Status selecionado:', selectedValue);
+    this.mensagem = '';
+  } 
 
 }
