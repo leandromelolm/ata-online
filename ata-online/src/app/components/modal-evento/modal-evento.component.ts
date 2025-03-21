@@ -83,7 +83,7 @@ export class ModalEventoComponent {
     switch (status) {
       case 'ABERTO': this.badgeColor = 'success'; break;
       case 'FECHADO': this.badgeColor = 'danger'; break;
-      case 'PAUSADO': this.badgeColor = 'Warning'; break;
+      case 'PAUSADO': this.badgeColor = 'warning'; break;
       case 'ENCERRADO': this.badgeColor = 'secondary'; break;
       case 'CANCELADO': this.badgeColor = 'secondary'; break;
     }
