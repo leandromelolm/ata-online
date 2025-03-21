@@ -64,6 +64,7 @@ export class AuthenticationService extends HttpBaseService {
     localStorage.removeItem('device_id');
     this.subjectUsuario.next(null);
     this.subjectLogin.next(false);
+    this.router.navigate(['login']);
   }
 
   refreshToken(): Observable<boolean> {

@@ -20,7 +20,7 @@ export class LoginComponent {
   messageLogin: string;
   successMessage: string;
   loading: boolean = false;
-  disabled: boolean = true;
+  btnDisabled: boolean = true;
 
   private _snackBar = inject(MatSnackBar);
 
@@ -41,19 +41,23 @@ export class LoginComponent {
     });
 
     this.loginForm.valueChanges.subscribe(() => {
-      this.disabled = !this.loginForm.valid;
+      this.btnDisabled = this.loginForm.invalid;
     });
 
     this.generateDeviceId();
   }
 
+
   login() {
     this.handleLoginError(true, '');
+
     this.authLogin = Object.assign('',this.authLogin, this.loginForm.value);
     this.authLogin.username = this.authLogin.username.toLowerCase();
-    if(this.disabled) return;
+    
+    if (this.loginForm.invalid || this.loading) return;
+
     this.loading = true;
-    this.disabled = true
+    this.btnDisabled = true;
     
     this.authenticationService.login({
       username: this.authLogin.username,
@@ -62,7 +66,6 @@ export class LoginComponent {
       deviceid: localStorage.getItem('device_id') || ''
     }).pipe(
       catchError((error) => {
-      // this.openSnackBar('Ocorreu um erro no Login!');
       return error;
       })
     ).subscribe({
@@ -71,16 +74,15 @@ export class LoginComponent {
           this.handleLoginSuccess(res.message)
         } else {
           this.handleLoginError(res.success, res.message);
-          // this.openSnackBar('Erro no Login! Usuário ou senha inválidos!');
+          this.loading = false;
+          this.btnDisabled = false;
         }
       },
       error: (error) => {
         console.error(error);
-        // this.openSnackBar('Erro no Login!');
       },
       complete: () => {
-        console.log('Login request completed');
-        
+        console.log('Login request completed');      
       }
     });
 
@@ -94,7 +96,6 @@ export class LoginComponent {
   handleLoginError(success: boolean, message: string){
     this.errorAuth = !success
     this.messageLogin = message;
-    this.loading = false;
   }
 
   handleLoginSuccess(message: string){

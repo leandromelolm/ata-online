@@ -29,7 +29,13 @@
             }
         </mat-form-field>
         
-        <app-button textButton="Acessar" [loading]="loading" [disabled]="disabled" size="w-100" display="d-flex" btnHeight="56" (click)="login()"></app-button>
+        <app-button textButton="Acessar" 
+            [loading]="loading" 
+            [disabled]="btnDisabled" 
+            size="w-100" display="d-flex" btnHeight="56"
+            (click)="login()">
+        </app-button>
+
         @if(errorAuth) {
             <div class="alert alert-danger">
                 {{messageLogin}}
