@@ -3,7 +3,10 @@
     <div class="page__content">
 
       <div class="container">
-        <span class="subtitulo">Registros</span>
+        <div class="d-grid">
+          <span class="subtitulo">Registros</span>
+          <span class="subtitulo">{{eventoTitulo}} | {{eventoData}}</span>
+        </div>
         @if (!isUrlAta) {
           <div class="div__message_erro">
             Leia QRCode do Evento
