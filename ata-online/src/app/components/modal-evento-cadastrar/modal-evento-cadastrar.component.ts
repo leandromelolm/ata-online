@@ -213,7 +213,7 @@ export class ModalEventoCadastrarComponent {
     if (this.titulo && this.hora && this.data && this.local && this.descricao)
       return 'btn__primary';
     else
-      return 'btn__2';
+      return 'btn__grey';
   }
 
   limparCampos() {

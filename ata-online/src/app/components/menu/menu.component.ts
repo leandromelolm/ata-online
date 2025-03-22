@@ -65,9 +65,8 @@ export class MenuComponent {
       takeUntil(this.destroy$))
       .subscribe({
         next: (loading) => {
-          console.log('loading', loading);
           this.isLoading = loading;
-          if(!loading || !this.username) {          
+          if(!loading || !this.username) {             
             this.username = sessionStorage.getItem('username') || '';
           }
         },

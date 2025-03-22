@@ -31,18 +31,19 @@
         
         <app-button textButton="Acessar" 
             [loading]="loading" 
-            [disabled]="btnDisabled" 
+            [disabled]="btnDisabled"
+            [btnColor]="btnColor"
             size="w-100" display="d-flex" btnHeight="56"
             (click)="login()">
         </app-button>
 
         @if(errorAuth) {
-            <div class="alert alert-danger">
+            <div class="alert alert-danger div__message">
                 {{messageLogin}}
             </div>
         } 
         @if(successAuth) {
-            <div class="alert alert-success">
+            <div class="alert alert-success div__message">
                 {{messageLogin}}
             </div>
         } 

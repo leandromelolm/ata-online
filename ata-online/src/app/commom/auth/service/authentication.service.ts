@@ -85,6 +85,7 @@ export class AuthenticationService extends HttpBaseService {
         
         if (!resposta.success) {
           console.error('Falha ao renovar token, redirecionando...');
+          this.setLoadingState(false);
           this.logout();
           return false;
         }
@@ -181,10 +182,10 @@ export class AuthenticationService extends HttpBaseService {
       const currentTime = new Date().getTime();
       const remainingTime = this.tokenExpiration - currentTime;
       // console.log(remainingTime);
-      // const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
-      // const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
-      // const formattedTime = this.formatTime(minutes, seconds);
-      // console.log(formattedTime);
+      const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
+      const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
+      const formattedTime = this.formatTime(minutes, seconds);
+      console.log(formattedTime);
       return remainingTime;
     }
   }

@@ -21,6 +21,7 @@ export class LoginComponent {
   successMessage: string;
   loading: boolean = false;
   btnDisabled: boolean = true;
+  btnColor: string = 'btn__grey'
 
   private _snackBar = inject(MatSnackBar);
 
@@ -42,6 +43,7 @@ export class LoginComponent {
 
     this.loginForm.valueChanges.subscribe(() => {
       this.btnDisabled = this.loginForm.invalid;
+      this.btnColor = this.loginForm.valid ? 'btn__primary' : 'btn__grey';
     });
 
     this.generateDeviceId();
