@@ -180,20 +180,20 @@ export class AuthenticationService extends HttpBaseService {
     else {
       this.tokenExpiration = expirationTime * 1000; // Convertendo para milissegundos
       const currentTime = new Date().getTime();
-      const remainingTime = this.tokenExpiration - currentTime;
-      // console.log(remainingTime);
-      const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
-      const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
-      const formattedTime = this.formatTime(minutes, seconds);
-      console.log(formattedTime);
+      const remainingTime = this.tokenExpiration - currentTime;     
+      // this.tempoParaExpirar(remainingTime);
       return remainingTime;
     }
   }
 
-  private formatTime(minutes: number, seconds: number): string {
+  private tempoParaExpirar(remainingTime: number): string {
+    const minutes = Math.floor(remainingTime / 60000); // 60000 milissegundos = 1 minuto
+    const seconds = Math.floor((remainingTime % 60000) / 1000); // O resto do tempo em segundos
     const minutesStr = minutes.toString().padStart(2, '0');
     const secondsStr = seconds.toString().padStart(2, '0');
-    return `${minutesStr}:${secondsStr}`;
+    const formattedTime = `${minutesStr}:${secondsStr}`
+    console.log('tempo para expirar:', formattedTime)
+    return formattedTime;
   }
 
 }
