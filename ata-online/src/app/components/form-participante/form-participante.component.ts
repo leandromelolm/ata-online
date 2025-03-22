@@ -391,6 +391,9 @@ export class FormParticipanteComponent {
     
     if(this.erroValidacaoFormulario())
       return;
+
+    if(this.isSending)
+      return;
       
     const base64File = (this.imageUrl as string).split(',')[1]; // Obtém apenas o Base64
 
@@ -424,7 +427,7 @@ export class FormParticipanteComponent {
     this.apiService.addParticipanteAoEvento(obj)
     .subscribe({
       next: (response) => {
-        this.responseMessageSuccess(response)
+        this.responseMessage(response)
       },
       error: (err) => {
         this.errorMessage = `Erro ao enviar arquivo: ${err}`;
@@ -436,10 +439,10 @@ export class FormParticipanteComponent {
 
   async saveParticipanteComFetch(obj: any) {
     const res =  await this.apiService.fetchPostAddParticipante(obj);    
-    this.responseMessageSuccess(res);
+    this.responseMessage(res);
   }
 
-  responseMessageSuccess(res: any) {
+  responseMessage(res: any) {
     if (res.message) {
       this.errorMessage = '';
       this.successMessage= `Registro enviado com sucesso!`;
