@@ -59,10 +59,16 @@
     color: #15cb55;
 }
 
-.icon_pending_actions {
-    color: #D9D9D9;
-}
-
 .icon_error {
     color: #EA3323;
+}
+
+.icon_pending_actions {
+    animation: colorChange 3s ease-in-out infinite;
+}
+
+@keyframes colorChange {
+    0% { color: #808080; }
+    50% { color: #D9D9D9; }
+    100% { color: #808080; }
 }

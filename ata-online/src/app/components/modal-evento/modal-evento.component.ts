@@ -62,9 +62,11 @@ export class ModalEventoComponent {
             this.changedBadgedColor(this.status);
             this.valueChanged.emit();
             this.fontIcon = 'check';
-            console.log(response.message);            
+            console.log(response.message);
+            this.btnSalvarAlteracao = 'Salvo';
           } else {
             this.fontIcon = 'error';
+            this.btnSalvarAlteracao = 'Salvar';
           }
         },
         error: (error) => {
@@ -75,7 +77,6 @@ export class ModalEventoComponent {
           this.isLoading = false;
         },
         complete: () => {
-          this.btnSalvarAlteracao = 'Salvar';
           this.isLoading = false;
         }
       })
@@ -102,8 +103,9 @@ export class ModalEventoComponent {
   onStatusChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.btnColorSalvar = this.status === selectedValue ? 'btn__grey' : 'btn__primary'; 
+    this.fontIcon = this.status === selectedValue ? '' : 'pending_actions'; 
     this.mensagem = '';
-    this.fontIcon = 'pending_actions'
-  } 
+    this.btnSalvarAlteracao = 'Salvar';
+  }
 
 }
