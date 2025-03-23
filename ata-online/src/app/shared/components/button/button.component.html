@@ -1,7 +1,7 @@
 <button 
     class="btn__"
     [ngClass]="['btn', btnColor, display, size]"
-    [ngStyle]="{ height: btnHeight + 'px'}"
+    [ngStyle]="{ height: btnHeight + 'px', width: btnWidth + 'px' }"
     [disabled]="disabled">
 
     <ng-container *ngIf="!loading">

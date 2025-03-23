@@ -29,20 +29,21 @@
 }
 
 .form__container {
-    max-width: 98%;
+    max-width: 100%;
     margin: 10px auto;
-    padding: 20px;
+    padding: 16px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 10px;justify-content: space-between;
+    gap: 5px;justify-content: space-between;
     width: 100%;
 }
 
 .div__select_status {
     display: flex;
+    align-items: center;
     gap: 20px;
     // justify-content: space-between;
     // width: 100%;
@@ -50,5 +51,18 @@
 
 .select__field {
     border-radius: 30px;
-    border: #efefef 2px solid ;
+    border: #efefef 2px solid;
+    height: 36px;
+}
+
+.icon_check {
+    color: #15cb55;
+}
+
+.icon_pending_actions {
+    color: #D9D9D9;
+}
+
+.icon_error {
+    color: #EA3323;
 }

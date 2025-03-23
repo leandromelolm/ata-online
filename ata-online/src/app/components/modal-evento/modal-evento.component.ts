@@ -18,6 +18,7 @@ export class ModalEventoComponent {
   isLoading: boolean = false;
   mensagem: string = '';
   badgeColor: string = 'success';
+  fontIcon: string = '';
   statusList = [
     { label: 'ABERTO', value: 'ABERTO' },
     { label: 'FECHADO', value: 'FECHADO' },
@@ -50,6 +51,7 @@ export class ModalEventoComponent {
       this.btnSalvarAlteracao = 'Aguarde';
       this.isLoading = true;
       this.mensagem = '';
+      this.fontIcon = '';
 
       this.apiService.getAlteraStatusEvento(params).subscribe({
         next:(response) => {
@@ -59,11 +61,18 @@ export class ModalEventoComponent {
             this.status = this.selectedStatus;
             this.changedBadgedColor(this.status);
             this.valueChanged.emit();
+            this.fontIcon = 'check';
+            console.log(response.message);            
+          } else {
+            this.fontIcon = 'error';
           }
         },
         error: (error) => {
           console.log(error);
+          this.fontIcon = 'error';
           this.mensagem = error;
+          this.btnSalvarAlteracao = 'Salvar';
+          this.isLoading = false;
         },
         complete: () => {
           this.btnSalvarAlteracao = 'Salvar';
@@ -94,6 +103,7 @@ export class ModalEventoComponent {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.btnColorSalvar = this.status === selectedValue ? 'btn__grey' : 'btn__primary'; 
     this.mensagem = '';
+    this.fontIcon = 'pending_actions'
   } 
 
 }
