@@ -13,7 +13,8 @@ export class ModalEventoComponent {
   userData: any;
   selectedStatus: string = '';
   status: string = '';
-  btnEditarStatus: string = 'Alterar Status';
+  btnSalvarAlteracao: string = 'Salvar';
+  btnColorSalvar: string = 'btn__grey'
   isLoading: boolean = false;
   mensagem: string = '';
   badgeColor: string = 'success';
@@ -46,7 +47,7 @@ export class ModalEventoComponent {
       .set('novostatus', this.selectedStatus)
       .set('atok', sessionStorage.getItem('access_token') || '');
       
-      this.btnEditarStatus = 'Aguarde...';
+      this.btnSalvarAlteracao = 'Aguarde';
       this.isLoading = true;
       this.mensagem = '';
 
@@ -65,7 +66,7 @@ export class ModalEventoComponent {
           this.mensagem = error;
         },
         complete: () => {
-          this.btnEditarStatus = 'Alterar Status';
+          this.btnSalvarAlteracao = 'Salvar';
           this.isLoading = false;
         }
       })
@@ -90,8 +91,8 @@ export class ModalEventoComponent {
   }
 
   onStatusChange(event: Event) {
-    // const selectedValue = (event.target as HTMLSelectElement).value;
-    // console.log('Status selecionado:', selectedValue);
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.btnColorSalvar = this.status === selectedValue ? 'btn__grey' : 'btn__primary'; 
     this.mensagem = '';
   } 
 

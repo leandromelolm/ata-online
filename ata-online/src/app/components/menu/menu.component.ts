@@ -40,7 +40,7 @@ export class MenuComponent {
     this.router.navigate([this.rotaParaRegistros], { queryParams });
   }
 
-  logout() {
+  logout(): void {
     if(!this.username){
        window.location.href = '/index'
     }
@@ -48,7 +48,7 @@ export class MenuComponent {
     this.router.navigate(['index']);
   }
 
-  checkAuthUser() { 
+  checkAuthUser(): void { 
     this.authenticationService.usuarioEstaLogado()
     .pipe(take(1))
     .subscribe(
@@ -62,8 +62,8 @@ export class MenuComponent {
 
   messageOfLoading(): void {
     this.authenticationService.loading$.pipe(
-      takeUntil(this.destroy$))
-      .subscribe({
+      takeUntil(this.destroy$)
+    ).subscribe({
         next: (loading) => {
           this.isLoading = loading;
           if(!loading || !this.username) {             
@@ -76,9 +76,8 @@ export class MenuComponent {
         complete: () => {
           console.log('requisição completa');          
         }
-      }     
-    )
-  } 
+    })
+  }
 
 
   // não chamada

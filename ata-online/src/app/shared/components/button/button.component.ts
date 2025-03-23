@@ -12,7 +12,7 @@ export class ButtonComponent {
   @Input() display: string = ''
   @Input() btnHeight: string = 'auto'
   @Input() disabled: boolean = false;
-  @Input() btnColor: string = 'btn__primary';
+  @Input() btnColor: string = 'btn__primary'; // btn__primary, btn__grey
   @Input() icon: string = '';
   @Input() loading: boolean = false;
   @Input() colorSpinner: string = 'accent'; // primary, accent, warn

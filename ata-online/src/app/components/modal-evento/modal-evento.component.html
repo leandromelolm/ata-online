@@ -41,13 +41,16 @@
         </div>
     </div>
     <div class="form__container">
-        <select id="status" class="input-field" [(ngModel)]="selectedStatus" (change)="onStatusChange($event)">
-            <option *ngFor="let status of statusList" [value]="status.value">
-              {{ status.label }}
-            </option>
-          </select>
-        <app-button [textButton]='btnEditarStatus' (click)="editStatus()"></app-button>
-        @if(isLoading){<mat-spinner [diameter]="30"></mat-spinner>}
+        <label>Alterar Status</label>
+        <div class="div__select_status">
+            <select id="status" class="select__field" [(ngModel)]="selectedStatus" (change)="onStatusChange($event)">
+                <option *ngFor="let status of statusList" [value]="status.value">
+                    {{ status.label }}
+                </option>
+            </select>
+            <app-button [textButton]='btnSalvarAlteracao' [btnColor]="btnColorSalvar" (click)="editStatus()"></app-button>
+            @if(isLoading){<mat-spinner [diameter]="30"></mat-spinner>}
+        </div>
         {{mensagem}}
     </div>
 </div>
