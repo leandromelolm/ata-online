@@ -138,7 +138,7 @@ export class FormParticipanteComponent {
       return this.messageMeeting(evento);
     }
 
-    this.apiService.getMeeting(urlParams.get('ata'))
+    this.apiService.getEventWithGetMethod(urlParams.get('ata'))
     .subscribe({
       next: (response) => {
         this.messageMeeting(response);

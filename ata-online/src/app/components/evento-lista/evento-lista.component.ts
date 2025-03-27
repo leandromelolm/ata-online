@@ -47,7 +47,7 @@ export class EventoListaComponent {
 
   getListaEvento(): void {
     this.isLoading = true;
-    this.apiService.getEventos()
+    this.apiService.getAllEventsWithGetMethod()
     .pipe( //map((r) => { console.log(r); return r;})
     )
     .subscribe({

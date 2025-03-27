@@ -53,7 +53,7 @@ export class ModalEventoComponent {
       this.mensagem = '';
       this.fontIcon = '';
 
-      this.apiService.getAlteraStatusEvento(params).subscribe({
+      this.apiService.updateEventStatusWithGetMethod(params).subscribe({
         next:(response) => {
           console.log(response);
           if(response.success) {

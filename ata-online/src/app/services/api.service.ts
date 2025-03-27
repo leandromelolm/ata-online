@@ -18,7 +18,14 @@ export class ApiService extends HttpBaseService{
   private readonly httpClientApi = inject(HttpClient);
   private readonly authenticationService = inject(AuthenticationService);
 
-  getEventos(): Observable<any> {
+  getEventWithGetMethod(idReuniao: string | null): Observable<{content: Evento}> {
+    return this.httpClientApi.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
+    .pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getAllEventsWithGetMethod(): Observable<any> {
     const accessToken = sessionStorage.getItem('access_token') || "";
     const username = this.authenticationService.getUserNameWithToken(accessToken)?.username;
     sessionStorage.setItem('username', username);
@@ -29,17 +36,25 @@ export class ApiService extends HttpBaseService{
     return this.httpPost('', newEvento).pipe(
       take(1),
       map((res) => {
-        // console.log(res);
         return res
       })
     )
   }
 
-  getMeeting(idReuniao: string | null): Observable<{content: Evento}> {
-    return this.httpClientApi.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
-    .pipe(
-      catchError(this.handleError)
-    );
+  updateEventStatusWithGetMethod(params: HttpParams): Observable<any> {
+    return this.httpGet(`?${params}`);
+    // return this.httpClientApi.get<any>(`${this.apiUrl}`, { params });
+  }
+
+  private handleError(error: any): Observable<never> {
+    let errorMessage = 'Ocorreu um erro desconhecido';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Erro: ${error.error.message}`;
+    } else {
+      errorMessage = `Código do erro: ${error.status}, Mensagem: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 
   addParticipanteAoEvento(participante: any): Observable<any> {
@@ -54,23 +69,10 @@ export class ApiService extends HttpBaseService{
     .pipe(
       catchError(this.handleError)
     );    
-  }
+  }  
 
-  getAlteraStatusEvento(params: HttpParams): Observable<any>{
-    return this.httpClientApi.get<any>(`${this.apiUrl}`, { params });
-  }
 
-  private handleError(error: any): Observable<never> {
-    let errorMessage = 'Ocorreu um erro desconhecido';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Erro: ${error.error.message}`;
-    } else {
-      errorMessage = `Código do erro: ${error.status}, Mensagem: ${error.message}`;
-    }
-    console.error(errorMessage);
-    return throwError(() => new Error(errorMessage));
-  }
-
+  // FETCH
   async fetchGetAllParticipantes(eventoId: string) {
     const res = await fetch(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`,{
       redirect: "follow",
@@ -82,6 +84,7 @@ export class ApiService extends HttpBaseService{
     return await res.json();
   }
 
+  // FETCH
   async fetchPostAddParticipante(obj: any): Promise<Response<any>> {
     const response = await fetch(`${this.apiUrl}`, {
       redirect: "follow",

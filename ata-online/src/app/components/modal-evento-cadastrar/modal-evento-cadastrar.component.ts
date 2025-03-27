@@ -250,34 +250,6 @@ export class ModalEventoCadastrarComponent {
     }
   }
 
-  editStatus() {
-    this.responseMsgEditStatus = '';
-    const params = new HttpParams()
-    .set('action', 'editarstatusevento')
-    .set('eventoid', this.eventoid.trim().toLowerCase())
-    .set('novostatus', this.selectedStatus)
-    // .set('teste', 'teste');  
-    this.apiService.getAlteraStatusEvento(params).subscribe({
-      next:(response) => {
-        this.sucessoEditarStatus(response);
-      },
-      error: (error) => {
-        this.erroEditarStatusEvento(error);
-      }
-    }
-    )
-  }
-
-  sucessoEditarStatus(response: any) {
-    console.log(response);
-    this.responseMsgEditStatus = response.message;
-  }
-
-  erroEditarStatusEvento(error: any) {
-    console.log(error);
-    this.responseMsgEditStatus = error.message;
-  }  
-
   validarCoordenadas(coordenadas: string): boolean {
     const regex = /^-?\d{1,2}(\.\d{1,15})?,-?\d{1,3}(\.\d{1,15})?$/;
     return regex.test(coordenadas);
