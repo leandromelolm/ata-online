@@ -146,7 +146,8 @@ const generateRefreshToken = (deviceId) => {
   return refreshToken;
 };
 
-const createToken = ({ 
+/** CriarToken */
+const createToken = ({
   expiresInHours = 0, 
   expiresInMinutes = 0, 
   privateKeyJwt ='', 
@@ -157,35 +158,28 @@ const createToken = ({
     alg: 'HS256',
     typ: 'JWT',
   };
-
   const now = Date.now();
-  const expires = new Date(now);
-  
+  const expires = new Date(now);  
   if (expiresInHours > 0) {
     expires.setHours(expires.getHours() + expiresInHours);
   }
   if (expiresInMinutes > 0) {
     expires.setMinutes(expires.getMinutes() + expiresInMinutes);
   }
-
   const payload = {
     exp: Math.round(expires.getTime() / 1000),
     iat: Math.round(now / 1000),
   };
-
   Object.keys(data).forEach(function (key) {
     payload[key] = data[key];
   });
-
   const base64Encode = (text, json = true) => {
     const data = json ? JSON.stringify(text) : text;
     return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
   };
-
   const toSign = `${base64Encode(header)}.${base64Encode(payload)}`;
   const signatureBytes = Utilities.computeHmacSha256Signature(toSign, privateKeyJwt);
   const signature = base64Encode(signatureBytes, false);
-
   return `${toSign}.${signature}`;
 };
 
@@ -208,6 +202,18 @@ const validateToken = (strJwt, privatKeyJwt) => {
     return { auth: false, error: e, message: 'Erro na validação do token' }
   }
 };
+
+const extrairUsuarioDoToken = (token) => {
+  try {
+    let [header, payload, signature] = token.split('.');
+    const blob = Utilities.newBlob(Utilities.base64Decode(payload)).getDataAsString();
+    const { name, ...data } = JSON.parse(blob);
+    return { auth: true, username: name }    
+  } catch(e) {
+    return { auth: false, error: e, message: 'Erro na validação do token' }
+  }
+}
+
 
 function encrypt(value, key) {
   return CryptoJS.AES.encrypt(value, key).toString();

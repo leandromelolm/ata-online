@@ -8,9 +8,20 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const {ata, eventoid, matricula, action, 
-      novostatus, user, deviceid, atok, rtok
-    } = parameter;
+    const {ata, eventoid, matricula, action, novostatus, user, deviceid, atok, rtok} = parameter;
+    const eventos = e.parameters.ev;
+
+    if(action === 'politica-de-privacidade') {
+      return politicaDePrivacidade();
+    }
+
+    if(action === 'termos-de-uso') {
+      return termosDeUso();
+    }
+
+    if(action === 'userEventDelete') {
+      return deletarEvento(atok, eventos);
+    }
 
     if (e.pathInfo == 'index')
       return HtmlService.createHtmlOutputFromFile("index")
@@ -49,7 +60,7 @@ const doGet = (e) => {
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
-    return outputError('erro na função doGet', error);
+    return outputError('erro na função doGet', {erro: error, messagem: error.message});
   }
 //   finally {
 //    lock.releaseLock();
@@ -94,8 +105,8 @@ const doPost = (e) => {
 function findByEvento(txtBuscado) {
   try { 
     let guiaEventos = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
-    let colunaParaPesquisar = "A";
-    let textFinder = guiaEventos.getRange(colunaParaPesquisar + ":" + colunaParaPesquisar).createTextFinder(txtBuscado);
+    let col = "A";
+    let textFinder = guiaEventos.getRange(col + ":" + col).createTextFinder(txtBuscado);
     let resultados = textFinder.findAll();
 
     if (resultados.length == 0 || resultados[0].getValue() !== txtBuscado){
@@ -190,9 +201,64 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
       status: evEdit.statusNovo,
       bCoordenadasParaAutorizarRegistro: evEdit.bCoordenadasParaAutorizarRegistro
     }
-    return outputSuccess('edição executada com sucesso', eventoEditadodeResposta);
+    return outputSuccess('Edição executada com sucesso', eventoEditadodeResposta);
   } else
-    return outputError('evento não encontrado', 'edição de evento não foi executada' );    
+    return outputError('Evento não encontrado', 'Edição de evento não foi executada' );    
+}
+
+/** 
+ * Deletar Eventos do usuário 
+ * ?action=userEventDelete&user={USERNAME}&atok={ACCESS_TOKEN}&ev={EVENTO_ID}&ev={EVENTO_ID}&ev={EVENTO_ID}
+ * 
+**/
+function deletarEvento(atok, eventos) {
+  if(!validarToken(atok)) return authenticationError();
+  const user = extrairUsuarioDoToken(atok);
+  const eventosDeletado = [];
+  eventos.forEach((evento) => {
+    const eventoEncontrado = findByEventoId(evento);
+    if (eventoEncontrado.evento !== false) {
+      if (eventoEncontrado.evento[10] === user.username) { // evento[10] = Coluna K (Proprietario)
+        const sheet = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
+        sheet.deleteRow(eventoEncontrado.positionRow);
+        deletarAba(eventoEncontrado.evento[0]);
+        eventosDeletado.push(eventoEncontrado.evento[0]);
+      }
+    }
+  })
+  const response = {
+    eventos: eventos,
+    numberOfDeletedEvents: eventosDeletado.length,
+    deletedEvents: eventosDeletado,
+    username: user.username
+  }
+  return outputSuccess('Evento deletado com sucesso', response);
+}
+
+/** deletar aba(folha) da planilha */
+function deletarAba(id) {
+  const folha = spreadSheet.getSheetByName(id);
+  if (folha) {
+    spreadSheet.deleteSheet(folha);
+    console.log("Folha deletada com sucesso!");
+  } else {
+    console.log("A folha não foi encontrada.");
+  }
+}
+
+function authenticationError() {
+  return outputError('Usuário não está logado');
+}
+
+function findByEventoId(id) {
+  const sheet = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
+  const col = "A";
+  const textFinder = sheet.getRange(col + ":" + col).createTextFinder(id);
+  textFinder.matchEntireCell(true);
+  const encontrado = textFinder.findNext();
+  if (!encontrado) return {evento: false};
+  const evento = sheet.getRange(encontrado.getRow(), 1, 1, sheet.getLastColumn()).getValues().flat()
+  return {evento: evento, positionRow: encontrado.getRow()};
 }
 
 /** Listar todos os Eventos do usuário  */
@@ -423,6 +489,31 @@ function outputError(message, error = 'erro') {
   return output;
 }
 
+function politicaDePrivacidade() {
+  try {
+    const docId = env().DOCUMENT_ID_POLITICA_DE_PRIVACIDADE;
+    const doc = DocumentApp.openById(docId);
+    const body = doc.getBody();
+    const text = body.getText();
+    // return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.TEXT);
+    return ContentService.createTextOutput(JSON.stringify({ content: text })).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput("Erro: " + error.message).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+function termosDeUso() {
+  try {
+    const docId = env().DOCUMENT_ID_TERMOS_DE_USO;
+    const doc = DocumentApp.openById(docId);
+    const body = doc.getBody();
+    const text = body.getText();
+    return ContentService.createTextOutput(JSON.stringify({ content: text })).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput("Erro: " + error.message).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
 function env_example() {
   const ENV_SPREADSHEET_ID = '';
   const ENV_FOLDER_ID = '';
@@ -433,6 +524,8 @@ function env_example() {
   const KEY_ACCESS_TOKEN = '';
   const KEY_REFRESH_TOKEN = '';
   const SHEETNAME_REFRESH ='';
+  const DOCUMENTO_ID_POLITICA_DE_PRIVACIDADE = '';
+  const DOCUMENTO_ID_TERMOS_DE_USO = '';
   return {
     ENV_SPREADSHEET_ID, 
     ENV_FOLDER_ID, 
@@ -442,7 +535,9 @@ function env_example() {
     ENV_CRYPTO_KEY_SECRET,
     KEY_ACCESS_TOKEN,
     KEY_REFRESH_TOKEN,
-    SHEETNAME_REFRESH
+    SHEETNAME_REFRESH,
+    DOCUMENTO_ID_POLITICA_DE_PRIVACIDADE,
+    DOCUMENTO_ID_TERMOS_DE_USO
   };
 }
 
