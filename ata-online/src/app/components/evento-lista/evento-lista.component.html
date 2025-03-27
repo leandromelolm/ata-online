@@ -21,7 +21,21 @@
             </p>
           </mat-card-content>
         <mat-card-actions align="end">
-            <button mat-button (click)="openModalEvento(evento)" class="btn btn-link" alt="editar">
+            <button mat-button 
+                    (click)="confirmarOuExcluir(evento.id)" 
+                    [ngClass]="{ 'confirmar-excluir': eventoParaExcluir === evento.id }"
+                    class="btn btn-link btn__excluir"
+                    alt="deletar">
+                @if (loadingEventoId === evento.id) {
+                    <mat-spinner diameter="20"></mat-spinner>
+                } @else {
+                    <mat-icon>
+                        {{ eventoParaExcluir === evento.id ? 'warning' : 'delete' }}
+                    </mat-icon>
+                    {{ eventoParaExcluir === evento.id ? 'Confirmo excluir' : '' }}
+                }
+            </button>
+            <button mat-button (click)="openModalEvento(evento)" class="btn btn-link btn__openModal" alt="editar">
                 <mat-icon>more_vert</mat-icon>
             </button>
         </mat-card-actions>

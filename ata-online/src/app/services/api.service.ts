@@ -41,9 +41,22 @@ export class ApiService extends HttpBaseService{
     )
   }
 
+  deleteEventsWithGetMethod(eventos: string[]): Observable<any> {
+    const accessToken = sessionStorage.getItem('access_token') || "";
+    const username = this.authenticationService.getUserNameWithToken(accessToken)?.username;
+    let params = new HttpParams()
+      .set('action', 'userEventDelete')
+      .set('user', username)
+      .set('atok', accessToken);
+    eventos.forEach(evento => {
+      params = params.append('ev', evento);
+    });
+    return this.httpGet(`?${params}`);
+  }
+
   updateEventStatusWithGetMethod(params: HttpParams): Observable<any> {
     return this.httpGet(`?${params}`);
-    // return this.httpClientApi.get<any>(`${this.apiUrl}`, { params });
+    // return this.httpClientApi.get<any>(`${this.apiUrl}`, {params});
   }
 
   private handleError(error: any): Observable<never> {

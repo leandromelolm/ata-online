@@ -1,3 +1,21 @@
 mat-card {
     text-align: start;
 }
+
+.confirmar-excluir {
+    color: red !important;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn__excluir {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn__openModal {
+    display: flex;
+    align-items: center;
+}
+  

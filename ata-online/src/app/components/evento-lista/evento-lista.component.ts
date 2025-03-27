@@ -16,6 +16,9 @@ export class EventoListaComponent {
   eventos: any[] = [];
   btnCadastrarEvento: string = 'Cadastrar Evento';
   isLoading: boolean = false;
+  eventoParaExcluir: string | null = null;
+  loadingEventoId: string | null = null;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -81,12 +84,49 @@ export class EventoListaComponent {
     });
   }
 
-  openModalEventoCadastrar(): void{
+  openModalEventoCadastrar(): void {
     const dialogRef = this.dialog.open(ModalEventoCadastrarComponent, {
     })
     dialogRef.componentInstance.valueChanged.subscribe(() => {
       this.getListaEvento();
     });
   }
-  
+
+  confirmarOuExcluir(eventoId: string) {
+    if (this.eventoParaExcluir === eventoId) {
+      this.deleteEvento(eventoId);
+      this.eventoParaExcluir = null;
+    } else {
+      this.eventoParaExcluir = eventoId;
+      setTimeout(() => {
+        if (this.eventoParaExcluir === eventoId) {
+          this.eventoParaExcluir = null;
+        }
+      }, 10000);
+    }
+  }
+
+  deleteEvento(id: string): void {
+    this.loadingEventoId = id;
+    const listaEvento = [];
+    listaEvento.push(id);
+    this.apiService.deleteEventsWithGetMethod(listaEvento)
+      .subscribe({
+        next: (data: any) => {
+          if(data.success){
+            console.log('eventos', data);
+            this.eventos = this.eventos.filter(evento => evento.id !== id);
+          } else {
+            this.authService.logout();
+          }
+        },
+        error: (error) => {
+          console.error('error', error);
+        },
+        complete: () => {
+          this.loadingEventoId = null;
+        }
+      });
+  }
+
 }
