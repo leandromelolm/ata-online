@@ -55,13 +55,14 @@ export class EventoListaComponent {
     )
     .subscribe({
       next: (data: any) => {
-        if(data.success){
-          console.log('eventos', data);
-          this.eventos = data.content.itens.reverse();
-          sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
-          this.isLoading = false;
-        } else {
+        if (!data.success)
           this.authService.logout();
+        if (data.success){
+          if (data.content.itens) {
+            this.eventos = data.content.itens.reverse();
+            sessionStorage.setItem('evento-lista', JSON.stringify(this.eventos));
+            this.isLoading = false;
+          }
         }
       },
       error: (error) => {

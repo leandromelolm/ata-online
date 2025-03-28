@@ -32,7 +32,7 @@ const doGet = (e) => {
         return outputError('token expirado ou inválido')
       else
         return listarEventosDoUsuario(user)
-      // ?action=userEventList&user={USERNAME}&atok=${ACCESS_TOKEN}
+      // ?action=userEventList&user={USERNAME}&atok={ACCESS_TOKEN}
     
     if (action === 'refreshToken')
       return renovarToken(rtok, deviceid);
@@ -269,7 +269,7 @@ function listarEventosDoUsuario(textToFind, column = 'K', sheet = env().SHEETNAM
   textFinder.matchEntireCell(true);
   const result = textFinder.findAll();
   if (result.length === 0)
-    return { success: false, result: 'Nenhum objeto encontrado' };
+    return outputSuccess('Nenhum evento encontrado',{ 'size': 0, 'itens': '' });
   const eventos = [];
   result.forEach((celula) => {
     const evento = sh.getRange(celula.getRow(), 10).getValues().flat() // 10 = coluna J
