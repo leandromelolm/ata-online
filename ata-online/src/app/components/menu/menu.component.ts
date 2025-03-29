@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../commom/auth/service/authentication.service';
 import { Subject, take, takeUntil } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-menu',
@@ -11,21 +12,29 @@ import { Subject, take, takeUntil } from 'rxjs';
 export class MenuComponent {
 
   username: string = '';
+  isMobile: boolean = false;
 
   rotaParaRegistros: string = '';
   isAuthenticated: boolean = false;
   isLoading: boolean = false;
   messageLoading: string = 'Carregando usuário...';
+  confirmeRedirecionar: boolean = false;
   private destroy$ = new Subject<void>();
 
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit() {
     this.checkAuthUser();
     this.messageOfLoading();
+
+    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset]
+      .subscribe(result => {
+        this.isMobile = result.matches;
+    });
   }
 
   ngOnDestroy() {
@@ -77,6 +86,16 @@ export class MenuComponent {
           console.log('requisição completa');          
         }
     })
+  }
+
+  confirmRedirectPage():void {
+    if (this.confirmeRedirecionar){
+      window.open('https://github.com/leandromelolm/ata-online', '_blank');
+    }
+    this.confirmeRedirecionar = !this.confirmeRedirecionar;
+    setTimeout(() => {
+      this.confirmeRedirecionar = false;
+    }, 5000)
   }
 
 

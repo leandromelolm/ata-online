@@ -7,11 +7,11 @@
   <span class="menu-mobile-titulo">Ata Online</span>
 </div>
 
-<div class="side-menu offcanvas-md offcanvas-start" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
+<div class="side-menu offcanvas offcanvas-md offcanvas-start" [ngClass]="{ 'offcanvas': isMobile }" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
   <div class="offcanvas-body p-0">
     <nav>
       <ul>
-        <li class="justify-content-between li__titulo" (click)="getSessionUrlParameter('/home')">
+        <li class="justify-content-between li__titulo" (click)="getSessionUrlParameter('/home')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <div>
             <img src="../../assets/logo.png"/> 
             <span class="span__titulo">Ata Online</span>
@@ -20,31 +20,32 @@
             <button type="button" class="btn-close btn-sm d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>
           </div>
         </li>
-        <li (click)="getSessionUrlParameter('/home')">
+        <li (click)="getSessionUrlParameter('/home')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>home</mat-icon>{{isAuthenticated ? 'Olá, ' + username : 'Olá, visitante'}}
         </li>
         <!-- <li routerLink="/home"> -->
-        <li (click)="getSessionUrlParameter('/home')">
+        <li (click)="getSessionUrlParameter('/home')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>description</mat-icon>Ata
         </li>
-          <li (click)="getSessionUrlParameter('/qrcode')">
+          <li (click)="getSessionUrlParameter('/qrcode')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>qr_code</mat-icon>QRCode
         </li>
-        <li (click)="getSessionUrlParameter('/registros')">
+        <li (click)="getSessionUrlParameter('/registros')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>lists</mat-icon>Registros
         </li>
         @if (isAuthenticated) {
-          <li (click)="getSessionUrlParameter('/meus-eventos')">
+          <li (click)="getSessionUrlParameter('/meus-eventos')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
             <mat-icon>edit_note</mat-icon>Meus Eventos
           </li>
         } @else {
-          <li (click)="getSessionUrlParameter('/auth/login')">
+          <li (click)="getSessionUrlParameter('/auth/login')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
             <mat-icon>login</mat-icon>Entrar
           </li>
         }
-        <a href="https://github.com/leandromelolm/ata-online" target="_blank">
-          <li>
-            <mat-icon>code</mat-icon>Projeto no Github
+        <a (click)="confirmRedirectPage()">
+          <li>            
+            @if (!confirmeRedirecionar) {<mat-icon>code</mat-icon> Projeto no Github}
+            @else {Clique novamente para ser redirecionado}
           </li>
         </a>
         <li (click)="logout()" class="logout">
