@@ -28,10 +28,11 @@ export class MenuComponent {
   ) {}
 
   ngOnInit() {
+    // this.isAuthenticated && this.checkAuthUser(); // se o usuario autenticado, faça o check
     this.checkAuthUser();
     this.messageOfLoading();
 
-    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset]
+    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset] ou ['(max-width: 770px)']
       .subscribe(result => {
         this.isMobile = result.matches;
     });
@@ -50,19 +51,25 @@ export class MenuComponent {
   }
 
   logout(): void {
-    if(!this.username){
-       window.location.href = '/index'
+    if (!this.username) {
+       window.location.href = '/index' // reload na página que desativa uso da camera
+    } else {
+      this.isAuthenticated = false;
+      this.username = '';
+      this.authenticationService.logout();
+      this.router.navigate(['index']);
     }
-    this.authenticationService.logout();
-    this.router.navigate(['index']);
   }
 
   checkAuthUser(): void { 
     this.authenticationService.usuarioEstaLogado()
-    .pipe(take(1))
+    // .pipe(take(1)) // remover para atualizar o nome de usuario com o menu inserido no app-component
+    .pipe(
+      takeUntil(this.destroy$))
     .subscribe(
       (isAuth) => {        
         if (isAuth){
+          console.log('checkAuthUser', isAuth);
           this.isAuthenticated = true;
         }          
       }
@@ -83,7 +90,7 @@ export class MenuComponent {
           console.log(err);
         },
         complete: () => {
-          console.log('requisição completa');          
+          console.log('requisição completa');
         }
     })
   }

@@ -1,54 +1,57 @@
-<div class="login-container">
-    <h1 class="titulo"> AtaOnline</h1>
-    <h1 class="subtitulo">Entrar</h1>    
+<div class="page__layout">
+    <div class="page__content">
 
-    <form class="login-form" [formGroup]="loginForm">
-        <mat-form-field class="login-full-width">
-            <mat-label>Usuário</mat-label>
-            <input class="input__form" type="text" matInput placeholder="nome de usuário" formControlName="username">
-            <mat-hint>Campo usuário</mat-hint>
-            @if(loginForm.controls['username'].hasError('required')) {
-                <mat-error>Nome de usuário é obrigatório</mat-error>
-            }
-            @if(loginForm.controls['username'].hasError('minlength')) {
-                <mat-error>Nome de usuário tem que ter pelo menos 6 digitos</mat-error>
-            }
-        </mat-form-field>
-        <mat-form-field class="login-full-width">
-            <mat-label>Senha</mat-label>
-            <input class="input__form" type="password" matInput formControlName="password" minLength="6">
-            <mat-hint>Campo senha</mat-hint>
-            @if(loginForm.controls['password'].hasError('required')) {
-                <mat-error>Senha é obrigatório</mat-error>
-            }
-            @if(loginForm.controls['password'].hasError('minlength')) {
-                <mat-error>A senha tem que ter pelo menos 6 digitos</mat-error>
-            }
-            @if(loginForm.controls['password'].hasError('specialCharacter')) {
-                <mat-error>A senha deve conter um desses caracteres: !, ?, #, $, %, &, *</mat-error>
-            }
-        </mat-form-field>
-        
-        <app-button textButton="Acessar" 
-            [loading]="loading" 
-            [disabled]="btnDisabled"
-            [btnColor]="btnColor"
-            size="w-100" display="d-flex" btnHeight="56"
-            (click)="login()">
-        </app-button>
+        <div class="login-container">
+            <h1 class="titulo"> AtaOnline</h1>
+            <h1 class="subtitulo">Entrar</h1>
 
-        @if(errorAuth) {
-            <div class="alert alert-danger div__message">
-                {{messageLogin}}
-            </div>
-        } 
-        @if(successAuth) {
-            <div class="alert alert-success div__message">
-                {{messageLogin}}
-            </div>
-        } 
-    </form>
+            <form class="login-form" [formGroup]="loginForm">
+                <mat-form-field class="login-full-width">
+                    <mat-label>Usuário</mat-label>
+                    <input class="input__form" type="text" matInput placeholder="nome de usuário"
+                        formControlName="username">
+                    <mat-hint>Campo usuário</mat-hint>
+                    @if(loginForm.controls['username'].hasError('required')) {
+                    <mat-error>Nome de usuário é obrigatório</mat-error>
+                    }
+                    @if(loginForm.controls['username'].hasError('minlength')) {
+                    <mat-error>Nome de usuário tem que ter pelo menos 6 digitos</mat-error>
+                    }
+                </mat-form-field>
+                <mat-form-field class="login-full-width">
+                    <mat-label>Senha</mat-label>
+                    <input class="input__form" type="password" matInput formControlName="password" minLength="6">
+                    <mat-hint>Campo senha</mat-hint>
+                    @if(loginForm.controls['password'].hasError('required')) {
+                    <mat-error>Senha é obrigatório</mat-error>
+                    }
+                    @if(loginForm.controls['password'].hasError('minlength')) {
+                    <mat-error>A senha tem que ter pelo menos 6 digitos</mat-error>
+                    }
+                    @if(loginForm.controls['password'].hasError('specialCharacter')) {
+                    <mat-error>A senha deve conter um desses caracteres: !, ?, #, $, %, &, *</mat-error>
+                    }
+                </mat-form-field>
 
-    <button (click)="sair()" class="btn btn-link mt-2">Sair</button>
+                <app-button textButton="Acessar" [loading]="loading" [disabled]="btnDisabled" [btnColor]="btnColor"
+                    size="w-100" display="d-flex" btnHeight="56" (click)="login()">
+                </app-button>
 
+                @if(errorAuth) {
+                <div class="alert alert-danger div__message">
+                    {{messageLogin}}
+                </div>
+                }
+                @if(successAuth) {
+                <div class="alert alert-success div__message">
+                    {{messageLogin}}
+                </div>
+                }
+            </form>
+
+            <button (click)="sair()" class="btn btn-link mt-2">Sair</button>
+
+        </div>
+
+    </div>
 </div>

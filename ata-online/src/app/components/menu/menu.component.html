@@ -48,7 +48,7 @@
             @else {Clique novamente para ser redirecionado}
           </li>
         </a>
-        <li (click)="logout()" class="logout">
+        <li (click)="logout()" class="logout" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>logout</mat-icon>Sair
         </li>
       </ul>
