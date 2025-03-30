@@ -3,14 +3,14 @@ const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
 /** 
  * GET
  *
+ * buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
  * refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
  * deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
- * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
  * listar eventos do usuario • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
- * buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
+ * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
+ * editar status do evento • ?action=change-event-status&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&atok=ACCESS_TOKEN
  * buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
  * buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
- * editar status do evento • ?action=change-event-status&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&atok=ACCESS_TOKEN
  *
  * **/
 const doGet = (e) => {
@@ -29,30 +29,30 @@ const doGet = (e) => {
 
     if (action === 'termos-de-uso')
       return termosDeUso();
+
+    if (action === 'evento-por-id' && ata)
+      return findByEvento(ata); 
     
     if (action === 'refreshToken')
       return renovarToken(rtok, deviceid);
   
     if (action === 'logout')
       return logoutDesativaSessao(deviceid)
-
-    if (action === 'user-event-delete')
-      return deletarEvento(atok, eventos);
       
     if (action === 'user-event-list')
         return listarEventosDoUsuario(atok, user)
 
-    if (action === 'evento-por-id' && ata)
-      return findByEvento(ata); 
+    if (action === 'user-event-delete')
+      return deletarEvento(atok, eventos);
+
+    if (action === 'change-event-status' && eventoid && novostatus && validarToken(atok))
+      return editStatusEvento(eventoid, novostatus, 'A');
 
     if (action === 'all-participant-event' && eventoid)
       return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
 
     if (action === 'find-participant-by-matricula' && matricula && eventoid)
       return encontrarParticipantePorMatricula(matricula, eventoid); 
-
-    if (action === 'change-event-status' && eventoid && novostatus && validarToken(atok))
-      return editStatusEvento(eventoid, novostatus, 'A');
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
@@ -69,7 +69,7 @@ const doGet = (e) => {
 const doPost = (e) => {
 //  const lock = LockService.getScriptLock();
 //  if (!lock.tryLock(10000))
-//   return outputError('Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' ) 
+//   return outputError('Serviço ocupado, tente novamente mais tarde.', 'lock.tryLock' )
   try {
     let data = JSON.parse(e.postData.contents);
 
