@@ -43,7 +43,7 @@ export class ModalEventoComponent {
 
   editStatus() {
       const params = new HttpParams()
-      .set('action', 'editarstatusevento')
+      .set('action', 'change-event-status')
       .set('eventoid', this.userData.id.trim().toLowerCase())
       .set('novostatus', this.selectedStatus)
       .set('atok', sessionStorage.getItem('access_token') || '');

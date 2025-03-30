@@ -2,6 +2,16 @@ const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
 
 /** 
  * GET
+ *
+ * refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
+ * deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
+ * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
+ * listar eventos do usuario • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
+ * buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
+ * buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
+ * buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
+ * editar status do evento • ?action=change-event-status&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&atok=ACCESS_TOKEN
+ *
  * **/
 const doGet = (e) => {
 //  const lock = LockService.getScriptLock();
@@ -11,52 +21,38 @@ const doGet = (e) => {
     const {ata, eventoid, matricula, action, novostatus, user, deviceid, atok, rtok} = parameter;
     const eventos = e.parameters.ev;
 
-    if(action === 'politica-de-privacidade') {
-      return politicaDePrivacidade();
-    }
-
-    if(action === 'termos-de-uso') {
-      return termosDeUso();
-    }
-
-    if(action === 'userEventDelete') {
-      return deletarEvento(atok, eventos);
-    }
-
     if (e.pathInfo == 'index')
-      return HtmlService.createHtmlOutputFromFile("index")
-      .setTitle('AtaOnline | Doc');
+      return HtmlService.createHtmlOutputFromFile("index").setTitle('AtaOnline | Doc');
 
-    if (action === 'userEventList')
-      if(!validarToken(atok))
-        return outputError('token expirado ou inválido')
-      else
-        return listarEventosDoUsuario(user)
-      // ?action=userEventList&user={USERNAME}&atok={ACCESS_TOKEN}
+    if (action === 'politica-de-privacidade')
+      return politicaDePrivacidade();
+
+    if (action === 'termos-de-uso')
+      return termosDeUso();
     
     if (action === 'refreshToken')
       return renovarToken(rtok, deviceid);
-      // ?rtok={REFRESH_TOKEN}&deviceid={DEVICE_ID}&action=refreshToken
-    
+  
     if (action === 'logout')
       return logoutDesativaSessao(deviceid)
-      // ?logoutdeviceid={DEVICE_ID}&action=logout
 
-    if (ata)
+    if (action === 'user-event-delete')
+      return deletarEvento(atok, eventos);
+      
+    if (action === 'user-event-list')
+        return listarEventosDoUsuario(atok, user)
+
+    if (action === 'evento-por-id' && ata)
       return findByEvento(ata); 
-      // ?ata={ID_EVENTO}
 
-    if (action === 'todosParticipantes' && eventoid)
+    if (action === 'all-participant-event' && eventoid)
       return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
-      // ?eventoid={ID_EVENTO}&action=todosParticipantes
 
-    if (action === 'participantePorMatricula' && matricula && eventoid)
+    if (action === 'find-participant-by-matricula' && matricula && eventoid)
       return encontrarParticipantePorMatricula(matricula, eventoid); 
-      // ?matricula={MATRICULA}&eventoid={ID_EVENTO}&action=participantePorMatricula
 
-    if (action === 'editarstatusevento' && eventoid && novostatus && validarToken(atok))
+    if (action === 'change-event-status' && eventoid && novostatus && validarToken(atok))
       return editStatusEvento(eventoid, novostatus, 'A');
-       // ?eventoid={ID_EVENTO}&novostatus={NOVO_STATUS}&atok={ACCESS_TOKEN}&action=editarstatusevento
 
     throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
   } catch (error) {
@@ -80,17 +76,14 @@ const doPost = (e) => {
     if (data.action === 'addParticipante')
       return addParticipanteNoEvento(data);
 
-    if (data.action === 'createEvento')
-      if(!validarToken(data.atok))
-        return outputError('token expirado ou inválido')
-      else
-        return createEvento(data);
-
     if (data.action === 'authCredentials')
       return login(data.username, data.password, data.deviceid);
     
     if (data.action === 'refreshToken')
       return renovarToken(data.rtok, data.deviceid);
+
+    if (data.action === 'createEvento')
+      return createEvento(data.atok, data);
 
   throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
   } catch (error) {
@@ -132,7 +125,10 @@ function findByEvento(txtBuscado) {
 }
 
 /** Criar Evento */
-function createEvento(d){
+function createEvento(atok, d) {
+
+  if(!validarToken(atok)) return outputError('token expirado ou inválido');
+
   let uuid = gerarUuidParticionado();
   let dt = new Date(d.data).toISOString().split('T')[0].replaceAll('-','');
   let pasta = criarPastaParaEvento(`${dt}_${uuid}`);
@@ -208,8 +204,6 @@ function editStatusEvento(idEvento, statusNovo, letraColuna) {
 
 /** 
  * Deletar Eventos do usuário 
- * ?action=userEventDelete&user={USERNAME}&atok={ACCESS_TOKEN}&ev={EVENTO_ID}&ev={EVENTO_ID}&ev={EVENTO_ID}
- * 
 **/
 function deletarEvento(atok, eventos) {
   if(!validarToken(atok)) return authenticationError();
@@ -262,7 +256,8 @@ function findByEventoId(id) {
 }
 
 /** Listar todos os Eventos do usuário  */
-function listarEventosDoUsuario(textToFind, column = 'K', sheet = env().SHEETNAME_EVENTOS) {
+function listarEventosDoUsuario(atok, textToFind, column = 'K', sheet = env().SHEETNAME_EVENTOS) {
+  if(!validarToken(atok)) return outputError('token expirado ou inválido');
   const sh = folhaDaPlanilha(sheet);
   coluna = sh.getRange(`${column}:${column}`);
   const textFinder = coluna.createTextFinder(textToFind);

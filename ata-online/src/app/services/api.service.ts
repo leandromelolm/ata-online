@@ -18,8 +18,8 @@ export class ApiService extends HttpBaseService{
   private readonly httpClientApi = inject(HttpClient);
   private readonly authenticationService = inject(AuthenticationService);
 
-  getEventWithGetMethod(idReuniao: string | null): Observable<{content: Evento}> {
-    return this.httpClientApi.get<any>(`${this.apiUrl}?ata=${idReuniao}`)
+  getEventWithGetMethod(eventoId: string | null): Observable<{content: Evento}> {
+    return this.httpClientApi.get<any>(`${this.apiUrl}?action=evento-por-id&ata=${eventoId}`)
     .pipe(
       catchError(this.handleError)
     );
@@ -29,7 +29,7 @@ export class ApiService extends HttpBaseService{
     const accessToken = sessionStorage.getItem('access_token') || "";
     const username = this.authenticationService.getUserNameWithToken(accessToken)?.username;
     sessionStorage.setItem('username', username);
-    return this.httpGet(`?action=userEventList&user=${username}&atok=${accessToken}`);
+    return this.httpGet(`?action=user-event-list&user=${username}&atok=${accessToken}`);
   }
 
   saveEvento(newEvento: any): Observable<any> {
@@ -45,7 +45,7 @@ export class ApiService extends HttpBaseService{
     const accessToken = sessionStorage.getItem('access_token') || "";
     const username = this.authenticationService.getUserNameWithToken(accessToken)?.username;
     let params = new HttpParams()
-      .set('action', 'userEventDelete')
+      .set('action', 'user-event-delete')
       .set('user', username)
       .set('atok', accessToken);
     eventos.forEach(evento => {
@@ -78,7 +78,7 @@ export class ApiService extends HttpBaseService{
   }
 
   getAllParticipantes(eventoId: string): Observable<Response<string[]>> {
-    return this.httpClientApi.get<Response<string[]>>(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`)
+    return this.httpClientApi.get<Response<string[]>>(`${this.apiUrl}?eventoid=${eventoId}&action=all-participant-event`)
     .pipe(
       catchError(this.handleError)
     );    
@@ -87,7 +87,7 @@ export class ApiService extends HttpBaseService{
 
   // FETCH
   async fetchGetAllParticipantes(eventoId: string) {
-    const res = await fetch(`${this.apiUrl}?eventoid=${eventoId}&action=todosParticipantes`,{
+    const res = await fetch(`${this.apiUrl}?eventoid=${eventoId}&action=all-participant-event`,{
       redirect: "follow",
       method: 'GET',
       headers: {
