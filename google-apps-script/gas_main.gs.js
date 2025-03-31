@@ -39,14 +39,14 @@ const doGet = (e) => {
     if (action === 'logout')
       return logoutDesativaSessao(deviceid)
       
-    if (action === 'user-event-list')
+    if (action === 'user-event-list' && atok)
         return listarEventosDoUsuario(atok, user)
 
-    if (action === 'user-event-delete')
+    if (action === 'user-event-delete' && atok)
       return deletarEvento(atok, eventos);
 
-    if (action === 'change-event-status' && eventoid && novostatus && validarToken(atok))
-      return editStatusEvento(eventoid, novostatus, 'A');
+    if (action === 'change-event-status' && eventoid && novostatus && atok)
+      return editStatusEvento(atok, eventoid, novostatus);
 
     if (action === 'all-participant-event' && eventoid)
       return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
@@ -54,9 +54,10 @@ const doGet = (e) => {
     if (action === 'find-participant-by-matricula' && matricula && eventoid)
       return encontrarParticipantePorMatricula(matricula, eventoid); 
 
-    throw  error = {"status": 'error', "details": `parâmetros não encontrada`};    
-  } catch (error) {
-    return outputError('erro na função doGet', {erro: error, messagem: error.message});
+    throw new Error(`parâmetros não encontrada`);
+
+  } catch (err) {
+    return outputError('erro na requisição doGet', {error: err.name, message: err.message}); // details: err.stack - para debug
   }
 //   finally {
 //    lock.releaseLock();
@@ -85,9 +86,11 @@ const doPost = (e) => {
     if (data.action === 'createEvento')
       return createEvento(data.atok, data);
 
-  throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
-  } catch (error) {
-    return outputError('erro na requisicao post' , error.message);
+    //throw  error = {"status": 'error', "details": `parâmetros não encontrada`};
+    throw new Error(`parâmetros não encontrada`);
+
+  } catch (err) {
+    return outputError('erro na requisição doPost' , {error: err.name, message: err.message}); // details: err.stack - para debug
   } 
 //  finally {
 //    lock.releaseLock();
@@ -120,7 +123,8 @@ function findByEvento(txtBuscado) {
     return outputSuccess('Objeto encontrado', eventoEncontrado);
 
   } catch(e) {
-    throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e}`};
+    //throw  error = {'status': 'error', 'details': `erro ao buscar evento: ${txtBuscado} - erro: ${e}`};
+    throw new Error(`erro ao buscar evento: ${txtBuscado} - erro: ${e}`);
   }  
 }
 
@@ -157,9 +161,11 @@ function createEvento(atok, d) {
 }
 
 /** Editar Status do Evento  */
-function editStatusEvento(idEvento, statusNovo, letraColuna) {
+function editStatusEvento(atok, idEvento, statusNovo, column = 'A') {
+  if(!validarToken(atok)) return authenticationError();
+
   const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
-  coluna = aba.getRange(`${letraColuna}:${letraColuna}`);
+  coluna = aba.getRange(`${column}:${column}`);
   var textFinder = coluna.createTextFinder(idEvento);
   textFinder.matchEntireCell(true);
   var resultados = textFinder.findAll();
@@ -399,7 +405,8 @@ function criarFolhaNaPlanilhaParaNovoEvento(nomeDaFolha) {
     Logger.log("A folha '" + nomeDaFolha + "' foi criada com sucesso!");
     return nomeDaFolha;
   } else {
-    throw  error = {'status': 'error', 'details': `Não foi possível criar a folha na planilha.`};
+    //throw  error = {'status': 'error', 'details': `Não foi possível criar a folha na planilha.`};
+    throw new Error(`Não foi possível criar a folha na planilha.`);
   }
 }
 
@@ -409,7 +416,8 @@ function dublicarAbaModeloParaNovoEvento(nomeDaFolha) {
     let novaAba = abaModelo.copyTo(spreadSheet);
     novaAba.setName(nomeDaFolha);
   } else {
-    throw  error = {"status": 'error', "details": `Não foi possível duplicar a aba`};
+    //throw  error = {"status": 'error', "details": `Não foi possível duplicar a aba`};
+    throw new Error(`Não foi possível duplicar a aba`);
   }
   return nomeDaFolha;
 }
