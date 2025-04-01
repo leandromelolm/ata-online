@@ -114,9 +114,13 @@ export class EventoListaComponent {
     this.apiService.deleteEventsWithGetMethod(listaEvento)
       .subscribe({
         next: (data: any) => {
-          if(data.success){
-            console.log('eventos', data);
-            this.eventos = this.eventos.filter(evento => evento.id !== id);
+          if (data.success) {
+            if (data.content.numberOfDeletedEvents > 0) {
+              console.log('eventos', data);
+              this.eventos = this.eventos.filter(evento => evento.id !== id);
+            } else {
+              console.log(data.message) // usar um toast, alert ou snackbar
+            }
           } else {
             this.authService.logout();
           }

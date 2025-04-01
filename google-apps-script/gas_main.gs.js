@@ -7,7 +7,8 @@ const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
  * refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
  * deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
  * listar eventos do usuario • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
- * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
+ * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCES
+ * eventosDeletado.push(eventoEncontrado.evento[0]);S_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
  * editar status do evento • ?action=change-event-status&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&atok=ACCESS_TOKEN
  * buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
  * buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
@@ -208,22 +209,22 @@ function editStatusEvento(atok, idEvento, statusNovo, column = 'A') {
     return outputError('Evento não encontrado', 'Edição de evento não foi executada' );    
 }
 
-/** 
- * Deletar Eventos do usuário 
-**/
-function deletarEvento(atok, eventos) {
+/** Deletar um ou vários eventos do usuário */
+function deletarEvento(atok = '', eventos = ["","",""]) {
   if(!validarToken(atok)) return authenticationError();
   const user = extrairUsuarioDoToken(atok);
   const eventosDeletado = [];
   eventos.forEach((evento) => {
     const eventoEncontrado = findByEventoId(evento);
-    if (eventoEncontrado.evento !== false) {
-      if (eventoEncontrado.evento[10] === user.username) { // evento[10] = Coluna K (Proprietario)
+    if (eventoEncontrado.evento !== false &&
+        eventoEncontrado.evento[10] === user.username && // evento[10] = Coluna K (Proprietario)
+        verificarDataDoEvento(JSON.parse(eventoEncontrado.evento[9]).data)) 
+    {
         const sheet = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
         sheet.deleteRow(eventoEncontrado.positionRow);
         deletarAba(eventoEncontrado.evento[0]);
         eventosDeletado.push(eventoEncontrado.evento[0]);
-      }
+        console.log('evento deletado')
     }
   })
   const response = {
@@ -232,7 +233,21 @@ function deletarEvento(atok, eventos) {
     deletedEvents: eventosDeletado,
     username: user.username
   }
-  return outputSuccess('Evento deletado com sucesso', response);
+  if(eventosDeletado.length > 0)
+    return outputSuccess('Evento deletado com sucesso', response);
+  else 
+    return outputSuccess('Nenhum evento foi deletado', response); // Retornado outputSuccess para retornar o objeto response. Mas o content.numberOfDeletedEvents tem o valor = 0.
+}
+
+/** Impedir que seja deletado um evento de data passada, e assim não perder informações */
+function verificarDataDoEvento(dataEventoString) {
+  const [dia, mes, ano] = dataEventoString.split("-").map(Number);
+  const dataConvertida = new Date(ano, mes - 1, dia);
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  console.log(dataConvertida);
+  if (dataConvertida > hoje) return true
+  else return false
 }
 
 /** deletar aba(folha) da planilha */
@@ -247,7 +262,7 @@ function deletarAba(id) {
 }
 
 function authenticationError() {
-  return outputError('Usuário não está logado');
+  return outputError('Usuário não está logado', 'Falha na autenticação');
 }
 
 function findByEventoId(id) {
