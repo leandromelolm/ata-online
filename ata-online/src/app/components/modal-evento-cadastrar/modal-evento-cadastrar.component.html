@@ -82,7 +82,7 @@
     <app-button class="btn-submit-form" (click)="generateQRCode()" [textButton]="btnQRCode" [disabled]="isSending"></app-button>
     
     @if (qrCodeImage) {
-        <div>
+        <div class="text-center">
             <h3>QR Code Gerado:</h3>
             <img [src]="qrCodeImage" alt="QR Code" />
         </div>
