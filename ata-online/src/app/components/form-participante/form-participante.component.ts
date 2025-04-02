@@ -71,9 +71,8 @@ export class FormParticipanteComponent {
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
   minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
   readonly checked = false;
-  @ViewChild('divCamera') divCamera!: ElementRef;
-  @ViewChild('inputUserName') inputUserName!: ElementRef;
-  @ViewChild('inputMatricula') inputMatricula!: ElementRef;
+  @ViewChild('divNoTopo') divNoTopo!: ElementRef;
+  @ViewChild('formContainer') formContainer!: ElementRef;
 
   constructor(
     private router: Router, 
@@ -245,7 +244,7 @@ export class FormParticipanteComponent {
     console.log('receberValorDaCamera',this.selectedFile); 
     this.onImagePreview(this.selectedFile);
     this.valorRecebido = 'ocultar';
-    this.rolarElementoParaTopo('divCamera');
+    this.rolarElementoParaTopo('divNoTopo');
   }
 
   receberValorDaLocalizacao(e: any) {
@@ -498,12 +497,10 @@ export class FormParticipanteComponent {
 
   rolarElementoParaTopo(elemento : String) {
     setTimeout(() => {
-      if (elemento === 'divCamera')
-        this.divCamera.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (elemento === 'inputUserName')
-        this.inputUserName.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (elemento === 'inputMatricula')
-        this.inputMatricula.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'divNoTopo')
+        this.divNoTopo.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'formContainer')
+        this.formContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 500);
   }
   
