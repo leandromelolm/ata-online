@@ -17,10 +17,13 @@ ng version
 # criar projeto
 ng new ata-online --no-standalone
 
-# executar projeto
-npm start || 
-ng serve -o ||
+# executar projeto execute uma das opções
+npm start
+ng serve -o
+# para permitir abrir no dispositivo mobile execute uma das opções
 ng serve --host {HOST_LOCAL_PARA_ABRIR_NO_MOBILE}
+ng serve --host=0.0.0.0 --disable-host-check
+ng serve --host=0.0.0.0 --port=4200 --disable-host-check
 
 # instalar boostrap
 npm install bootstrap@5.3.3

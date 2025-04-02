@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { Evento } from '../../models/evento';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-form-participante',
@@ -73,11 +74,13 @@ export class FormParticipanteComponent {
   readonly checked = false;
   @ViewChild('divNoTopo') divNoTopo!: ElementRef;
   @ViewChild('formContainer') formContainer!: ElementRef;
+  isMobile: boolean = false;
 
   constructor(
     private router: Router, 
     private localizacaoService: LocalizacaoService,
     private apiService: ApiService,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   async ngOnInit() {
@@ -95,6 +98,11 @@ export class FormParticipanteComponent {
         console.log('Localização ativa:', this.isLocationActive);
       }
     );
+
+    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset] ou ['(max-width: 770px)']
+      .subscribe(result => {
+        this.isMobile = result.matches;
+    });
   }
   
   ngOnDestroy() {
@@ -501,7 +509,7 @@ export class FormParticipanteComponent {
         this.divNoTopo.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (elemento === 'formContainer')
         this.formContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 500);
+    }, 700);
   }
   
   sair() {
