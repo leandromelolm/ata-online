@@ -54,14 +54,14 @@
             </div>
 
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
-                <div #formContainer class="form__container">
-                    <h3 class="h3__formulario">Formulário</h3>
+                <div class="form__container">
+                    <h3 #formContainer class="h3__formulario">Formulário</h3>
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
                     </div>
                     <div>  
                         @if(userName){<div class="div__label" @fadeInOut @fadeInUp><label for="name">NOME</label></div>}
-                        <input (focus)="rolarElementoParaTopo('formContainer')" id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()"
+                        <input (click)="rolarElementoParaTopo('formContainer')" id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()"
                             placeholder="Digite seu nome" (blur)="onBlurUserName()" maxlength="50">
                         <div id="msgUserName" class="input__error" *ngIf="!userName && errorInputUserName">Campo nome é obrigatório.</div>
                         <p *ngIf="userName">{{ userName.length || 0 }}/50 caracteres</p>
