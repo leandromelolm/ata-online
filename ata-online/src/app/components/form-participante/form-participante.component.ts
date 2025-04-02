@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
 import { Subscription } from 'rxjs';
@@ -71,6 +71,9 @@ export class FormParticipanteComponent {
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
   minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
   readonly checked = false;
+  @ViewChild('divCamera') divCamera!: ElementRef;
+  @ViewChild('inputUserName') inputUserName!: ElementRef;
+  @ViewChild('inputMatricula') inputMatricula!: ElementRef;
 
   constructor(
     private router: Router, 
@@ -239,9 +242,10 @@ export class FormParticipanteComponent {
 
   receberValorDaCamera(valor: string) {
     this.selectedFile = this.retornarUmFile(valor, 'imagem.png', 'image/png');
-    // console.log(this.selectedFile);   
+    console.log('receberValorDaCamera',this.selectedFile); 
     this.onImagePreview(this.selectedFile);
-    this.valorRecebido = 'ocultar'
+    this.valorRecebido = 'ocultar';
+    this.rolarElementoParaTopo('divCamera');
   }
 
   receberValorDaLocalizacao(e: any) {
@@ -492,6 +496,17 @@ export class FormParticipanteComponent {
     // console.log(this.imageUrl.length);
   }
 
+  rolarElementoParaTopo(elemento : String) {
+    setTimeout(() => {
+      if (elemento === 'divCamera')
+        this.divCamera.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'inputUserName')
+        this.inputUserName.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'inputMatricula')
+        this.inputMatricula.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500);
+  }
+  
   sair() {
     if (sessionStorage.getItem('url-param-meeting')) {
       if (confirm('Ao sair as informações sobre o evento serão apagadas. Será necessário ler novamente o QRCode do evento para um novo registro'))
