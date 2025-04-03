@@ -72,8 +72,11 @@ export class FormParticipanteComponent {
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
   minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
   readonly checked = false;
-  @ViewChild('divNoTopo') divNoTopo!: ElementRef;
+
+  @ViewChild('divEventoHora') divEventoHora!: ElementRef;
   @ViewChild('formContainer') formContainer!: ElementRef;
+  @ViewChild('inputUserName') inputUserName!: ElementRef;
+  
   isMobile: boolean = false;
 
   constructor(
@@ -252,7 +255,7 @@ export class FormParticipanteComponent {
     console.log('receberValorDaCamera',this.selectedFile); 
     this.onImagePreview(this.selectedFile);
     this.valorRecebido = 'ocultar';
-    this.rolarElementoParaTopo('divNoTopo');
+    this.rolarElementoParaTopo('divEventoHora');
   }
 
   receberValorDaLocalizacao(e: any) {
@@ -505,11 +508,13 @@ export class FormParticipanteComponent {
 
   rolarElementoParaTopo(elemento : String) {
     setTimeout(() => {
-      if (elemento === 'divNoTopo')
-        this.divNoTopo.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'divEventoHora')
+        this.divEventoHora.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (elemento === 'formContainer')
         this.formContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 700);
+      if (elemento === 'inputUserName')
+        this.inputUserName.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
   }
   
   sair() {

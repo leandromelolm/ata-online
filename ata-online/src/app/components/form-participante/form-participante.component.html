@@ -18,7 +18,7 @@
             <div>{{ meeting.titulo }}</div>
             <div>{{ meeting.local }}</div>
             <div>Data: {{ meeting.data }}</div>
-            <div #divNoTopo>Hora: {{ meeting.hora }}</div>
+            <div #divEventoHora>Hora: {{ meeting.hora }}</div>
         </div>
 
         <div class="row">
@@ -35,7 +35,11 @@
                     <div class="div__camera" *ngIf="isLocationActive && !successMessage">
                         <app-camera (enviarParaForm)="receberValorDaCamera($event)" *ngIf="valorRecebido === 'mostrar'"></app-camera>
                         
-                        <app-button textButton="Tirar Outra Foto" (click)="alterarValor('mostrar')" *ngIf="valorRecebido === 'ocultar'"></app-button>
+                        <app-button 
+                            textButton="Mudar foto" 
+                            (click)="alterarValor('mostrar')" 
+                            *ngIf="valorRecebido === 'ocultar'">
+                        </app-button>
                         
                         <div *ngIf="valorRecebido === 'ocultar' && imageUrl">
                             <h4 class="mb-0">Pré-visualização</h4>
@@ -54,21 +58,21 @@
             </div>
 
             <div class="right__container col-md" *ngIf="isLocationActive && imageUrl">
-                <div class="form__container">
-                    <h3 #formContainer class="h3__formulario">Formulário</h3>
+                <div #formContainer class="form__container">
+                    <h3 class="h3__formulario">Formulário</h3>
                     <div>
                         <input class="file-input" type="file" (change)="onFileSelected($event)" [disabled]="!userName" />
                     </div>
                     <div>  
                         @if(userName){<div class="div__label" @fadeInOut @fadeInUp><label for="name">NOME</label></div>}
-                        <input (click)="rolarElementoParaTopo('formContainer')" id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()"
+                        <input #inputUserName (focus)="rolarElementoParaTopo('formContainer')" id="inputUserName" class="input-field" [(ngModel)]="userName" [ngModelOptions]="{standalone: true}" (ngModelChange)="onUserNameChange()"
                             placeholder="Digite seu nome" (blur)="onBlurUserName()" maxlength="50">
                         <div id="msgUserName" class="input__error" *ngIf="!userName && errorInputUserName">Campo nome é obrigatório.</div>
                         <p *ngIf="userName">{{ userName.length || 0 }}/50 caracteres</p>
                     </div>
                     <div>
                         @if(matricula){<div class="div__label" @fadeInOut @fadeInUp><label for="matricula">MATRÍCULA</label></div>}
-                        <input class="input-field" type="text" [(ngModel)]="matricula" mask="00000000000" 
+                        <input (focus)="rolarElementoParaTopo('inputUserName')" class="input-field" type="text" [(ngModel)]="matricula" mask="00000000000" 
                             placeholder="Digite o número da matrícula" (blur)="onBlurMatricula()" (input)="onInputMatricula()">
                         <div class="input__error" *ngIf="!matricula && errorInputMatricula">Campo matrícula é obrigatório.</div>
                         <div class="input__error" *ngIf="errorInputMatricula">Matrícula incompleta</div>
