@@ -68,7 +68,8 @@ Veja se seu navegador permite acessar a sua localização.`);
   }
 
   async getAddressWithCoordinates(lati: number, long: number) {
-    const url = `https://nominatim.openstreetmap.org/reverse.php?lat=${lati}&lon=${long}&zoom=18&format=jsonv2`;
+    // https://nominatim.org/release-docs/develop/api/Reverse/
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lati}&lon=${long}&zoom=18&format=jsonv2`;
     const res = await fetch(url)
     const e = await res.json();
     let {lat, lon, address} = e;
