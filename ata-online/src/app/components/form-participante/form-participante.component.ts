@@ -76,6 +76,7 @@ export class FormParticipanteComponent {
   @ViewChild('divEventoHora') divEventoHora!: ElementRef;
   @ViewChild('formContainer') formContainer!: ElementRef;
   @ViewChild('inputUserName') inputUserName!: ElementRef;
+  @ViewChild('inputMatricula') inputMatricula!: ElementRef;
   
   isMobile: boolean = false;
 
@@ -514,6 +515,8 @@ export class FormParticipanteComponent {
         this.formContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       if (elemento === 'inputUserName')
         this.inputUserName.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elemento === 'inputMatricula')
+        this.inputMatricula.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 800);
   }
   
