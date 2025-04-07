@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { take } from 'rxjs';
 import QRCode from 'qrcode';
-import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-modal-evento-cadastrar',
@@ -74,6 +73,7 @@ export class ModalEventoCadastrarComponent {
   statusEvento: string = 'ABERTO';
   coordenadas: string;
   bCoordsAutorizarRegistro: boolean = false;
+  bObterLocalDoParticipante: boolean = false;
   latitude: string = '0';
   longitude: string = '0';
 
@@ -131,7 +131,8 @@ export class ModalEventoCadastrarComponent {
       local: this.local.trim(),
       titulo: this.titulo.toUpperCase().trim(),
       descricao: this.descricao.trim(),
-      bCoordenadasParaAutorizarRegistro: this.bCoordsAutorizarRegistro,
+      bRestritoParaInLoco: this.bCoordsAutorizarRegistro,
+      bObterLocalDoParticipante: this.bObterLocalDoParticipante,
       status: this.statusEvento,
       coords: {lat: this.latitude, long: this.longitude},
       action: 'createEvento',

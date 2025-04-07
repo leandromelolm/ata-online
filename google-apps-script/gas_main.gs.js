@@ -6,10 +6,9 @@ const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
  * buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
  * refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
  * deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
- * listar eventos do usuario • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
- * deletar eventos do usuário • ?action=user-event-delete&user=USERNAME&atok=ACCES
- * eventosDeletado.push(eventoEncontrado.evento[0]);S_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
- * editar status do evento • ?action=change-event-status&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&atok=ACCESS_TOKEN
+ * listar eventos • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
+ * deletar eventos • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
+ * editar evento • ?action=user-event-edit&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&bRestritoParaInLoco=BOOLEAN&bObterLocalDoParticipante=BOOLEAN&atok=ACCESS_TOKEN
  * buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
  * buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
  *
@@ -19,7 +18,8 @@ const doGet = (e) => {
 //  lock.tryLock(10000);
   try {
     const { parameter } = e;
-    const {ata, eventoid, matricula, action, novostatus, user, deviceid, atok, rtok} = parameter;
+    const {ata, eventoid, matricula, action, novostatus, user, deviceid, atok, rtok, 
+    bRestritoParaInLoco, bObterLocalDoParticipante} = parameter;
     const eventos = e.parameters.ev;
 
     if (e.pathInfo == 'index')
@@ -46,8 +46,8 @@ const doGet = (e) => {
     if (action === 'user-event-delete' && atok)
       return deletarEvento(atok, eventos);
 
-    if (action === 'change-event-status' && eventoid && novostatus && atok)
-      return editStatusEvento(atok, eventoid, novostatus);
+    if (action === 'user-event-edit' && eventoid && novostatus && atok)
+      return editStatusEvento(atok, eventoid, novostatus, bRestritoParaInLoco, bObterLocalDoParticipante);
 
     if (action === 'all-participant-event' && eventoid)
       return encontrarTodosParticipantesColunaParticipantesDTO(eventoid); 
@@ -117,8 +117,8 @@ function findByEvento(txtBuscado) {
       let e = JSON.parse(colunaJ);
 
       eventoEncontrado = new Evento(
-        e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.bCoordenadasParaAutorizarRegistro,
-        e.idFolder, 'http***',{ lat: e.coords.lat, long: e.coords.long }, e.dono
+        e.id, e.data, e.hora, e.local, e.titulo, e.descricao, e.status, e.bRestritoParaInLoco, 
+        e.bObterLocalDoParticipante,e.idFolder, 'http***',{ lat: e.coords.lat, long: e.coords.long }, e.dono
       )
     };    
     return outputSuccess('Objeto encontrado', eventoEncontrado);
@@ -148,7 +148,8 @@ function createEvento(atok, d) {
       d.titulo, 
       d.descricao, 
       d.status, 
-      d.bCoordenadasParaAutorizarRegistro, 
+      d.bRestritoParaInLoco,
+      d.bObterLocalDoParticipante,
       pasta.folderId, 
       pasta.folderUrl, 
       { lat: d.coords.lat, long: d.coords.long },
@@ -162,8 +163,12 @@ function createEvento(atok, d) {
 }
 
 /** Editar Status do Evento  */
-function editStatusEvento(atok, idEvento, statusNovo, column = 'A') {
+function editStatusEvento(atok, idEvento, statusNovo, bRestritoParaInLocoParam, bObterLocalDoParticipanteParam, column = 'A') {
   if(!validarToken(atok)) return authenticationError();
+
+  // pega as string e converte para boolean
+  const bRestritoParaInLoco = bRestritoParaInLocoParam === 'true';
+  const bObterLocalDoParticipante = bObterLocalDoParticipanteParam === 'true';
 
   const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
   coluna = aba.getRange(`${column}:${column}`);
@@ -171,42 +176,46 @@ function editStatusEvento(atok, idEvento, statusNovo, column = 'A') {
   textFinder.matchEntireCell(true);
   var resultados = textFinder.findAll();
   let flag = false;
-  let evEdit = {};
+  let eventoSelecionado = {};
+
   resultados.forEach(function(celula) {
     aba.getRange(celula.getRow(), 7).setValue(statusNovo);
     let colEventoJson = aba.getRange(celula.getRow(), 10).getValue();
-    evEdit = JSON.parse(colEventoJson);
-
+    eventoSelecionado = JSON.parse(colEventoJson);
+    
     const eventoEditadoStatus = new Evento(
-      evEdit.id,
-      evEdit.data,
-      evEdit.hora,
-      evEdit.local,
-      evEdit.titulo,
-      evEdit.descricao,
+      eventoSelecionado.id,
+      eventoSelecionado.data,
+      eventoSelecionado.hora,
+      eventoSelecionado.local,
+      eventoSelecionado.titulo,
+      eventoSelecionado.descricao,
       statusNovo,
-      evEdit.bCoordenadasParaAutorizarRegistro,
-      evEdit.idFolder,
-      evEdit.urlFolder,
-      { lat: evEdit.coords.lat, long: evEdit.coords.long },
-      evEdit.dono
+      bRestritoParaInLoco,
+      bObterLocalDoParticipante,
+      eventoSelecionado.idFolder,
+      eventoSelecionado.urlFolder,
+      { lat: eventoSelecionado.coords.lat, long: eventoSelecionado.coords.long },
+      eventoSelecionado.dono
     );
 
     aba.getRange(celula.getRow(), 10).setValue(JSON.stringify(eventoEditadoStatus));
     flag = true;
   });
-  if(flag) {
-    eventoEditadodeResposta = {
-      id: evEdit.id,
-      data: evEdit.data,
-      hora: evEdit.hora,
-      titulo: evEdit.titulo,
-      status: evEdit.statusNovo,
-      bCoordenadasParaAutorizarRegistro: evEdit.bCoordenadasParaAutorizarRegistro
-    }
-    return outputSuccess('Edição executada com sucesso', eventoEditadodeResposta);
-  } else
-    return outputError('Evento não encontrado', 'Edição de evento não foi executada' );    
+
+  if(!flag)
+    return outputError('Evento não encontrado', 'Edição de evento não foi executada' );
+  
+  eventoEditadodeResposta = {
+    id: eventoSelecionado.id,
+    data: eventoSelecionado.data,
+    hora: eventoSelecionado.hora,
+    titulo: eventoSelecionado.titulo,
+    status: statusNovo,
+    bRestritoParaInLoco: bRestritoParaInLoco,
+    bObterLocalDoParticipante: bObterLocalDoParticipante
+  }
+  return outputSuccess('Edição executada com sucesso', eventoEditadodeResposta);
 }
 
 /** Deletar um ou vários eventos do usuário */
@@ -289,8 +298,8 @@ function listarEventosDoUsuario(atok, textToFind, column = 'K', sheet = env().SH
   const eventos = [];
   result.forEach((celula) => {
     const evento = sh.getRange(celula.getRow(), 10).getValues().flat() // 10 = coluna J
-    let { id, titulo, local, data, hora, descricao, status, bCoordenadasParaAutorizarRegistro, coords } = JSON.parse(evento[0]);
-    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, coords);
+    let { id, titulo, local, data, hora, descricao, status, bRestritoParaInLoco, bObterLocalDoParticipante, coords } = JSON.parse(evento[0]);
+    eventoDTO = new EventoDTO(id, data, hora, local, titulo, descricao, status, bRestritoParaInLoco, bObterLocalDoParticipante, coords);
     eventos.push(eventoDTO);
   });
   return outputSuccess(`${textToFind}`, { 'size': result.length, 'itens': eventos });

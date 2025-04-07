@@ -26,7 +26,8 @@ export class ModalEventoComponent {
     { label: 'ENCERRADO', value: 'ENCERRADO' },
     { label: 'CANCELADO', value: 'CANCELADO' },
   ];
-
+  bRestritoParaInLoco: boolean;
+  bObterLocalDoParticipante: boolean;
   @Output() valueChanged = new EventEmitter<string>();
 
   constructor(
@@ -38,14 +39,18 @@ export class ModalEventoComponent {
     console.log(this.userData);
     this.selectedStatus = this.userData.status;
     this.status = this.userData.status;
+    this.bRestritoParaInLoco = this.userData.bRestritoParaInLoco;
+    this.bObterLocalDoParticipante = this.userData.bObterLocalDoParticipante;
     this.changedBadgedColor(this.userData.status);
   }
 
-  editStatus() {
+  editarEvento() {
       const params = new HttpParams()
-      .set('action', 'change-event-status')
+      .set('action', 'user-event-edit')
       .set('eventoid', this.userData.id.trim().toLowerCase())
       .set('novostatus', this.selectedStatus)
+      .set('bRestritoParaInLoco', this.bRestritoParaInLoco)
+      .set('bObterLocalDoParticipante', this.bObterLocalDoParticipante)
       .set('atok', sessionStorage.getItem('access_token') || '');
       
       this.btnSalvarAlteracao = 'Aguarde';

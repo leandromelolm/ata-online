@@ -66,7 +66,7 @@ export class FormParticipanteComponent {
   meeting: Evento = new Evento();
   latEvento: number = 0;
   lonEvento: number = 0;
-  bCoordenadasParaAutorizarRegistro: boolean = false;
+  bRestritoParaInLoco: boolean = false;
   distanciaNaoPermiteRegistro: string = '';
   flagCheckDistanciaEvento: boolean = false;
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
@@ -148,7 +148,7 @@ export class FormParticipanteComponent {
 
     if (reuniaoStatus === 'ABERTO' && urlReuniao === sheetPageId) {
       const evento = JSON.parse(sessionStorage.getItem('reuniao') || '');
-      this.bCoordenadasParaAutorizarRegistro = evento.content.bCoordenadasParaAutorizarRegistro;
+      this.bRestritoParaInLoco = evento.content.bRestritoParaInLoco;
       return this.messageMeeting(evento);
     }
 
@@ -180,7 +180,7 @@ export class FormParticipanteComponent {
 
     if(response.content.status === 'ABERTO') {
       this.isMeeting = true;
-      this.bCoordenadasParaAutorizarRegistro = response.content.bCoordenadasParaAutorizarRegistro;
+      this.bRestritoParaInLoco = response.content.bRestritoParaInLoco;
       this.latEvento = response.content.coords.lat;
       this.lonEvento = response.content.coords.long;
 
@@ -262,7 +262,7 @@ export class FormParticipanteComponent {
   receberValorDaLocalizacao(e: any) {
     const endereco = {"state": e.state,  "city": e.city,  "postcode": e.postcode, "suburb": e.suburb, "road": e.road, "house_number": e.house_number};
     this.enderecoLocal = endereco;
-    if(this.bCoordenadasParaAutorizarRegistro){
+    if(this.bRestritoParaInLoco){
       const distancia = this.calcularDistancia(this.latEvento, this.lonEvento, e.lat, e.long);
       if(distancia > this.distanciaLimite) {
         this.distanciaNaoPermiteRegistro = `Você não está no local do evento.\nDistância do local em km: ${distancia.toFixed(3)}`;

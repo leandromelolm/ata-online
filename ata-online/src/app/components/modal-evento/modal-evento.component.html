@@ -32,13 +32,17 @@
             <p class="informacao">{{userData.local}}</p>
         </div>
         <div class="col-6">
-            <h4 class="titulo-informacao">Restringe presença pelo local</h4>
-            <p class="informacao">{{userData.bCoordenadasParaAutorizarRegistro ? 'SIM': 'NÃO'}}</p>
+            <h4 class="titulo-informacao">Presença Restrita apenas para o local</h4>
+            <p class="informacao">{{userData.bRestritoParaInLoco ? 'SIM': 'NÃO'}}</p>
         </div>        
         <div class="col-6">
             <h4 class="titulo-informacao">Coordenadas do Evento</h4>
             <p class="informacao">{{userData.coords.lat}}, {{userData.coords.long}}</p>
         </div>
+        <div class="col-6">
+            <h4 class="titulo-informacao">Obter local do participante</h4>
+            <p class="informacao">{{userData.bObterLocalDoParticipante ? 'SIM': 'NÃO'}}</p>
+        </div>        
     </div>
     <div class="form__container">
         <label>Alterar Status</label>
@@ -48,7 +52,7 @@
                     {{ status.label }}
                 </option>
             </select>
-            <app-button [textButton]='btnSalvarAlteracao' [btnColor]="btnColorSalvar" btnWidth="100" (click)="editStatus()"></app-button>
+            <app-button [textButton]='btnSalvarAlteracao' [btnColor]="btnColorSalvar" btnWidth="100" (click)="editarEvento()"></app-button>
             @if(isLoading){<mat-spinner [diameter]="30"></mat-spinner>}
             @if(!isLoading){
                 <mat-icon [ngClass]="['icon_'+fontIcon]" aria-hidden="false" aria-label="Icon Edit Status" fontIcon={{fontIcon}}></mat-icon>

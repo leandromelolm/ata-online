@@ -1,5 +1,5 @@
 class Evento {
-  constructor(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, idFolder, urlFolder, coords, dono) {
+  constructor(id, data, hora, local, titulo, descricao, status, bRestritoParaInLoco, bObterLocalDoParticipante, idFolder, urlFolder, coords, dono) {
     this.setId(id);
     this.setData(data);
     this.setHora(hora);
@@ -7,7 +7,8 @@ class Evento {
     this.setTitulo(titulo);
     this.setDescricao(descricao);
     this.setStatus(status);
-    this.setBCoordenadasParaAutorizarRegistro(bCoordenadasParaAutorizarRegistro);
+    this.setBRestritoParaInLoco(bRestritoParaInLoco);
+    this.setBObterLocalDoParticipante(bObterLocalDoParticipante);
     this.setIdFolder(idFolder);
     this.setUrlFolder(urlFolder);
     this.setCoords(coords);
@@ -64,11 +65,18 @@ class Evento {
     this.status = status;
   }
 
-  setBCoordenadasParaAutorizarRegistro(value) {
+  setBRestritoParaInLoco(value) {
     if (typeof value !== 'boolean') {
-      throw new Error('bCoordenadasParaAutorizarRegistro deve ser um booleano.');
+      throw new Error('bRestritoParaInLoco deve ser um booleano.');
     }
-    this.bCoordenadasParaAutorizarRegistro = value;
+    this.bRestritoParaInLoco = value;
+  }
+
+  setBObterLocalDoParticipante(value) {
+    if (typeof value !== 'boolean') {
+      throw new Error('bObterLocalDoParticipante deve ser um booleano.');
+    }
+    this.bObterLocalDoParticipante = value;
   }
 
   setIdFolder(idFolder) {
@@ -106,15 +114,16 @@ class Evento {
 }
 
 class EventoDTO {
-    constructor(id, data, hora, local, titulo, descricao, status, bCoordenadasParaAutorizarRegistro, coords) {
+    constructor(id, data, hora, local, titulo, descricao, status, bRestritoParaInLoco, bObterLocalDoParticipante, coords) {
         this.id = id;
         this.data = data;
         this.hora = hora;
         this.local = local;
         this.titulo = titulo;
         this.descricao = descricao;
-        this.status = status
-        this.bCoordenadasParaAutorizarRegistro = bCoordenadasParaAutorizarRegistro
-        this.coords = coords
+        this.status = status;
+        this.bRestritoParaInLoco = bRestritoParaInLoco;
+        this.bObterLocalDoParticipante = bObterLocalDoParticipante;
+        this.coords = coords;
     }
 }
