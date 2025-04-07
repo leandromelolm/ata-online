@@ -108,6 +108,12 @@ export class ModalEventoCadastrarComponent {
    }
   }
 
+  onRestricaoMudou(): void {
+    if (this.bCoordsAutorizarRegistro) {
+      this.bObterLocalDoParticipante = true;
+    }
+  }
+
   submitForm() {
     if(this.checkError())
       return;
@@ -161,7 +167,7 @@ export class ModalEventoCadastrarComponent {
           this.isFormEvento = false;
           this.valueChanged.emit();
         } else {
-          this.message = `Falha ao salvar. mensagem de erro: ${res.error}`;
+          this.message = `Falha ao salvar. mensagem de erro: ${res.error}, ${res.message}`;
         }
       },
       error: (error) => {

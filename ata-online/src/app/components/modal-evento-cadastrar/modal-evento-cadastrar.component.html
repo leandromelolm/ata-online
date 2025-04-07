@@ -41,10 +41,18 @@
             <div class="input__error" *ngIf="!descricao && errorInputDescricao">Campo obrigatório.</div>
             <p *ngIf="descricao">{{ descricao.length || 0 }}/50 caracteres</p>
         </div>
+
+        <div>
+            <h4 class="titulo-toggle-group">Pedir a localização do participante:</h4>
+            <mat-button-toggle-group [(ngModel)]="bObterLocalDoParticipante" [disabled]="bCoordsAutorizarRegistro" aria-label="Font Style">
+                <mat-button-toggle [value]='false'>Não</mat-button-toggle>
+                <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
         
         <div>
             <h4 class="titulo-toggle-group">Restringir presença pela localização:</h4>
-            <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" aria-label="Font Style">
+            <mat-button-toggle-group [(ngModel)]="bCoordsAutorizarRegistro" (change)="onRestricaoMudou()" aria-label="Font Style">
                 <mat-button-toggle [value]='false'>Não</mat-button-toggle>
                 <mat-button-toggle [value]='true'>Sim</mat-button-toggle>
             </mat-button-toggle-group>
