@@ -67,6 +67,7 @@ export class FormParticipanteComponent {
   latEvento: number = 0;
   lonEvento: number = 0;
   bRestritoParaInLoco: boolean = false;
+  bObterLocalDoParticipante: boolean = false;
   distanciaNaoPermiteRegistro: string = '';
   flagCheckDistanciaEvento: boolean = false;
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
@@ -149,6 +150,7 @@ export class FormParticipanteComponent {
     if (reuniaoStatus === 'ABERTO' && urlReuniao === sheetPageId) {
       const evento = JSON.parse(sessionStorage.getItem('reuniao') || '');
       this.bRestritoParaInLoco = evento.content.bRestritoParaInLoco;
+      this.bObterLocalDoParticipante = evento.content.bObterLocalDoParticipante;
       return this.messageMeeting(evento);
     }
 
