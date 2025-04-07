@@ -59,6 +59,14 @@ export class ApiService extends HttpBaseService{
     // return this.httpClientApi.get<any>(`${this.apiUrl}`, {params});
   }
 
+  getPrivacyPolicy(): Observable<any> {
+    return this.httpGet(`?action=politica-de-privacidade`)
+  }
+
+  getTermsOfUse(): Observable<any> {
+    return this.httpGet(`?action=termos-de-uso`)
+  }
+
   private handleError(error: any): Observable<never> {
     let errorMessage = 'Ocorreu um erro desconhecido';
     if (error.error instanceof ErrorEvent) {
