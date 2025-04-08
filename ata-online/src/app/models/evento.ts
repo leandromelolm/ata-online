@@ -7,5 +7,6 @@ export class Evento {
     descricao: string;
     status: string;
     idFolder: string;
+    bObterLocalDoParticipante: boolean;
 }
 

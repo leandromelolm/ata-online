@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalizacaoService } from '../../services/localizacao.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { Evento } from '../../models/evento';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -53,7 +53,7 @@ export class FormParticipanteComponent {
   buttonText: string = 'Enviar';
   enderecoLocal: any;
   infoReuniao: string = '';
-  isLocationActive: boolean;
+  isLocationActive: boolean = false;
   isMeeting: boolean = false;
   isSending: boolean = false;
   isSpinner: boolean = true;
@@ -67,12 +67,15 @@ export class FormParticipanteComponent {
   latEvento: number = 0;
   lonEvento: number = 0;
   bRestritoParaInLoco: boolean = false;
-  bObterLocalDoParticipante: boolean = false;
+  bObterLocalDoParticipante: boolean = true;
   distanciaNaoPermiteRegistro: string = '';
   flagCheckDistanciaEvento: boolean = false;
   distanciaLimite: number = 0.1; // 0.1 = 100 metros
   minuto: number = 10; // da função tempoDesdeUltimaRequisicaoGet
   readonly checked = false;
+  deveExibirAvisoLocalizacao: boolean = false;
+
+  private destroy$ = new Subject<void>();
 
   @ViewChild('divEventoHora') divEventoHora!: ElementRef;
   @ViewChild('formContainer') formContainer!: ElementRef;
@@ -96,18 +99,10 @@ export class FormParticipanteComponent {
     
     this.getUrl();
 
-    // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
-    this.subscription = this.localizacaoService.localizacaoAtiva$.subscribe(
-      (status) => {
-        this.isLocationActive = status;
-        console.log('Localização ativa:', this.isLocationActive);
-      }
-    );
+    // this.localizacaoGPSAtiva();
 
-    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset] ou ['(max-width: 770px)']
-      .subscribe(result => {
-        this.isMobile = result.matches;
-    });
+    this.pegarResolucaoDaTela();
+    
   }
   
   ngOnDestroy() {
@@ -115,6 +110,43 @@ export class FormParticipanteComponent {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  precisaObterLocalDoParticipante(bObterLocalDoParticipante: any): void{
+    console.log('precisaObterLocalParticipante', bObterLocalDoParticipante);
+    if(bObterLocalDoParticipante){
+      this.localizacaoGPSAtiva();
+      this.deveExibirAvisoLocalizacao = true;
+    } else {
+      this.isLocationActive = true;
+      this.flagCheckDistanciaEvento = true;
+      this.deveExibirAvisoLocalizacao = false;
+    }
+  }
+
+  precisaSerInLoco(): boolean {
+    return this.bRestritoParaInLoco;
+  }
+
+  localizacaoGPSAtiva(): void {
+    // Inscreve-se para ouvir as atualizações sobre o estado de localizacaoAtiva
+    this.subscription = this.localizacaoService.localizacaoAtiva$
+    .pipe(takeUntil(this.destroy$)).subscribe(
+    // .pipe(take(1)).subscribe(
+      (status) => {
+        this.isLocationActive = status;
+        console.log('Localização ativa:', this.isLocationActive);
+      }
+    );
+  }
+
+  pegarResolucaoDaTela() {
+    this.breakpointObserver.observe(['(max-width: 770px)']) // [Breakpoints.Handset] ou ['(max-width: 770px)']
+      .subscribe(result => {
+        this.isMobile = result.matches;
+    });
   }
 
   getUrl() {
@@ -151,6 +183,7 @@ export class FormParticipanteComponent {
       const evento = JSON.parse(sessionStorage.getItem('reuniao') || '');
       this.bRestritoParaInLoco = evento.content.bRestritoParaInLoco;
       this.bObterLocalDoParticipante = evento.content.bObterLocalDoParticipante;
+      this.precisaObterLocalDoParticipante(evento.content.bObterLocalDoParticipante);
       return this.messageMeeting(evento);
     }
 
@@ -158,7 +191,8 @@ export class FormParticipanteComponent {
     .subscribe({
       next: (response) => {
         this.messageMeeting(response);
-        this.atualizarSessionStorage(response);        
+        this.atualizarSessionStorage(response);
+        this.precisaObterLocalDoParticipante(response.content.bObterLocalDoParticipante);
       },
       error: (err) => {
         console.error('Erro ao buscar dados da evento:', err);
