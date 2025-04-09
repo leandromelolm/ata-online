@@ -10,6 +10,7 @@ export class ButtonComponent {
   @Input() textButton: string;
   @Input() size: string = 'auto';
   @Input() display: string = '';
+  @Input() textButtonLoading: string = '';
   @Input() btnHeight: string = 'auto';
   @Input() btnWidth: string = 'auto';
   @Input() disabled: boolean = false;

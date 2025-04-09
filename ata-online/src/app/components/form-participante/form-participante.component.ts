@@ -57,6 +57,7 @@ export class FormParticipanteComponent {
   isMeeting: boolean = false;
   isSending: boolean = false;
   isSpinner: boolean = true;
+  buttonLoading: boolean = false;
   private subscription: Subscription;
   reuniao: string = '';
   errorInputUserName: boolean = false;
@@ -464,6 +465,7 @@ export class FormParticipanteComponent {
       hiddenMat: this.esconderNumero(this.matricula)
     }
     this.buttonText = 'Aguarde';
+    this.buttonLoading = true;
     this.isSending = true;
 
     //** Usa Fetch
@@ -484,6 +486,7 @@ export class FormParticipanteComponent {
         this.errorMessage = `Erro ao enviar arquivo: ${err}`;
         this.successMessage= ``;
         this.isSending = false;
+        this.buttonLoading = false;
       }
     });
   }
@@ -494,17 +497,19 @@ export class FormParticipanteComponent {
   }
 
   responseMessage(res: any) {
-    if (res.message) {
+    if (res.success) {
       this.errorMessage = '';
       this.successMessage= `Registro enviado com sucesso!`;
       this.sheetId = res.content?.sheetId!;
       this.selectedFile = null;
       this.limparCampos();
       this.isSending = false;
+      this.buttonLoading = false;
     } else {
       this.errorMessage = `Erro: ${res.message}`;
       this.successMessage= ``;
       this.isSending = false;
+      this.buttonLoading = false;
     }
   }
 

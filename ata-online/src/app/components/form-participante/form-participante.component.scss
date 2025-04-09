@@ -113,7 +113,11 @@ a{
 }
 
 .success-msg {
-    color: green; 
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    border-radius: 25px;
+    padding: 10px;
     margin-top: 40px;
     font-weight: 500;
     font-size: medium;

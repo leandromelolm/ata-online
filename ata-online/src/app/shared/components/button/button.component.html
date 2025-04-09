@@ -8,7 +8,11 @@
         <i *ngIf="icon" [ngClass]="icon"></i>
         {{ textButton }}
     </ng-container>
-    
-    <mat-spinner *ngIf="loading" [diameter]="24" [color]="colorSpinner"></mat-spinner>
+    @if(loading) {
+        <div class="d-flex justify-content-around mx-2">
+            <div>{{textButtonLoading}}</div> 
+            <mat-spinner [diameter]="24" [color]="colorSpinner"></mat-spinner>
+        </div>
+    }
     
 </button>

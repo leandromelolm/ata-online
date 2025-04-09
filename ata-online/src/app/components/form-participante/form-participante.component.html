@@ -113,20 +113,27 @@
                           
                         <div class="input__error" *ngIf="errorCheckBox">Marque que aceita o termos de uso e a politica de privacidade</div>
     
-                        <app-button class="btn-submit-form" [btnColor]="validarCampos()" *ngIf="selectedFile" (click)="submitForm()" [disabled]="isSending" [textButton]="buttonText"></app-button>
+                        <app-button class="btn-submit-form"
+                            [btnColor]="validarCampos()"
+                            *ngIf="selectedFile"
+                            (click)="submitForm()"
+                            [disabled]="isSending"
+                            [loading]="buttonLoading"
+                            [textButton]="buttonText">
+                        </app-button>
                     </div>
                 </div>
             }
         </div>
 
         
-        <div *ngIf="successMessage" class="success-msg">
+        <div *ngIf="successMessage" class="success-msg" @fadeInOut>
             <div class="d-grid">
                 <div class="mb-2">{{ successMessage }}</div>
                 <div>ID: {{ sheetId }}</div>            
             </div>
         </div>
-        <div *ngIf="errorMessage" class="error-msg">
+        <div *ngIf="errorMessage" class="error-msg" @fadeInOut>
             {{ errorMessage }}
         </div>
         
