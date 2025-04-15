@@ -225,13 +225,14 @@ function deletarEvento(atok = '', eventos = ["","",""]) {
   const eventosDeletado = [];
   eventos.forEach((evento) => {
     const eventoEncontrado = findByEventoId(evento);
+    const eventoObj = JSON.parse(eventoEncontrado.evento[9]);
     if (eventoEncontrado.evento !== false &&
-        eventoEncontrado.evento[10] === user.username && // evento[10] = Coluna K (Proprietario)
-        verificarDataDoEvento(JSON.parse(eventoEncontrado.evento[9]).data)) 
-    {
+      eventoEncontrado.evento[10] === user.username && // evento[10] = Coluna K (Proprietario)
+      verificarDataDoEvento(eventoObj.data)) {
         const sheet = spreadSheet.getSheetByName(env().SHEETNAME_EVENTOS);
         sheet.deleteRow(eventoEncontrado.positionRow);
         deletarAba(eventoEncontrado.evento[0]);
+        deletarPastaPorId(eventoObj.idFolder);
         eventosDeletado.push(eventoEncontrado.evento[0]);
         console.log('evento deletado')
     }
@@ -267,6 +268,18 @@ function deletarAba(id) {
     console.log("Folha deletada com sucesso!");
   } else {
     console.log("A folha não foi encontrada.");
+  }
+}
+
+/** deletar pasta */
+function deletarPastaPorId(folderId) {
+  try {
+    var pasta = DriveApp.getFolderById(folderId);
+    var pastaPai = pasta.getParents().next(); // Obtém a pasta pai
+    pastaPai.removeFolder(pasta);
+    Logger.log(`Pasta com ID '${folderId}' deletada com sucesso.`);
+  } catch (error) {
+    Logger.log(`Erro ao deletar a pasta com ID '${folderId}': ${error}`);
   }
 }
 
