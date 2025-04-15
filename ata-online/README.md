@@ -80,10 +80,8 @@ ng build --configuration=production
 # configurar o firebase.json na linha "site": "ataonline",
 firebase deploy --only hosting:ataonline
 
-
 # construir o projeto com variaveis do environment.prod
 ng build --configuration=sindatsb-prod
-
 
 #listar os projetos no firebase
 firebase projects:list
@@ -92,7 +90,6 @@ firebase projects:list
 firebase use --add PROJECT_ID
 # fazer o deploy
 firebase deploy --only hosting:sindatsbpe
-
 
 
 # deploy de preview - teste
