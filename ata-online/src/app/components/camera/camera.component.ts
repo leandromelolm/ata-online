@@ -25,9 +25,9 @@ export class CameraComponent {
   reloadPage(): void {
     let urlParams = window.location.search;
     if (urlParams)
-      window.location.href = '/home' + urlParams;
+      window.location.href = '/ata' + urlParams;
     else
-      window.location.href = '/home'
+      window.location.href = '/ata'
   }
 
   abrirCamera() {

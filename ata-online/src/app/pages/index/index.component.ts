@@ -17,6 +17,6 @@ export class IndexComponent {
   }
 
   redirectHome() {
-    this.router.navigate(['home']);
+    this.router.navigate(['ata']);
   }
 }

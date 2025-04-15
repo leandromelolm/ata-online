@@ -283,9 +283,9 @@ export class FormParticipanteComponent {
   reloadPage() {
     let urlParams = window.location.search;
     if (urlParams)
-      window.location.href = '/home' + urlParams;
+      window.location.href = '/ata' + urlParams;
     else
-      window.location.href = '/home'
+      window.location.href = '/ata'
   }
 
   receberValorDaCamera(valor: string) {

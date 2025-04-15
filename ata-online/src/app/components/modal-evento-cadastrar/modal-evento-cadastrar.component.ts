@@ -162,7 +162,7 @@ export class ModalEventoCadastrarComponent {
         if (res.success) {
           this.message = res.message;
           this.idEvento = res.content.id
-          this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
+          this.qrText = `${window.location.origin}/ata?ata=${res.content.id}`;
           this.limparCampos();
           this.isFormEvento = false;
           this.valueChanged.emit();
@@ -283,7 +283,7 @@ export class ModalEventoCadastrarComponent {
       if (res.success){
         this.message = res.message;
         this.idEvento = res.content.id
-        this.qrText = `https://sindatsb.web.app/home?ata=${res.content.id}`;
+        this.qrText = `${window.location.origin}ata?ata=${res.content.id}`;
         this.limparCampos();
         this.isFormEvento = false;
       } else {
