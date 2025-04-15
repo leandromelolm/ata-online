@@ -55,13 +55,32 @@
                   "maximumError": "4kb"
                 }
               ],
-              "outputHashing": "all",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true, 
+              "namedChunks": true,
+              "aot": true,
+              "extractLicenses": false
+            },
+            "sindatsb-prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prodsindatsb.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true, 
+              "namedChunks": true,
+              "aot": true,
+              "extractLicenses": false
             },
             "development": {
               "optimization": false,

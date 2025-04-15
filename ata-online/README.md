@@ -71,17 +71,34 @@ firebase logout
 firebase login
 firebase init
 
-# construir o projeto
-ng build
+# construir o projeto com variaveis do environment.prod
+ng build --configuration=production
 # o ng build deve ser dentro do diretório ata-online
 # escolher a opcão App Hosting
 # usar um projeto existente que ja foi criado no firebase
 # configurar arquivo firebase.json para localizar pasta index
+# configurar o firebase.json na linha "site": "ataonline",
 firebase deploy --only hosting:ataonline
+
+
+# construir o projeto com variaveis do environment.prod
+ng build --configuration=sindatsb-prod
+
+
+#listar os projetos no firebase
+firebase projects:list
+# configurar firebase.json "site": "sindatsbpe",
+# alterar para outro projeto existente
+firebase use --add PROJECT_ID
+# fazer o deploy
+firebase deploy --only hosting:sindatsbpe
+
+
 
 # deploy de preview - teste
 # https://firebase.google.com/docs/hosting/test-preview-deploy
 firebase hosting:channel:deploy preview_beta
+
 
 
 ### Outros comandos úteis

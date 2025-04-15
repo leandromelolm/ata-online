@@ -45,6 +45,7 @@ Thumbs.db
 
 *environment.ts
 *environment.prod.ts
+*environment.prodsindatsb.ts
 *functions
 
 proxy.conf.json
