@@ -28,6 +28,7 @@ export class ModalEventoComponent {
   ];
   bRestritoParaInLoco: boolean;
   bObterLocalDoParticipante: boolean;
+  link: string = '';
   @Output() valueChanged = new EventEmitter<string>();
 
   constructor(
@@ -41,6 +42,7 @@ export class ModalEventoComponent {
     this.status = this.userData.status;
     this.bRestritoParaInLoco = this.userData.bRestritoParaInLoco;
     this.bObterLocalDoParticipante = this.userData.bObterLocalDoParticipante;
+    this.link = `${window.location.origin}/ata?ata=${this.userData.id}`;
     this.changedBadgedColor(this.userData.status);
   }
 

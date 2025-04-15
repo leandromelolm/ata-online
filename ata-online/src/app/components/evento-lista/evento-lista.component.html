@@ -16,9 +16,12 @@
             <mat-card-subtitle>{{ evento.id }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-            <p>
+            <div>
               {{evento.status}} - {{evento.data}} | {{evento.hora}}
-            </p>
+            </div>
+            <div class="text-body-secondary">
+                <small>{{evento.bRestritoParaInLoco ? "Só permite registro no local" : ""}}</small>
+            </div>
           </mat-card-content>
         <mat-card-actions align="end">
             <button mat-button 
