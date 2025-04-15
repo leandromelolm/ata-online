@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "sindatsb",
+    "site": "ataonline",
     "public": "dist/ata-online/browser",
     "ignore": [
       "firebase.json",

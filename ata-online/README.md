@@ -67,6 +67,7 @@ ng generate class models/meeting
 ### implantar projeto no firebase
 npm install firebase
 npm install -g firebase-tools
+firebase logout
 firebase login
 firebase init
 
@@ -76,7 +77,7 @@ ng build
 # escolher a opcão App Hosting
 # usar um projeto existente que ja foi criado no firebase
 # configurar arquivo firebase.json para localizar pasta index
-firebase deploy --only hosting:sindatsb
+firebase deploy --only hosting:ataonline
 
 # deploy de preview - teste
 # https://firebase.google.com/docs/hosting/test-preview-deploy
