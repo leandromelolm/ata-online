@@ -115,4 +115,9 @@ export class ModalEventoComponent {
     this.btnSalvarAlteracao = 'Salvar';
   }
 
+  openQRCode(id: string) {
+    console.log('teste');
+    window.open(`${window.location.origin}/qrcode?ata=${id}`, '_blank');
+  }
+
 }

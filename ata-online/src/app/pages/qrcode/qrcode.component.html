@@ -1,28 +1,19 @@
 <div class="page__layout">
     <!-- <app-menu class="app__menu"></app-menu> -->
     <div class="page__content">
-    <div class="subtitulo">QRCode</div>
-      <div class="container">
-          <div class="col">
-              <div class="row">
-                  <div class="div__qrcode row">
-                    <div *ngIf="strQRCode === ''" class="row">
-                        <!-- <img src="../../assets/qrcode_index.png"/> -->
-                        <span>ataonline.web.app</span>
+        <div class="subtitulo">QRCode</div>
+        <div class="container">
+            <div class="div__qrcode row">
+                <div class="qr-container">
+                    <div class="text-center d-grid justify-item-center">
+                        <h3>AtaOnline</h3>
+                        <span>{{urlOrigin}}</span>
+                        <img [src]="qrCodeImage" alt="QR Code" />
                     </div>
-                    <div *ngIf="strQRCode === 'test'" class="row">
-                        <!-- <img src="../../assets/qrcode_ata_test.png"/> -->
-                        <span>QRCode de Reunião teste</span>
-                    </div>
-                    <div *ngIf="strQRCode === '2605'" class="row">
-                        <!-- <img src="../../assets/qrcode_ata_2605.png"/> -->
-                        <span>QRCode de reunião</span>
-                    </div>
-                  </div>
-              </div>
-              <div class="row mt-2">
-              </div>
-          </div>
-      </div>
+                </div>
+                <app-button class="btn-submit-form" (click)="downloadQRCode()"
+                    [textButton]="btnDownloadQRCode"></app-button>
+            </div>
+        </div>
     </div>
 </div>
