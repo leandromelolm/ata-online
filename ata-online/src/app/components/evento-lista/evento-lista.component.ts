@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ModalEventoComponent } from '../modal-evento/modal-evento.component';
 import { ModalEventoCadastrarComponent } from '../modal-evento-cadastrar/modal-evento-cadastrar.component';
 import { AuthenticationService } from '../../commom/auth/service/authentication.service';
+import { ToastMessageService } from '../../services/toast-message.service';
 
 @Component({
   selector: 'app-evento-lista',
@@ -24,7 +25,8 @@ export class EventoListaComponent {
   constructor(
     private apiService: ApiService,
     public dialog: MatDialog,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private toastMessageService: ToastMessageService
   ) {}
 
   ngOnInit() {
@@ -117,9 +119,11 @@ export class EventoListaComponent {
           if (data.success) {
             if (data.content.numberOfDeletedEvents > 0) {
               console.log('eventos', data);
+              this.toastMessageService.add(data.message);
               this.eventos = this.eventos.filter(evento => evento.id !== id);
             } else {
-              console.log(data.message) // usar um toast, alert ou snackbar
+              console.log(data.message);
+              this.toastMessageService.add(data.message)
             }
           } else {
             this.authService.logout();

@@ -35,6 +35,7 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
 import { ModalEventoCadastrarComponent } from './components/modal-evento-cadastrar/modal-evento-cadastrar.component';
 import { LoadingComponent } from './shared/loading/loading.component';
 import { AtaComponent } from './pages/ata/ata.component';
+import { MessageComponent } from './components/message/message.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { AtaComponent } from './pages/ata/ata.component';
     ClickOutsideDirective,
     ModalEventoCadastrarComponent,
     LoadingComponent,
-    AtaComponent
+    AtaComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,

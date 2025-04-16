@@ -2,6 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from '../../services/api.service';
+import { ToastMessageService } from '../../services/toast-message.service';
 
 @Component({
   selector: 'app-modal-evento',
@@ -31,10 +32,11 @@ export class ModalEventoComponent {
   link: string = '';
   @Output() valueChanged = new EventEmitter<string>();
 
-  constructor(
+  constructor (
     public dialogRef: MatDialogRef<ModalEventoComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private toastMessageService: ToastMessageService
   ) {
     this.userData = data;
     console.log(this.userData);
@@ -70,6 +72,7 @@ export class ModalEventoComponent {
             this.valueChanged.emit();
             this.fontIcon = 'check';
             console.log(response.message);
+            this.toastMessageService.add(response.message);
             this.btnSalvarAlteracao = 'Salvo';
           } else {
             this.fontIcon = 'error';

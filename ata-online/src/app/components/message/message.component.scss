@@ -1,0 +1,27 @@
+.message {
+    position: fixed;
+    top: 3em;
+    right: 3%;
+    width: 360px;
+    z-index: 999;
+    padding: 1.5em;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+  }
+  
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
+  }
+  
+  .message-header button {
+    padding: 0;
+    height: 26px;
+    cursor: pointer;
+  }
+  
+  .message p {
+    font-size: 1.2em;
+  }

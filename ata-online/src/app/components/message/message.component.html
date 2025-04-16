@@ -1,0 +1,9 @@
+<div class="message alert alert-warning" *ngIf="messageService.message">
+    <div class="message-header">
+      <div>Mensagem do Sistema:</div>
+      <button class="btn" data-bs-toggle="button" (click)="messageService.clear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <p>{{ messageService.message }}</p>
+  </div>
