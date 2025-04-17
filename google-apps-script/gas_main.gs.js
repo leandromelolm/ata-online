@@ -1,18 +1,48 @@
-const spreadSheet = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID);
+/**
+ *  
 
-/** 
- * GET
- *
- * buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
- * refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
- * deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
- * listar eventos • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
- * deletar eventos • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
- * editar evento • ?action=user-event-edit&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&bRestritoParaInLoco=BOOLEAN&bObterLocalDoParticipante=BOOLEAN&atok=ACCESS_TOKEN
- * buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
- * buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
+Projeto Google Apps Script
+ 
+criar o projeto do tipo: web app
+permissão de acesso: qualquer pessoa
+  
+PROJECT_FOLDER_NAME = nome da pasta projeto no google drive. ex: projeto_ataonline
+SPREADSHEET_ID: id da ata-online_planilha.gsheet
+ 
+renomear função env_example() para env()
+ 
+criar o diretorios do google drive:
+
+  projeto_ataonline/ 
+  ├── ata-online_imagens/
+  ├── ata-online_script/
+  │   └── google_apps_script.gs
+  ├── ata-online_planilha.gsheet
+  ├── ata politica de privacidade.doc
+  └── ata termos de uso.doc
+
+  
+projeto usa CryptoJS v3.1.2
+O CryptoJS é usando na função decrypt() do arquivo auth
+ 
+
+ROTAS GET
+ 
+buscar evento por id • ?action=evento-por-id&ata=ID_EVENTO
+refresh token • ?action=refreshToken&rtok=REFRESH_TOKEN&deviceid=DEVICE_ID
+deslogar usuario • ?action=logout&logoutdeviceid=DEVICE_ID
+listar eventos • ?action=user-event-list&user=USERNAME&atok=ACCESS_TOKEN 
+deletar eventos • ?action=user-event-delete&user=USERNAME&atok=ACCESS_TOKEN&ev=EVENTO_ID&ev=EVENTO_ID&ev=EVENTO_ID
+editar evento • ?action=user-event-edit&eventoid=ID_EVENTO&novostatus=NOVO_STATUS&bRestritoParaInLoco=BOOLEAN&bObterLocalDoParticipante=BOOLEAN&atok=ACCESS_TOKEN
+buscar todos os participantes por evento • ?action=all-participant-event&eventoid=ID_EVENTO
+buscar participante por matricula • ?action=find-participant-by-matricula&matricula=MATRICULA&eventoid=ID_EVENTO
+
  *
  * **/
+
+
+const spreadSheet = SpreadsheetApp.openById(env().SPREADSHEET_ID);
+
 const doGet = (e) => {
 //  const lock = LockService.getScriptLock();
 //  lock.tryLock(10000);
@@ -170,7 +200,7 @@ function editStatusEvento(atok, idEvento, statusNovo, bRestritoParaInLocoParam, 
   const bRestritoParaInLoco = bRestritoParaInLocoParam === 'true';
   const bObterLocalDoParticipante = bObterLocalDoParticipanteParam === 'true';
 
-  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName('EVENTOS');
+  const aba = SpreadsheetApp.openById(env().SPREADSHEET_ID).getSheetByName('EVENTOS');
   coluna = aba.getRange(`${column}:${column}`);
   var textFinder = coluna.createTextFinder(idEvento);
   textFinder.matchEntireCell(true);
@@ -319,7 +349,7 @@ function listarEventosDoUsuario(atok, textToFind, column = 'K', sheet = env().SH
 }
 
 function folhaDaPlanilha(sheetName) {
-  return SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(sheetName);
+  return SpreadsheetApp.openById(env().SPREADSHEET_ID).getSheetByName(sheetName);
 };
 
 /** Encontrar Todos ParticipantesDTO */
@@ -342,7 +372,7 @@ function encontrarParticipantePorMatricula(valorPesquisado, eventoId) {
   if (eventoId === 'EVENTOS')
     return outputError('evento id inválido', 'erro na pesquisa por matrícula')
   const coluna = 4 // coluna que estão as matrículas
-  const planilha = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(eventoId);
+  const planilha = SpreadsheetApp.openById(env().SPREADSHEET_ID).getSheetByName(eventoId);
   if(!planilha)
     return outputError('evento não encontrado', 'erro ao buscar participante');
   const dados = planilha.getDataRange().getValues();
@@ -407,7 +437,7 @@ function gerarUuidParticionado() {
 }
 
 function criarPastaParaEvento(nomeDaPasta) {
-  var nomeDoSubdiretorio = "ata-online";
+  var nomeDoSubdiretorio = env().PROJECT_FOLDER_NAME;
   var nomeDaSubPasta = "ata-online_imagens";
   var pastas = DriveApp.getFoldersByName(nomeDoSubdiretorio);
   if (!pastas.hasNext()) {
@@ -423,6 +453,28 @@ function criarPastaParaEvento(nomeDaPasta) {
     pastaImagens = pastaPai.createFolder(nomeDaSubPasta);
   }
   var novaPasta = pastaImagens.createFolder(nomeDaPasta);
+  return {
+    "folderId": novaPasta.getId(),
+    "folderUrl": novaPasta.getUrl()
+  };
+}
+
+function _criarPastaParaEvento(nomeDaPasta, idPastaPai) {
+  try {
+    var pastaPai = DriveApp.getFolderById(idPastaPai);
+  } catch (e) {
+    throw new Error(`A pasta com o ID '${idPastaPai}' não foi encontrada.`);
+  }
+
+  const nomeDoSubPasta = "ata-online_imagens";
+  const subPastas = pastaPai.getFoldersByName(nomeDoSubPasta);
+  let pastaImagens;
+  if (subPastas.hasNext()) {
+    pastaImagens = subPastas.next();
+  } else {
+    pastaImagens = pastaPai.createFolder(nomeDoSubPasta);
+  }
+  const novaPasta = pastaImagens.createFolder(nomeDaPasta);
   return {
     "folderId": novaPasta.getId(),
     "folderUrl": novaPasta.getUrl()
@@ -553,46 +605,4 @@ function termosDeUso() {
     return ContentService.createTextOutput("Erro: " + error.message).setMimeType(ContentService.MimeType.TEXT);
   }
 }
-
-function env_example() {
-  const ENV_SPREADSHEET_ID = '';
-  const ENV_FOLDER_ID = '';
-  const SHEETNAME_EVENTOS = '';
-  const PRIVATE_KEY_HASH = '';
-  const SHEETNAME_USER = '';
-  const ENV_CRYPTO_KEY_SECRET = '';
-  const KEY_ACCESS_TOKEN = '';
-  const KEY_REFRESH_TOKEN = '';
-  const SHEETNAME_REFRESH ='';
-  const DOCUMENTO_ID_POLITICA_DE_PRIVACIDADE = '';
-  const DOCUMENTO_ID_TERMOS_DE_USO = '';
-  return {
-    ENV_SPREADSHEET_ID, 
-    ENV_FOLDER_ID, 
-    SHEETNAME_EVENTOS, 
-    PRIVATE_KEY_HASH, 
-    SHEETNAME_USER, 
-    ENV_CRYPTO_KEY_SECRET,
-    KEY_ACCESS_TOKEN,
-    KEY_REFRESH_TOKEN,
-    SHEETNAME_REFRESH,
-    DOCUMENTO_ID_POLITICA_DE_PRIVACIDADE,
-    DOCUMENTO_ID_TERMOS_DE_USO
-  };
-}
-
-/**
- *  Projeto Google Apps Script
- * 
- * criar o projeto do tipo: web app
- * permissão de acesso: qualquer pessoa
- * 
- * ENV_FOLDER_ID = id da pasta que será salva no google drive
- * ENV_SPREADSHEET_ID: id da panilha google
- * 
- * renomear função env_example() para env()
- * 
- * projeto usa CryptoJS v3.1.2 na função decrypt()
- * 
- * */
  

@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "ataonline",
+    "public": "dist/ata-online/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

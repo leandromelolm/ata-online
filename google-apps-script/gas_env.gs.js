@@ -1,0 +1,29 @@
+function env() {
+    const SPREADSHEET_ID = '';
+    const PROJECT_FOLDER_ID = '';
+    const PROJECT_FOLDER_NAME = '';
+    const SHEETNAME_EVENTOS = '';
+    const SHEETNAME_USER = '';
+    const SHEETNAME_REFRESH ='';
+    const PRIVATE_KEY_HASH = '';
+    const ENV_CRYPTO_KEY_SECRET = '';
+    const KEY_ACCESS_TOKEN = '';
+    const KEY_REFRESH_TOKEN = '';
+    const DOCUMENT_ID_POLITICA_DE_PRIVACIDADE = '';
+    const DOCUMENT_ID_TERMOS_DE_USO = '';
+  
+    return {
+      SPREADSHEET_ID,
+      PROJECT_FOLDER_ID,
+      PROJECT_FOLDER_NAME,
+      SHEETNAME_EVENTOS,
+      SHEETNAME_USER,
+      SHEETNAME_REFRESH,
+      PRIVATE_KEY_HASH,
+      ENV_CRYPTO_KEY_SECRET,
+      KEY_ACCESS_TOKEN,
+      KEY_REFRESH_TOKEN,
+      DOCUMENT_ID_POLITICA_DE_PRIVACIDADE,
+      DOCUMENT_ID_TERMOS_DE_USO
+    };
+  }
