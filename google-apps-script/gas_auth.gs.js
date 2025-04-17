@@ -65,7 +65,7 @@ function horasParaExpiracao(expTimestamp) {
 };
 
 function sheetSession(sheetName) {
-  return SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(sheetName);
+  return SpreadsheetApp.openById(env().SPREADSHEET_ID).getSheetByName(sheetName);
 };
 
 function createUserSession(timeStamp, userId, userName, refreshToken, deviceId, status) {
@@ -246,7 +246,7 @@ function authUser(user, password) {
 }
 
 function localizarUsuario(user) {
-  const aba = SpreadsheetApp.openById(env().ENV_SPREADSHEET_ID).getSheetByName(env().SHEETNAME_USER);
+  const aba = SpreadsheetApp.openById(env().SPREADSHEET_ID).getSheetByName(env().SHEETNAME_USER);
   coluna = aba.getRange("C:C");
   const textFinder = coluna.createTextFinder(user);
   textFinder.matchEntireCell(true);
