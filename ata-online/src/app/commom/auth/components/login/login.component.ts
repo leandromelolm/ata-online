@@ -5,6 +5,7 @@ import { AuthenticationService } from '../../service/authentication.service';
 import { Router } from '@angular/router';
 import { MatSnackBar} from '@angular/material/snack-bar';
 import { catchError } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ import { catchError } from 'rxjs';
 })
 export class LoginComponent {
 
+  titleMain: string = "AtaOnline"
   loginForm!: FormGroup; 
   authLogin!: Login;
   errorAuth: boolean;
@@ -32,6 +34,7 @@ export class LoginComponent {
   ){ }
 
   ngOnInit(): void {
+    this.titleMain = environment.titleMain;
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
       password: ['',Validators.compose([

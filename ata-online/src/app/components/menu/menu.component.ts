@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from '../../commom/auth/service/authentication.service';
 import { Subject, take, takeUntil } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-menu',
@@ -11,6 +12,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 })
 export class MenuComponent {
 
+  title: string = 'AtaOnline';
   username: string = '';
   isMobile: boolean = false;
 
@@ -28,6 +30,7 @@ export class MenuComponent {
   ) {}
 
   ngOnInit() {
+    this.title = environment.titleMain;
     // this.isAuthenticated && this.checkAuthUser(); // se o usuario autenticado, faça o check
     this.checkAuthUser();
     this.messageOfLoading();

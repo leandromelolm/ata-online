@@ -4,7 +4,7 @@
     <mat-icon class="menu-mobile-icon">menu</mat-icon>
   </div>
   <img src="../../assets/logo.png"/>
-  <span class="menu-mobile-titulo">Ata Online</span>
+  <span class="menu-mobile-titulo">{{title}}</span>
 </div>
 
 <div class="side-menu offcanvas offcanvas-md offcanvas-start" [ngClass]="{ 'offcanvas': isMobile }" tabindex="-1" id="offcanvasResponsive" aria-labelledby="offcanvasResponsiveLabel">
@@ -14,7 +14,7 @@
         <li class="justify-content-between li__titulo" (click)="getSessionUrlParameter('/home')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <div>
             <img src="../../assets/logo.png"/> 
-            <span class="span__titulo">Ata Online</span>
+            <span class="span__titulo">{{title}}</span>
           </div>
           <div data-bs-theme="dark">
             <button type="button" class="btn-close btn-sm d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasResponsive" aria-label="Close"></button>

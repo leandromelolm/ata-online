@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-index',
@@ -8,12 +9,14 @@ import { Router } from '@angular/router';
 })
 export class IndexComponent {
 
-  userName: string;
+  titleMain: string = "AtaOnline";
 
   constructor(private router: Router) {}
 
   ngOnInit() {
+    this.titleMain = environment.titleMain;
     sessionStorage.clear();
+
   }
 
   redirectHome() {

@@ -71,6 +71,36 @@ firebase logout
 firebase login
 firebase init
 
+
+### Build and Deploy
+
+## build and deploy sindatsbpe
+
+# configurar firebase.json "site": "sindatsbpe",
+
+# criar arquivo environment.prodsindatsb.ts no diretorio environment
+
+# construir o projeto com variaveis do environment.prodsindatsb.prod
+ng build --configuration=sindatsb-prod
+# arquivo env personalizado acrescentado no angular.json
+
+# se não estiver logado
+firebase login
+
+
+
+#listar os projetos no firebase
+firebase projects:list
+
+# usar o projeto existente
+firebase use --add PROJECT_ID
+
+# fazer o deploy
+firebase deploy --only hosting:sindatsbpe
+
+
+## build and deploy ata-online
+
 # construir o projeto com variaveis do environment.prod
 ng build --configuration=production
 # o ng build deve ser dentro do diretório ata-online
@@ -80,19 +110,8 @@ ng build --configuration=production
 # configurar o firebase.json na linha "site": "ataonline",
 firebase deploy --only hosting:ataonline
 
-# construir o projeto com variaveis do environment.prod
-ng build --configuration=sindatsb-prod
 
-#listar os projetos no firebase
-firebase projects:list
-# configurar firebase.json "site": "sindatsbpe",
-# alterar para outro projeto existente
-firebase use --add PROJECT_ID
-# fazer o deploy
-firebase deploy --only hosting:sindatsbpe
-
-
-# deploy de preview - teste
+### deploy de preview - teste
 # https://firebase.google.com/docs/hosting/test-preview-deploy
 firebase hosting:channel:deploy preview_beta
 
