@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'ata', component: AtaComponent },
   { path: 'qrcode', component: QrcodeComponent },
-  { path: 'registros', component: RegistrosComponent },
+  { path: 'registros', component: RegistrosComponent, canActivate: [canActivateAuthGuard] },
   { path: 'criar-evento', component: MeusEventosComponent, canActivate: [canActivateAuthGuard] },
   { path: 'meus-eventos', component: MeusEventosComponent, canActivate: [canActivateAuthGuard] },
   { path: 'auth', loadChildren: () => import('./commom/auth/auth.module').then(m => AuthModule), canMatch: [canMatchAuthGuard] },
