@@ -30,10 +30,10 @@
           <!-- <li (click)="getSessionUrlParameter('/qrcode')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
           <mat-icon>qr_code</mat-icon>QRCode
         </li> -->
-        <li (click)="getSessionUrlParameter('/registros')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
-          <mat-icon>lists</mat-icon>Registros
-        </li>
         @if (isAuthenticated) {
+          <li (click)="getSessionUrlParameter('/registros')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
+            <mat-icon>lists</mat-icon>Registros
+          </li>
           <li (click)="getSessionUrlParameter('/meus-eventos')" [attr.data-bs-dismiss]="isMobile ? 'offcanvas' : null">
             <mat-icon>edit_note</mat-icon>Meus Eventos
           </li>
