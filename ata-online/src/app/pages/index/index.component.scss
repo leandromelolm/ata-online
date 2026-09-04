@@ -10,6 +10,17 @@
     background-repeat: repeat-y;
 }
 
+.background-gradiente {
+    width: 55%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 40% 60%, rgba(94, 185, 219, 0.8) 0%, rgba(35, 99, 125, 0.5) 40%, transparent 80%),
+        radial-gradient(circle at 80% 80%, rgba(110, 203, 237, 0.7) 0%, rgba(12, 45, 59, 0.9) 60%, transparent 100%),
+        radial-gradient(circle at 10% 10%, #05161c 0%, #0f3442 50%, #225a70 100%);
+    background-blend-mode: screen;
+    background-color: #081d26;
+}
+
 .area-form{
     height: 100%;
     width: 45%;
