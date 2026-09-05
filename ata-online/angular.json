@@ -98,6 +98,9 @@
             },
             "development": {
               "buildTarget": "ata-online:build:development"
+            },
+            "sindatsb-prod": {
+              "buildTarget": "ata-online:build:sindatsb-prod"
             }
           },
           "defaultConfiguration": "development"
